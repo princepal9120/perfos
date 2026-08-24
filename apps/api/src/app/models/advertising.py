@@ -13,7 +13,9 @@ class AdAccount(Base):
     __tablename__ = "ad_accounts"
     __table_args__ = (
         CheckConstraint(
-            "platform IN ('google','meta','shopify')", name="ck_adaccount_platform"
+            "platform IN ('google','meta','shopify','tiktok','linkedin','pinterest',"
+            "'snapchat','amazon','reddit','twitter','youtube','amazon_ads','x_ads')",
+            name="ck_adaccount_platform",
         ),
         CheckConstraint("status IN ('active','paused')", name="ck_adaccount_status"),
     )
