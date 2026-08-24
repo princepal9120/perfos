@@ -1,0 +1,37 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+        "cwd": "."
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && .venv/bin/python -m pytest -q",
+        "cwd": "."
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && .venv/bin/python scripts/seed.py",
+        "cwd": "."
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && .venv/bin/pip install -e '.[postgres]'",
+        "cwd": "."
+      }
+    }
+  },
+  "tags": ["backend", "api"]
+}

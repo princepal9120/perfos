@@ -1,0 +1,14 @@
+{
+  "owner": "hud",
+  "pid": 59998,
+  "cwd": "/Users/princepal/Desktop/coding/PerfOS",
+  "heartbeat_at": "2026-08-24T16:06:45.341Z",
+  "cooldown_ms": 5000,
+  "jitter_ms": 99,
+  "skip_count": 179,
+  "last_status": "skipped",
+  "last_reason": "rate_limited",
+  "last_spawn_at": "2026-08-24T16:06:43.338Z",
+  "last_skip_at": "2026-08-24T16:06:45.341Z",
+  "next_allowed_at": "2026-08-24T16:06:48.437Z"
+}

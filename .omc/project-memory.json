@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1787587353622,
+  "projectRoot": "/Users/princepal/Desktop/coding/PerfOS",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": null,
+    "devCommand": "npm run dev",
+    "scripts": {
+      "api:dev": "nx run api:serve",
+      "api:test": "nx run api:test",
+      "api:build": "nx run api:build",
+      "web:dev": "nx run web:dev",
+      "web:build": "nx run web:build",
+      "web:start": "nx run web:start",
+      "dev": "nx run-many --targets=dev --projects=api,web --parallel",
+      "build": "nx run-many --targets=build --projects=api,web --parallel",
+      "test": "nx run-many --targets=test --projects=api,web --parallel"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": true,
+    "workspaces": [
+      "apps/*"
+    ],
+    "mainDirectories": [
+      "app",
+      "docs",
+      "spec"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1787587353587,
+      "keyFiles": [
+        "__init__.py",
+        "main.py",
+        "schemas.py"
+      ]
+    },
+    "apps": {
+      "path": "apps",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1787587353588,
+      "keyFiles": []
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 4,
+      "lastAccessed": 1787587353615,
+      "keyFiles": [
+        "ARCHITECTURE.md",
+        "PROOF_AND_DEPLOY.md",
+        "REVERSE_ENGINEERING.md",
+        "api.md"
+      ]
+    },
+    "perfos.egg-info": {
+      "path": "perfos.egg-info",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1787587353616,
+      "keyFiles": [
+        "PKG-INFO",
+        "SOURCES.txt",
+        "dependency_links.txt",
+        "requires.txt",
+        "top_level.txt"
+      ]
+    },
+    "spec": {
+      "path": "spec",
+      "purpose": "Test specifications",
+      "fileCount": 2,
+      "lastAccessed": 1787587353616,
+      "keyFiles": [
+        "COMPLETION.md",
+        "CONTRACTS.md"
+      ]
+    },
+    "app/api": {
+      "path": "app/api",
+      "purpose": "API routes",
+      "fileCount": 2,
+      "lastAccessed": 1787587353617,
+      "keyFiles": [
+        "__init__.py",
+        "routes.py"
+      ]
+    },
+    "app/models": {
+      "path": "app/models",
+      "purpose": "Data models",
+      "fileCount": 6,
+      "lastAccessed": 1787587353617,
+      "keyFiles": [
+        "__init__.py",
+        "advertising.py",
+        "integrations.py"
+      ]
+    },
+    "apps/api": {
+      "path": "apps/api",
+      "purpose": "API routes",
+      "fileCount": 4,
+      "lastAccessed": 1787587353617,
+      "keyFiles": [
+        "project.json",
+        "pyproject.toml",
+        "pytest.ini"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

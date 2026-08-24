@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# Build
+.next/
+out/
+dist/
+build/
+.vercel/
+
+# Env
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Nx
+.nx/
+*.tsbuildinfo
+
+# PerfOS specific
+perfos*.db
+.build/

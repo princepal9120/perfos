@@ -1,0 +1,22 @@
+{
+  "name": "perfos",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "api:dev": "nx run api:serve",
+    "api:test": "nx run api:test",
+    "api:build": "nx run api:build",
+    "web:dev": "nx run web:dev",
+    "web:build": "nx run web:build",
+    "web:start": "nx run web:start",
+    "dev": "nx run-many --targets=dev --projects=api,web --parallel",
+    "build": "nx run-many --targets=build --projects=api,web --parallel",
+    "test": "nx run-many --targets=test --projects=api,web --parallel"
+  },
+  "devDependencies": {
+    "nx": "^20.0.0"
+  }
+}

@@ -1,0 +1,60 @@
+# PerfOS demo stack: web (Next.js), api (uvicorn), redis, postgres (optional).
+#   docker compose up --build          # sqlite, mock mode
+#   docker compose --profile postgres up -d postgres api web   # Postgres variant
+#
+# Note: web/next.config.js proxies /api -> http://localhost:8000 at runtime
+# (server-side). The rewrite destination is hardcoded to localhost, so the web
+# container shares the api container's network namespace to reach it. All host
+# ports are therefore published on the `api` service.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    environment:
+      MOCK_MODE: "true"
+      DATABASE_URL: sqlite:////data/perfos.db
+      # For the optional postgres service use instead:
+      # DATABASE_URL: postgresql+psycopg2://perfos:perfos@postgres:5432/perfos
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: change-me-in-prod
+      DEFAULT_WORKSPACE_API_KEY: perfos-demo-key
+    volumes:
+      - api-data:/data
+    ports:
+      - "8000:8000"
+      - "3000:3000" # served by the `web` container (shared netns)
+    depends_on:
+      - redis
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    network_mode: "service:api"
+    depends_on:
+      - api
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: perfos
+      POSTGRES_PASSWORD: perfos
+      POSTGRES_DB: perfos
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  api-data:
+  pg-data:
