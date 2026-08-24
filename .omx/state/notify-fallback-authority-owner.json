@@ -2,13 +2,13 @@
   "owner": "hud",
   "pid": 59998,
   "cwd": "/Users/princepal/Desktop/coding/PerfOS",
-  "heartbeat_at": "2026-08-24T16:31:02.284Z",
+  "heartbeat_at": "2026-08-24T16:31:40.328Z",
   "cooldown_ms": 5000,
-  "jitter_ms": 201,
-  "skip_count": 1273,
+  "jitter_ms": 187,
+  "skip_count": 1305,
   "last_status": "skipped",
   "last_reason": "rate_limited",
-  "last_spawn_at": "2026-08-24T16:31:01.283Z",
-  "last_skip_at": "2026-08-24T16:31:02.284Z",
-  "next_allowed_at": "2026-08-24T16:31:06.484Z"
+  "last_spawn_at": "2026-08-24T16:31:37.323Z",
+  "last_skip_at": "2026-08-24T16:31:40.328Z",
+  "next_allowed_at": "2026-08-24T16:31:42.510Z"
 }
