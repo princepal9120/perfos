@@ -1,18 +1,12 @@
 {
-  "$schema": "./web/node_modules/wrangler/config-schema.json",
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "perfos-dashboard",
-  "pages_build_output_dir": "web/.vercel/output",
+  "pages_build_output_dir": "apps/web/out",
   "compatibility_date": "2026-08-20",
   "compatibility_flags": ["nodejs_compat"],
-
-  // Frontend talks to the backend via this base URL.
-  // Set NEXT_PUBLIC_API_URL in the Pages project env (Dashboard -> Settings ->
-  // Environment variables) to your deployed backend URL, e.g.
-  // https://perfos-api.<your-subdomain>.workers.dev
   "vars": {
     "NEXT_PUBLIC_API_URL": ""
   },
-
   "env": {
     "preview": {
       "vars": {
