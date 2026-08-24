@@ -138,10 +138,10 @@ const FAQ = [
 function Logo() {
   return (
     <span className="flex items-center gap-2.5">
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-sm font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.3)]">
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white shadow-[0_4px_20px_rgba(61,99,245,0.3)]">
         P
       </span>
-      <span className="text-base font-semibold tracking-tight text-[#f0f0f5]">
+      <span className="font-display text-base font-semibold tracking-tight text-[#f0f0f5]">
         PerfOS
       </span>
     </span>
@@ -150,28 +150,32 @@ function Logo() {
 
 export default function LandingPage() {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
-      {/* Glow orbs */}
-      <div className="glow-orb animate-pulse-glow left-[-200px] top-[-200px] h-[500px] w-[500px] rounded-full bg-[#3b82f6]/20" />
-      <div className="glow-orb animate-pulse-glow bottom-[-200px] right-[-200px] h-[600px] w-[600px] rounded-full bg-[#8b5cf6]/15" />
-      <div className="glow-orb left-1/2 top-1/3 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-[#06b6d4]/10" />
-
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden">
       {/* Header */}
       <header className="relative z-10 border-b border-white/[0.04]">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
           <Logo />
           <nav className="hidden items-center gap-6 md:flex">
-            <Link href="#features" className="text-sm text-[#8b8ba3] transition-colors hover:text-white">
+            <Link
+              href="#features"
+              className="rounded-sm text-sm text-[#8b8ba3] transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Features
             </Link>
-            <Link href="#pricing" className="text-sm text-[#8b8ba3] transition-colors hover:text-white">
+            <Link
+              href="#pricing"
+              className="rounded-sm text-sm text-[#8b8ba3] transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Pricing
             </Link>
-            <Link href="#faq" className="text-sm text-[#8b8ba3] transition-colors hover:text-white">
+            <Link
+              href="#faq"
+              className="rounded-sm text-sm text-[#8b8ba3] transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               FAQ
             </Link>
           </nav>
-          <Link href="/overview" className="btn-secondary text-sm">
+          <Link href="/overview" className="btn-secondary text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
             Open console
           </Link>
         </div>
@@ -179,12 +183,19 @@ export default function LandingPage() {
 
       <main className="relative z-10 flex-1">
         {/* Hero */}
-        <section className="section-padding mx-auto w-full max-w-6xl px-6 pb-20 pt-32 text-center sm:pt-40">
+        <section className="section-padding relative mx-auto w-full max-w-6xl px-6 pb-20 pt-32 text-center sm:pt-40">
+          {/* Single, restrained glow tied to the headline — fades in once on
+              load, never loops. */}
+          <div
+            className="hero-glow animate-fade-up left-1/2 top-16 -z-10 h-[420px] w-[720px] -translate-x-1/2"
+            style={{ animationDelay: "80ms" }}
+            aria-hidden="true"
+          />
           <div className="gradient-border mb-8 inline-block rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs font-medium text-[#8b8ba3] backdrop-blur-sm">
             <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 align-middle" />
             Now in mock mode. Try the full demo.
           </div>
-          <h1 className="mx-auto max-w-4xl text-balance text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 className="mx-auto max-w-4xl text-balance break-words font-display text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl md:text-7xl">
             <span className="text-[#f0f0f5]">Stop platforms</span>
             <br />
             <span className="gradient-text">inflating your ROAS.</span>
@@ -228,7 +239,7 @@ export default function LandingPage() {
 
         {/* Problem */}
         <section className="section-padding mx-auto w-full max-w-6xl px-6 text-center">
-          <h2 className="text-balance text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Your platforms are lying to you.
             <br />
             <span className="text-[#8b8ba3]">Here is how much.</span>
@@ -252,7 +263,7 @@ export default function LandingPage() {
               },
             ].map((item) => (
               <div key={item.label} className="glass-card p-8 text-left">
-                <p className="gradient-text text-3xl font-bold">{item.metric}</p>
+                <p className="text-3xl font-bold text-accent">{item.metric}</p>
                 <p className="mt-3 text-sm font-semibold text-[#f0f0f5]">{item.label}</p>
                 <p className="mt-2 text-sm leading-relaxed text-[#8b8ba3]">{item.sub}</p>
               </div>
@@ -262,7 +273,7 @@ export default function LandingPage() {
 
         {/* Features */}
         <section id="features" className="section-padding mx-auto w-full max-w-6xl px-6">
-          <h2 className="text-balance text-center text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words text-center font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Three capabilities.
             <br />
             <span className="text-[#8b8ba3]">One operating system.</span>
@@ -290,7 +301,7 @@ export default function LandingPage() {
 
         {/* How it works */}
         <section className="section-padding mx-auto w-full max-w-6xl px-6">
-          <h2 className="text-balance text-center text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words text-center font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Go from connected to confident
             <br />
             <span className="text-[#8b8ba3]">in three steps.</span>
@@ -299,10 +310,10 @@ export default function LandingPage() {
             {STEPS.map((step, i) => (
               <div key={step.num} className="relative">
                 {i < STEPS.length - 1 && (
-                  <div className="absolute left-[2rem] top-[2.5rem] hidden h-px w-full bg-gradient-to-r from-[#3b82f6]/30 to-transparent sm:block" />
+                  <div className="absolute left-[2rem] top-[2.5rem] hidden h-px w-full bg-gradient-to-r from-accent/30 to-transparent sm:block" />
                 )}
                 <div className="glass-card relative p-8">
-                  <span className="gradient-text text-4xl font-bold opacity-60">
+                  <span className="text-4xl font-bold text-accent/50">
                     {step.num}
                   </span>
                   <h3 className="mt-4 text-base font-semibold text-[#f0f0f5]">
@@ -319,14 +330,14 @@ export default function LandingPage() {
 
         {/* Testimonials */}
         <section className="section-padding mx-auto w-full max-w-6xl px-6">
-          <h2 className="text-balance text-center text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words text-center font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Built for operators, not experiments.
           </h2>
           <div className="mx-auto mt-12 grid gap-6 sm:grid-cols-3">
             {TESTIMONIALS.map((t) => (
               <div key={t.name} className="glass-card p-8">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-sm font-bold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
                     {t.name.split(" ").map((n) => n[0]).join("")}
                   </div>
                   <div>
@@ -344,7 +355,7 @@ export default function LandingPage() {
 
         {/* Pricing */}
         <section id="pricing" className="section-padding mx-auto w-full max-w-6xl px-6">
-          <h2 className="text-balance text-center text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words text-center font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Simple, transparent pricing.
           </h2>
           <div className="mx-auto mt-12 grid gap-6 sm:grid-cols-3">
@@ -352,11 +363,11 @@ export default function LandingPage() {
               <div
                 key={tier.name}
                 className={`glass-card relative p-8 ${
-                  tier.popular ? "border-[#3b82f6]/30 shadow-[0_0_40px_rgba(59,130,246,0.12)]" : ""
+                  tier.popular ? "border-accent/30 shadow-[0_0_40px_rgba(61,99,245,0.12)]" : ""
                 }`}
               >
                 {tier.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                     Most popular
                   </span>
                 )}
@@ -371,7 +382,7 @@ export default function LandingPage() {
                 <ul className="mt-6 space-y-3">
                   {tier.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm text-[#8b8ba3]">
-                      <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6]" />
+                      <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                       {f}
                     </li>
                   ))}
@@ -380,7 +391,7 @@ export default function LandingPage() {
                   href="/overview"
                   className={`mt-8 block w-full rounded-xl py-3 text-center text-sm font-semibold transition-all ${
                     tier.popular
-                      ? "bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] text-white shadow-[0_4px_20px_rgba(99,102,241,0.25)] hover:opacity-90"
+                      ? "bg-accent text-white shadow-[0_4px_20px_rgba(61,99,245,0.25)] hover:bg-accent-hover"
                       : "bg-white/[0.04] text-[#f0f0f5] ring-1 ring-white/10 hover:bg-white/[0.08]"
                   }`}
                 >
@@ -396,7 +407,7 @@ export default function LandingPage() {
 
         {/* FAQ */}
         <section id="faq" className="section-padding mx-auto w-full max-w-3xl px-6">
-          <h2 className="text-balance text-center text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
+          <h2 className="text-balance break-words text-center font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-3xl">
             Questions, answered.
           </h2>
           <div className="mt-12 space-y-4">
@@ -416,11 +427,11 @@ export default function LandingPage() {
 
         {/* Final CTA */}
         <section className="section-padding mx-auto w-full max-w-6xl px-6 text-center">
-          <div className="glass-card gradient-border p-12 sm:p-16">
-            <h2 className="text-balance text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-4xl">
+          <div className="glass-card relative overflow-hidden border-accent/20 p-12 shadow-[0_0_60px_rgba(61,99,245,0.1)] sm:p-16">
+            <h2 className="text-balance break-words font-display text-2xl font-semibold tracking-tight text-[#f0f0f5] sm:text-4xl">
               Stop guessing which platform
               <br />
-              <span className="gradient-text">numbers are real.</span>
+              <span className="text-accent">numbers are real.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm text-[#8b8ba3]">
               Connect your channels, set your policy, and let PerfOS reconcile
