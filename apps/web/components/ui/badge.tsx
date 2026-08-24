@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 type Variant = "default" | "secondary" | "outline" | "destructive" | "success" | "warning";
 
 const variants: Record<Variant, string> = {
-  default: "border-primary/25 bg-primary/15 text-primary",
-  secondary: "border-transparent bg-secondary text-secondary-foreground",
-  outline: "border-border text-muted-foreground",
-  destructive: "border-destructive/25 bg-destructive/15 text-destructive",
-  success: "border-success/20 bg-success/10 text-success",
-  warning: "border-warning/20 bg-warning/10 text-warning",
+  default: "border-[#3b82f6]/20 bg-[#3b82f6]/10 text-[#3b82f6]",
+  secondary: "border-transparent bg-white/[0.04] text-[#8b8ba3]",
+  outline: "border-white/[0.1] text-[#8b8ba3]",
+  destructive: "border-red-500/20 bg-red-500/10 text-red-400",
+  success: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
+  warning: "border-amber-500/20 bg-amber-500/10 text-amber-400",
 };
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {

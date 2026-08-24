@@ -60,20 +60,17 @@ const menuNav: NavItem[] = [
   {
     href: "/integrations",
     label: "Integrations",
-    icon: <Icon d="M9 7V2M15 7V2M6 7h12v5a6 6 0 0 1-12 0V7zM12 18v4" />,
+    icon: <Icon d="M8 8h8v8H8zM3 3h4v4H3zM17 3h4v4h-4zM3 17h4v4H3zM17 17h4v4h-4z" />,
   },
-  {
-    href: "/command-center",
-    label: "Command Center",
-    icon: <Icon d="M22 12h-4l-3 9L9 3l-3 9H2" />,
-  },
-];
-
-const exploreNav: NavItem[] = [
   {
     href: "/mcp",
     label: "MCP",
     icon: <Icon d="M8 8h8v8H8zM3 3h4v4H3zM17 3h4v4h-4zM3 17h4v4H3zM17 17h4v4h-4z" />,
+  },
+  {
+    href: "/command-center",
+    label: "Command",
+    icon: <Icon d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" />,
   },
 ];
 
@@ -92,9 +89,9 @@ const TITLES: Record<string, string> = {
   "/recommendations": "Recommendations",
   "/experiments": "Experiments",
   "/agents": "Agents",
+  "/mcp": "MCP Servers",
   "/integrations": "Integrations",
   "/command-center": "Command Center",
-  "/mcp": "MCP Servers",
   "/settings": "Settings",
 };
 
@@ -116,7 +113,7 @@ function NavSection({
   return (
     <div>
       {!collapsed && (
-        <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <p className="px-3 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5b5b73]">
           {label}
         </p>
       )}
@@ -130,15 +127,15 @@ function NavSection({
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                item.href === "/mcp" && "hidden md:flex",
+                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50",
+                item.href === "/command-center" && "hidden md:flex",
                 collapsed ? "justify-center px-2 py-2" : "",
                 active
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                  ? "bg-white/[0.06] text-white"
+                  : "text-[#8b8ba3] hover:bg-white/[0.04] hover:text-[#f0f0f5]"
               )}
             >
-              <span className={cn("shrink-0", active ? "text-primary" : "text-muted-foreground")}>
+              <span className={cn("shrink-0", active ? "text-[#3b82f6]" : "text-[#5b5b73]")}>
                 {item.icon}
               </span>
               {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
@@ -159,37 +156,36 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     "PerfOS";
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground">
+    <div className="flex h-[100dvh] overflow-hidden bg-[#050508] text-[#f0f0f5]">
       {/* Sidebar */}
       <aside
         className={cn(
-          "hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
+          "hidden shrink-0 flex-col border-r border-white/[0.06] bg-[#0a0a12]/80 backdrop-blur-xl transition-[width] duration-200 ease-out md:flex",
           collapsed ? "w-[56px]" : "w-[196px]"
         )}
         aria-label="Sidebar"
       >
-        {/* Logo */}
         <div
           className={cn(
-            "flex h-14 shrink-0 items-center border-b border-sidebar-border px-2.5",
+            "flex h-14 shrink-0 items-center border-b border-white/[0.06] px-2.5",
             collapsed ? "justify-center" : "justify-between gap-1.5"
           )}
         >
           {collapsed ? (
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[#53b1fd] text-sm font-bold text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-sm font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.3)]">
               P
             </span>
           ) : (
             <>
-              <Link href="/overview" className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[#53b1fd] text-[13px] font-bold text-white">
+              <Link href="/overview" className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50 rounded-lg">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-[13px] font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.3)]">
                   P
                 </span>
-                <span className="text-sm font-semibold tracking-tight">PerfOS</span>
+                <span className="text-sm font-semibold tracking-tight text-[#f0f0f5]">PerfOS</span>
               </Link>
               <button
                 onClick={() => setCollapsed(true)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-[#5b5b73] hover:bg-white/[0.06] hover:text-[#f0f0f5] focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50"
                 aria-label="Collapse sidebar"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4"><path d="M11 4H4v16h7M13 12h8M13 12l3-3M13 12l3 3" /></svg>
@@ -198,39 +194,34 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           )}
         </div>
 
-        {/* Nav */}
         <div className="flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden px-1.5 py-2.5">
           <NavSection label="Menu" items={menuNav} pathname={pathname} collapsed={collapsed} />
-          <NavSection label="Explore" items={exploreNav} pathname={pathname} collapsed={collapsed} />
           <NavSection label="Account" items={accountNav} pathname={pathname} collapsed={collapsed} />
         </div>
 
-        {/* Plan card */}
         {!collapsed && (
-          <div className="border-t border-sidebar-border px-2 py-2">
-            <div className="flex items-center justify-between gap-1.5 rounded-lg border border-sidebar-border bg-muted/60 px-2 py-1.5 text-xs">
-              <span className="rounded bg-primary/10 px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+          <div className="border-t border-white/[0.06] px-2 py-2">
+            <div className="flex items-center justify-between gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1.5 text-xs">
+              <span className="rounded bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
                 Demo
               </span>
-              <span className="truncate text-[11px] font-semibold">PerfOS Mock</span>
+              <span className="truncate text-[11px] font-semibold text-[#f0f0f5]">PerfOS Mock</span>
             </div>
           </div>
         )}
       </aside>
 
-      {/* Main column */}
+      {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur sm:px-8">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/[0.06] bg-[#0a0a12]/60 px-4 backdrop-blur-xl sm:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
-            <span className="hidden text-muted-foreground sm:inline">Console</span>
-            <span className="hidden text-muted-foreground/40 sm:inline" aria-hidden="true">
-              /
-            </span>
-            <h1 className="font-display text-base font-semibold tracking-tight">{title}</h1>
+            <span className="hidden text-[#5b5b73] sm:inline">Console</span>
+            <span className="hidden text-[#5b5b73]/40 sm:inline" aria-hidden="true">/</span>
+            <h1 className="text-base font-semibold tracking-tight text-[#f0f0f5]">{title}</h1>
           </nav>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-0.5 text-[11px] font-medium text-success">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
               Mock data
             </span>
           </div>

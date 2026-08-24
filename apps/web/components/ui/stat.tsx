@@ -18,23 +18,25 @@ function Stat({ label, value, sub, delta, className }: StatProps) {
   return (
     <Card className={className}>
       <CardContent className="pt-5">
-        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5b5b73]">
           {label}
         </p>
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-3xl font-semibold tabular-nums tracking-tight">{value}</span>
+          <span className="text-3xl font-semibold tabular-nums tracking-tight text-[#f0f0f5]">
+            {value}
+          </span>
           {typeof delta === "number" && (
             <span
               className={cn(
                 "rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
-                delta >= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                delta >= 0 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
               )}
             >
               {formatDelta(delta)}
             </span>
           )}
         </div>
-        {sub && <p className="mt-2 text-xs leading-4 text-muted-foreground">{sub}</p>}
+        {sub && <p className="mt-2 text-xs leading-4 text-[#5b5b73]">{sub}</p>}
       </CardContent>
     </Card>
   );
