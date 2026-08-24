@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import LandingChat from "./landing-chat";
 
 export const metadata: Metadata = {
   title: "PerfOS — AI Performance Marketing OS",
@@ -216,6 +217,9 @@ export default function LandingPage() {
           <p className="mt-4 text-xs text-[#5b5b73]">
             No credit card required. Setup in 5 minutes. Cancel anytime.
           </p>
+
+          {/* Chat agent box (SnitchFeed-style plain-language entry) */}
+          <LandingChat />
 
           {/* Social proof */}
           <div className="mt-16 flex flex-col items-center gap-4">

@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
 from app.agents.policy import evaluate as evaluate_policy
+from app.agents.orchestrator import run_analysis
 from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
 from app.models import (
@@ -1008,3 +1009,133 @@ def complete_incrementality_test(
     db.commit()
     db.refresh(test)
     return test
+
+
+# ---------------------------------------------------------------------------
+# Chat agent (plain-language interface to the PerfOS engine)
+# ---------------------------------------------------------------------------
+
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[dict] = []
+
+
+class ChatAction(BaseModel):
+    label: str
+    href: str | None = None
+    pending_approval: bool = False
+
+
+class ChatResponse(BaseModel):
+    reply: str
+    intent: str
+    actions: list[ChatAction] = []
+
+
+def _classify_intent(message: str) -> str:
+    msg = message.lower()
+    if any(k in msg for k in ("reconcile", "roas", "over-claim", "inflation", "discrepancy", "real number", "truth")):
+        return "reconcile"
+    if any(k in msg for k in ("optimi", "reallocate", "budget", "shift spend", "where should")):
+        return "optimize"
+    if any(k in msg for k in ("creative", "fatigue", "hook", "ad fatigue", "which creative")):
+        return "creative"
+    if any(k in msg for k in ("experiment", "incrementality", "geo test", "holdout", "lift test")):
+        return "experiment"
+    if any(k in msg for k in ("agent", "mcp", "tool", "launch", "dispatch")):
+        return "agent"
+    return "explain"
+
+
+def _fmt_money(v: float) -> str:
+    return f"${v:,.0f}"
+
+
+@router.post("/chat", response_model=ChatResponse)
+def chat_agent(body: ChatRequest, db: DbDep, workspace_id: WorkspaceId) -> ChatResponse:
+    """Natural-language entry point. Routes intent to the real engine and
+    returns a human reply plus any approval-gated actions."""
+    intent = _classify_intent(body.message)
+    actions: list[ChatAction] = []
+
+    if intent == "reconcile":
+        result = run_analysis(workspace_id)
+        recon = result.get("reconcile") or {}
+        over_claim = float(recon.get("over_claim_pct", 0.0) or 0.0)
+        flag = recon.get("flag", False)
+        reply = (
+            f"Ran reconciliation across your connected ad accounts. "
+            f"Platforms are over-claiming by about {over_claim:.0f}% "
+            f"versus your actual store revenue. "
+            f"{'I flagged the discrepancy.' if flag else 'No major discrepancy found.'} "
+            f"Open Recommendations to review the specific actions."
+        )
+        actions.append(ChatAction(label="View recommendations", href="/recommendations", pending_approval=False))
+        return ChatResponse(reply=reply, intent=intent, actions=actions)
+
+    if intent == "optimize":
+        plan = recommend_reallocation(workspace_id, db)
+        movers = [p for p in plan.get("plan", []) if abs(p.get("delta", 0.0)) > 1.0]
+        if movers:
+            lines = ", ".join(
+                f"{m['platform']} {'+' if m['delta'] > 0 else ''}{_fmt_money(m['delta'])}"
+                for m in movers[:4]
+            )
+            reply = (
+                f"Built a budget reallocation that preserves your total spend. "
+                f"Top moves: {lines}. Because these change live spend, each move "
+                f"needs your approval before it executes."
+            )
+            actions.append(ChatAction(label="Approve in Command Center", href="/command-center", pending_approval=True))
+        else:
+            reply = "Your current allocation is already near-optimal against calibrated iROAS. No reallocation needed right now."
+        return ChatResponse(reply=reply, intent=intent, actions=actions)
+
+    if intent == "creative":
+        creatives = (
+            db.query(CreativePerformance)
+            .filter(CreativePerformance.workspace_id == workspace_id)
+            .order_by(CreativePerformance.fatigue_score.desc())
+            .all()
+        )
+        if creatives:
+            top = creatives[0]
+            reply = (
+                f"Your most fatigued creative is on {top.platform} "
+                f"({top.creative_id}) with a fatigue score of {top.fatigue_score:.2f}. "
+                f"Consider pausing or refreshing it. I can draft a replacement if you want."
+            )
+            actions.append(ChatAction(label="See creative analytics", href="/creative", pending_approval=False))
+        else:
+            reply = "No creative performance data yet. Connect an ad account to start tracking fatigue."
+        return ChatResponse(reply=reply, intent=intent, actions=actions)
+
+    if intent == "experiment":
+        reply = (
+            "You can run a geo-holdout or conversion-lift test to calibrate the model. "
+            "Pick a platform and treated vs control markets, then hit Run. "
+            "Lift is computed automatically."
+        )
+        actions.append(ChatAction(label="Open Experiments", href="/experiments", pending_approval=False))
+        return ChatResponse(reply=reply, intent=intent, actions=actions)
+
+    if intent == "agent":
+        reply = (
+            "I can dispatch connected AI agents (ChatGPT, Claude, opencode) and call "
+            "external tools through MCP, all from the Command Center. Tell me what you "
+            "want done and I will plan it, then ask for approval before anything touches "
+            "your accounts."
+        )
+        actions.append(ChatAction(label="Open Command Center", href="/command-center", pending_approval=False))
+        return ChatResponse(reply=reply, intent=intent, actions=actions)
+
+    # explain / fallback
+    reply = (
+        "I'm the PerfOS agent. I reconcile your ad platforms against actual revenue, "
+        "score creative fatigue, plan budget reallocation, and run incrementality tests. "
+        "Try: \"How much are my platforms over-claiming?\", \"Optimize my budget\", or "
+        "\"Which creative is fatigued?\". Every action that changes spend needs your approval first."
+    )
+    actions.append(ChatAction(label="See Measurement", href="/measurement", pending_approval=False))
+    return ChatResponse(reply=reply, intent=intent, actions=actions)

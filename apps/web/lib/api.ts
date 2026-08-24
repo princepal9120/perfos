@@ -670,6 +670,35 @@ export async function createIncrementalityTest(
   return data;
 }
 
+// ---- Chat agent ----
+
+export interface ChatAction {
+  label: string;
+  href?: string | null;
+  pending_approval?: boolean;
+}
+
+export interface ChatMessage {
+  role: "user" | "agent";
+  content: string;
+  actions?: ChatAction[];
+}
+
+export interface ChatResponse {
+  reply: string;
+  intent: string;
+  actions: ChatAction[];
+}
+
+/** POST /chat */
+export async function sendChatMessage(
+  message: string,
+  history: { role: string; content: string }[] = []
+): Promise<ChatResponse> {
+  const { data } = await api.post<ChatResponse>("/chat", { message, history });
+  return data;
+}
+
 /** POST /incrementality/{id}/run */
 export async function runIncrementalityTest(id: number): Promise<IncrementalityTest> {
   const { data } = await api.post<IncrementalityTest>(`/incrementality/${id}/run`);

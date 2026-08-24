@@ -68,6 +68,11 @@ const menuNav: NavItem[] = [
     icon: <Icon d="M5 5h14v14H5zM9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" circle />,
   },
   {
+    href: "/chat",
+    label: "Chat",
+    icon: <Icon d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" />,
+  },
+  {
     href: "/integrations",
     label: "Integrations",
     icon: <Icon d="M8 8h8v8H8zM3 3h4v4H3zM17 3h4v4h-4zM3 17h4v4H3zM17 17h4v4h-4z" />,
