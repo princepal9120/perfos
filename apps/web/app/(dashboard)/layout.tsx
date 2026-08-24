@@ -53,6 +53,16 @@ const menuNav: NavItem[] = [
     icon: <Icon d="M9 3h6M10 3v5.2L4.9 17.6A2 2 0 0 0 6.7 20.5h10.6a2 2 0 0 0 1.8-2.9L14 8.2V3M7.5 15h9" />,
   },
   {
+    href: "/measurement",
+    label: "Measurement",
+    icon: <Icon d="M12 3a9 9 0 0 1 9 9M12 3a9 9 0 0 0-9 9m9-9v4m9 5h-4M3 12h4m5 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z" />,
+  },
+  {
+    href: "/creative",
+    label: "Creative",
+    icon: <Icon d="M4 4h16v16H4zM4 15l4-4 3 3 5-5 4 4" />,
+  },
+  {
     href: "/agents",
     label: "Agents",
     icon: <Icon d="M5 5h14v14H5zM9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" circle />,
@@ -88,6 +98,8 @@ const TITLES: Record<string, string> = {
   "/accounts": "Accounts",
   "/recommendations": "Recommendations",
   "/experiments": "Experiments",
+  "/measurement": "Measurement",
+  "/creative": "Creative Analytics",
   "/agents": "Agents",
   "/mcp": "MCP Servers",
   "/integrations": "Integrations",

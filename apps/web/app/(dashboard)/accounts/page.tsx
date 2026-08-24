@@ -15,7 +15,20 @@ import {
 import { connectAccount, getAccounts, type AdAccount } from "@/lib/api";
 
 type PlatformMeta = {
-  id: "google" | "meta" | "shopify";
+  id:
+    | "google"
+    | "meta"
+    | "shopify"
+    | "tiktok"
+    | "linkedin"
+    | "pinterest"
+    | "snapchat"
+    | "amazon"
+    | "reddit"
+    | "twitter"
+    | "youtube"
+    | "amazon_ads"
+    | "x_ads";
   name: string;
   description: string;
   dotClass: string;
@@ -39,6 +52,66 @@ const PLATFORMS: PlatformMeta[] = [
     name: "Shopify",
     description: "Actual revenue — the source of truth.",
     dotClass: "bg-emerald-600",
+  },
+  {
+    id: "tiktok",
+    name: "TikTok Ads",
+    description: "Short-form video performance claims.",
+    dotClass: "bg-[#ff2d55]",
+  },
+  {
+    id: "linkedin",
+    name: "LinkedIn Ads",
+    description: "B2B campaigns and lead gen claims.",
+    dotClass: "bg-[#0a66c2]",
+  },
+  {
+    id: "pinterest",
+    name: "Pinterest Ads",
+    description: "Visual discovery campaign claims.",
+    dotClass: "bg-[#e60023]",
+  },
+  {
+    id: "snapchat",
+    name: "Snapchat Ads",
+    description: "Vertical video reach and swipes.",
+    dotClass: "bg-[#f7b500]",
+  },
+  {
+    id: "amazon",
+    name: "Amazon Ads",
+    description: "Retail media spend and claimed sales.",
+    dotClass: "bg-[#ff9900]",
+  },
+  {
+    id: "reddit",
+    name: "Reddit Ads",
+    description: "Community placements and clicks.",
+    dotClass: "bg-[#ff4500]",
+  },
+  {
+    id: "twitter",
+    name: "Twitter Ads",
+    description: "Timeline campaigns and engagement.",
+    dotClass: "bg-[#1d9bf0]",
+  },
+  {
+    id: "youtube",
+    name: "YouTube Ads",
+    description: "Video views and claimed conversions.",
+    dotClass: "bg-[#ff0000]",
+  },
+  {
+    id: "amazon_ads",
+    name: "Amazon DSP",
+    description: "Programmatic retail media buys.",
+    dotClass: "bg-[#ff9900]",
+  },
+  {
+    id: "x_ads",
+    name: "X Ads",
+    description: "Real-time campaigns on X.",
+    dotClass: "bg-[#1d9bf0]",
   },
 ];
 

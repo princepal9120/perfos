@@ -19,7 +19,7 @@ def get_current_workspace(
     ),
     x_api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
     authorization: Optional[str] = Header(default=None),
-) -> str:
+) -> str | int:
     """Return the authenticated workspace_id or raise 401."""
     workspace_id = get_workspace_from_header(
         {
@@ -39,4 +39,8 @@ def get_current_workspace(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="X-Workspace-Id does not match credentials.",
         )
+    # Workspace IDs are integers in the DB; coerce so filtered ORM queries
+    # match int columns (a str "1" never equals int 1 and returns []).
+    if workspace_id is not None and workspace_id.isdigit():
+        return int(workspace_id)
     return workspace_id

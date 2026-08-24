@@ -35,7 +35,20 @@ export async function apiPost<T = unknown>(path: string, body?: unknown): Promis
 
 // ---- Types (mirror pydantic models in app/api/routes.py) ----
 
-export type Platform = "google" | "meta" | "shopify";
+export type Platform =
+  | "google"
+  | "meta"
+  | "shopify"
+  | "tiktok"
+  | "linkedin"
+  | "pinterest"
+  | "snapchat"
+  | "amazon"
+  | "reddit"
+  | "twitter"
+  | "youtube"
+  | "amazon_ads"
+  | "x_ads";
 export type AgentProvider =
   | "chatgpt"
   | "claude"
@@ -524,5 +537,149 @@ export async function callTool(
 /** POST /agents/dispatch-all */
 export async function dispatchAllAgents(): Promise<DispatchResult> {
   const { data } = await api.post<DispatchResult>("/agents/dispatch-all");
+  return data;
+}
+
+// ---- Unified measurement: iROAS / incrementality / optimizer / creatives ----
+
+/** Platform ids supported across ad channels (13 total). */
+export type AdChannel =
+  | "google"
+  | "meta"
+  | "shopify"
+  | "tiktok"
+  | "linkedin"
+  | "pinterest"
+  | "snapchat"
+  | "amazon"
+  | "reddit"
+  | "twitter"
+  | "youtube"
+  | "amazon_ads"
+  | "x_ads";
+
+export type TestType = "geo_holdout" | "conversion_lift" | "ab";
+export type TestStatus = "draft" | "running" | "completed";
+
+/** GET /iroas */
+export interface IroasRow {
+  platform: string;
+  reported_roas: number;
+  iroas: number;
+  calibration: number;
+}
+
+export async function getIroas(): Promise<IroasRow[]> {
+  const { data } = await api.get<IroasRow[]>("/iroas");
+  return data;
+}
+
+/** GET /creatives */
+export interface CreativePerformance {
+  id: number;
+  workspace_id: number;
+  platform: string;
+  creative_id: string;
+  impressions: number;
+  spend: number;
+  conversions: number;
+  fatigue_score: number;
+  hook_rate: number;
+}
+
+export async function getCreatives(): Promise<CreativePerformance[]> {
+  const { data } = await api.get<CreativePerformance[]>("/creatives");
+  return data;
+}
+
+/** GET /anomalies */
+export interface Anomaly {
+  platform: string;
+  metric: string;
+  severity: string;
+  detected_at: string;
+  detail: string;
+}
+
+export async function getAnomalies(): Promise<Anomaly[]> {
+  const { data } = await api.get<Anomaly[]>("/anomalies");
+  return data;
+}
+
+/** POST /optimizer/reallocate */
+export interface OptimizerPlanRow {
+  platform: string;
+  current_spend: number;
+  recommended_spend: number;
+  delta: number;
+  expected_iroas: number;
+}
+
+export interface OptimizerPlan {
+  total_current_spend: number;
+  total_recommended_spend: number;
+  plan: OptimizerPlanRow[];
+}
+
+export async function postReallocate(): Promise<OptimizerPlan> {
+  const { data } = await api.post<OptimizerPlan>("/optimizer/reallocate");
+  return data;
+}
+
+/** IncrementalityTestOut */
+export interface IncrementalityTest {
+  id: number;
+  workspace_id: number;
+  platform: string;
+  test_type: TestType;
+  status: TestStatus;
+  markets_treated: string[] | null;
+  markets_control: string[] | null;
+  spend_treated: number;
+  spend_control: number;
+  conversions_treated: number;
+  conversions_control: number;
+  lift_pct: number | null;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+/** POST /incrementality body */
+export interface IncrementalityCreate {
+  platform: AdChannel;
+  test_type?: TestType;
+  markets_treated?: string[];
+  markets_control?: string[];
+  spend_treated?: number;
+  spend_control?: number;
+  conversions_treated?: number;
+  conversions_control?: number;
+}
+
+/** GET /incrementality */
+export async function getIncrementalityTests(): Promise<IncrementalityTest[]> {
+  const { data } = await api.get<IncrementalityTest[]>("/incrementality");
+  return data;
+}
+
+/** POST /incrementality */
+export async function createIncrementalityTest(
+  body: IncrementalityCreate
+): Promise<IncrementalityTest> {
+  const { data } = await api.post<IncrementalityTest>("/incrementality", body);
+  return data;
+}
+
+/** POST /incrementality/{id}/run */
+export async function runIncrementalityTest(id: number): Promise<IncrementalityTest> {
+  const { data } = await api.post<IncrementalityTest>(`/incrementality/${id}/run`);
+  return data;
+}
+
+/** POST /incrementality/{id}/complete */
+export async function completeIncrementalityTest(
+  id: number
+): Promise<IncrementalityTest> {
+  const { data } = await api.post<IncrementalityTest>(`/incrementality/${id}/complete`);
   return data;
 }

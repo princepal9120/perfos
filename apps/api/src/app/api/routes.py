@@ -18,8 +18,10 @@ from app.models import (
     AdAccount,
     Approval,
     ConnectedAgent,
+    CreativePerformance,
     Experiment,
     ExternalIntegration,
+    IncrementalityTest,
     MCPServer,
     Outcome,
     Recommendation,
@@ -30,11 +32,27 @@ from app.models import (
 from app.services.audit import log_action
 from app.services.briefing import build_briefing
 from app.services.execution import execute_recommendation
+from app.services.optimizer import recommend_reallocation
 from app.services.orchestrator import OrchestratorService
+from app.services.reconciliation_iroas import compute_iroas
 
 router = APIRouter()
 
-PLATFORMS = Literal["google", "meta", "shopify"]
+PLATFORMS = Literal[
+    "google",
+    "meta",
+    "shopify",
+    "tiktok",
+    "linkedin",
+    "pinterest",
+    "snapchat",
+    "amazon",
+    "reddit",
+    "twitter",
+    "youtube",
+    "amazon_ads",
+    "x_ads",
+]
 AGENT_PROVIDERS = Literal["chatgpt", "claude", "opencode", "openai", "anthropic"]
 TOKEN_SECRET = os.environ.get("PERFOS_TOKEN_SECRET", "perfos-dev-secret")
 TOKEN_TTL_SECONDS = 86400
@@ -785,3 +803,223 @@ def call_tool(body: ToolCallRequest, db: DbDep, workspace_id: WorkspaceId) -> di
 def dispatch_all_agents(db: DbDep, workspace_id: WorkspaceId) -> dict:
     """Set last_run_at on every connected agent and report who was dispatched."""
     return OrchestratorService.dispatch_all_agents(workspace_id, db)
+
+
+
+
+# ---- Measurement: iROAS / creatives / anomalies / optimizer / incrementality ----
+
+TEST_TYPES = Literal["geo_holdout", "conversion_lift", "ab"]
+
+ANOMALIES_MOCK = [
+    {
+        "platform": "meta",
+        "metric": "spend",
+        "severity": "high",
+        "detected_at": "2026-08-24T09:00:00Z",
+        "detail": "meta spend +38% vs 7d avg",
+    },
+    {
+        "platform": "tiktok",
+        "metric": "cpa",
+        "severity": "medium",
+        "detected_at": "2026-08-24T09:00:00Z",
+        "detail": "tiktok CPA +22% vs 7d avg on Prospecting",
+    },
+    {
+        "platform": "google",
+        "metric": "ctr",
+        "severity": "low",
+        "detected_at": "2026-08-24T09:00:00Z",
+        "detail": "google CTR down 12% week over week on brand search",
+    },
+]
+
+
+class IroasRow(BaseModel):
+    platform: str
+    reported_roas: float
+    iroas: float
+    calibration: float
+
+
+class CreativeOut(_ORMModel):
+    id: int
+    workspace_id: int
+    platform: str
+    creative_id: str
+    impressions: int
+    spend: float
+    conversions: float
+    fatigue_score: float
+    hook_rate: float
+
+
+class AnomalyOut(BaseModel):
+    platform: str
+    metric: str
+    severity: str
+    detected_at: str
+    detail: str
+
+
+class OptimizerPlanRow(BaseModel):
+    platform: str
+    current_spend: float
+    recommended_spend: float
+    delta: float
+    expected_iroas: float
+
+
+class OptimizerPlan(BaseModel):
+    total_current_spend: float
+    total_recommended_spend: float
+    plan: list[OptimizerPlanRow]
+
+
+class IncrementalityCreate(BaseModel):
+    platform: PLATFORMS
+    test_type: TEST_TYPES = "geo_holdout"
+    markets_treated: list[str] = []
+    markets_control: list[str] = []
+    spend_treated: float = 0.0
+    spend_control: float = 0.0
+    conversions_treated: float = 0.0
+    conversions_control: float = 0.0
+    spend_treated: float = 0.0
+    spend_control: float = 0.0
+    conversions_treated: float = 0.0
+    conversions_control: float = 0.0
+    spend_treated: float = 0.0
+    spend_control: float = 0.0
+    conversions_treated: float = 0.0
+    conversions_control: float = 0.0
+
+
+class IncrementalityOut(_ORMModel):
+    id: int
+    workspace_id: int
+    platform: str
+    test_type: str
+    status: str
+    markets_treated: Optional[Any] = None
+    markets_control: Optional[Any] = None
+    spend_treated: float
+    spend_control: float
+    conversions_treated: float
+    conversions_control: float
+    lift_pct: Optional[float] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+
+@router.get("/iroas", response_model=list[IroasRow])
+def get_iroas(db: DbDep, workspace_id: WorkspaceId) -> list[IroasRow]:
+    """Incrementality-corrected ROAS per channel (deterministic mock calibration)."""
+    return [IroasRow(**row) for row in compute_iroas(workspace_id, db)]
+
+
+@router.get("/creatives", response_model=list[CreativeOut])
+def list_creatives(db: DbDep, workspace_id: WorkspaceId) -> list[CreativePerformance]:
+    return (
+        db.query(CreativePerformance)
+        .filter(CreativePerformance.workspace_id == workspace_id)
+        .order_by(CreativePerformance.fatigue_score.desc(), CreativePerformance.id)
+        .all()
+    )
+
+
+@router.get("/anomalies", response_model=list[AnomalyOut])
+def list_anomalies() -> list[AnomalyOut]:
+    """Deterministic mock anomaly feed (spend/CPA/CTR deviations)."""
+    return [AnomalyOut(**row) for row in ANOMALIES_MOCK]
+
+
+@router.post("/optimizer/reallocate", response_model=OptimizerPlan)
+def run_optimizer(db: DbDep, workspace_id: WorkspaceId) -> OptimizerPlan:
+    """Deterministic what-if reallocation plan. Plan only; nothing executes."""
+    return OptimizerPlan(**recommend_reallocation(workspace_id, db))
+
+
+def _incrementality_or_404(
+    db: Session, workspace_id: int, test_id: int
+) -> IncrementalityTest:
+    test = (
+        db.query(IncrementalityTest)
+        .filter(
+            IncrementalityTest.id == test_id,
+            IncrementalityTest.workspace_id == workspace_id,
+        )
+        .first()
+    )
+    if test is None:
+        raise HTTPException(status_code=404, detail="Incrementality test not found")
+    return test
+
+
+@router.get("/incrementality", response_model=list[IncrementalityOut])
+def list_incrementality(db: DbDep, workspace_id: WorkspaceId) -> list[IncrementalityTest]:
+    return (
+        db.query(IncrementalityTest)
+        .filter(IncrementalityTest.workspace_id == workspace_id)
+        .order_by(IncrementalityTest.id)
+        .all()
+    )
+
+
+@router.post("/incrementality", response_model=IncrementalityOut, status_code=201)
+def create_incrementality_test(
+    body: IncrementalityCreate, db: DbDep, workspace_id: WorkspaceId
+) -> IncrementalityTest:
+    test = IncrementalityTest(
+        workspace_id=workspace_id,
+        platform=body.platform,
+        test_type=body.test_type,
+        status="draft",
+        markets_treated=body.markets_treated or None,
+        markets_control=body.markets_control or None,
+        spend_treated=body.spend_treated,
+        spend_control=body.spend_control,
+        conversions_treated=body.conversions_treated,
+        conversions_control=body.conversions_control,
+    )
+    db.add(test)
+    db.commit()
+    db.refresh(test)
+    return test
+
+
+@router.post("/incrementality/{test_id}/run", response_model=IncrementalityOut)
+def run_incrementality_test(
+    test_id: int, db: DbDep, workspace_id: WorkspaceId
+) -> IncrementalityTest:
+    """Mark running and compute lift deterministically when numbers allow."""
+    test = _incrementality_or_404(db, workspace_id, test_id)
+    if test.status == "draft":
+        test.status = "running"
+    if test.started_at is None:
+        test.started_at = _now()
+    try:
+        lift = (
+            (test.conversions_treated / test.conversions_control)
+            / (test.spend_treated / test.spend_control)
+            - 1
+        ) * 100
+        test.lift_pct = round(lift, 2)
+    except ZeroDivisionError:
+        pass
+    db.commit()
+    db.refresh(test)
+    return test
+
+
+@router.post("/incrementality/{test_id}/complete", response_model=IncrementalityOut)
+def complete_incrementality_test(
+    test_id: int, db: DbDep, workspace_id: WorkspaceId
+) -> IncrementalityTest:
+    test = _incrementality_or_404(db, workspace_id, test_id)
+    test.status = "completed"
+    test.completed_at = _now()
+    db.commit()
+    db.refresh(test)
+    return test
