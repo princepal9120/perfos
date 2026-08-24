@@ -224,6 +224,18 @@
       "accessCount": 1,
       "lastAccessed": 1787595158037,
       "type": "file"
+    },
+    {
+      "path": "apps/api/src/app/schemas.py",
+      "accessCount": 1,
+      "lastAccessed": 1787596889678,
+      "type": "file"
+    },
+    {
+      "path": "apps/api/src/app/main.py",
+      "accessCount": 1,
+      "lastAccessed": 1787596949033,
+      "type": "file"
     }
   ],
   "userDirectives": []
