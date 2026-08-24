@@ -42,9 +42,7 @@ def reconcile(spends: list[dict], revenues: list[dict]) -> dict:
     per_channel = []
     for platform in sorted(channels):
         entry = channels[platform]
-        roas = (
-            entry["claimed_value"] / entry["spend"] if entry["spend"] else None
-        )
+        roas = entry["claimed_value"] / entry["spend"] if entry["spend"] else None
         per_channel.append(
             {
                 "platform": entry["platform"],

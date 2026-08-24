@@ -5,7 +5,7 @@ Consumed by the approvals flow: policy -> execute_recommendation -> audit.
 """
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 from app.core.db import SessionLocal
 from app.models import Campaign, Outcome
@@ -68,9 +68,7 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                         workspace_id,
                     )
                     if kind == "set_budget":
-                        response = connector.set_budget(
-                            campaign_id, float(act["new_daily_budget"])
-                        )
+                        response = connector.set_budget(campaign_id, float(act["new_daily_budget"]))
                     elif kind == "pause":
                         response = connector.pause_campaign(campaign_id)
                     else:
@@ -98,9 +96,7 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                 None,
             )
             target = (
-                f"campaign:{r['campaign_id']}"
-                if r["campaign_id"]
-                else f"channel:{r['action']}"
+                f"campaign:{r['campaign_id']}" if r["campaign_id"] else f"channel:{r['action']}"
             )
             log_action(
                 workspace_id=workspace_id,
@@ -151,9 +147,7 @@ def _record_outcome(rec, workspace_id, session) -> None:
         blended = 0.0
         try:
             analysis = run_analysis(workspace_id) or {}
-            blended = float(
-                ((analysis.get("reconcile") or {}).get("blended_mer")) or 0.0
-            )
+            blended = float(((analysis.get("reconcile") or {}).get("blended_mer")) or 0.0)
         except Exception:
             blended = 0.0
         session.add(
@@ -192,7 +186,7 @@ def _normalize(proposed_changes) -> list[dict]:
     return []
 
 
-def _platform_for(session, campaign_id) -> Optional[str]:
+def _platform_for(session, campaign_id) -> str | None:
     if not campaign_id:
         return None
     campaign = session.get(Campaign, campaign_id)

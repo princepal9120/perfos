@@ -46,9 +46,7 @@ def generate_recommendations(
     if len(per_channel) < 2 or blended_mer <= 0:
         return []
 
-    ranked = sorted(
-        per_channel, key=lambda ch: _inflation(ch, blended_mer), reverse=True
-    )
+    ranked = sorted(per_channel, key=lambda ch: _inflation(ch, blended_mer), reverse=True)
     source, target = ranked[0], ranked[-1]
     source_platform = source.get("platform")
     target_platform = target.get("platform")
@@ -81,9 +79,7 @@ def generate_recommendations(
     }
     if isinstance(attribute_output, dict) and attribute_output:
         evidence_json["attribution"] = {
-            k: attribute_output[k]
-            for k in _ATTRIBUTION_KEYS
-            if k in attribute_output
+            k: attribute_output[k] for k in _ATTRIBUTION_KEYS if k in attribute_output
         }
 
     return [

@@ -8,6 +8,7 @@ Scenario from spec/CONTRACTS.md, workspace "Demo DTC Brand" (USD):
 Row-level campaign/spend/revenue data sums EXACTLY to these aggregates:
 each series is split across 7 days with the final day absorbing the remainder.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -30,10 +31,46 @@ _ACCOUNTS = (
 
 _CAMPAIGNS = {
     "g_brand": ("acc_google", "google", "g-111", "Search - Brand", 720.0, 5000.0, 260, 27000.0),
-    "g_nonbrand": ("acc_google", "google", "g-222", "Search - Non-brand", 580.0, 4000.0, 200, 20000.0),
-    "g_pmax": ("acc_google", "google", "g-333", "Performance Max - Catalog", 430.0, 3000.0, 140, 13000.0),
-    "m_prospecting": ("acc_meta", "meta", "m-444", "Prospecting - Broad", 750.0, 5200.0, 330, 29000.0),
-    "m_retargeting": ("acc_meta", "meta", "m-555", "Retargeting - Dynamic", 400.0, 2800.0, 170, 15000.0),
+    "g_nonbrand": (
+        "acc_google",
+        "google",
+        "g-222",
+        "Search - Non-brand",
+        580.0,
+        4000.0,
+        200,
+        20000.0,
+    ),
+    "g_pmax": (
+        "acc_google",
+        "google",
+        "g-333",
+        "Performance Max - Catalog",
+        430.0,
+        3000.0,
+        140,
+        13000.0,
+    ),
+    "m_prospecting": (
+        "acc_meta",
+        "meta",
+        "m-444",
+        "Prospecting - Broad",
+        750.0,
+        5200.0,
+        330,
+        29000.0,
+    ),
+    "m_retargeting": (
+        "acc_meta",
+        "meta",
+        "m-555",
+        "Retargeting - Dynamic",
+        400.0,
+        2800.0,
+        170,
+        15000.0,
+    ),
 }
 
 _CPC = {"google": 1.4, "meta": 0.9}

@@ -9,8 +9,19 @@ def test_iroas_calibration(client, seeded_db):
 
     # Every calibrated channel is represented (11 entries).
     assert len(rows) == 11
-    for platform in ("google", "meta", "tiktok", "linkedin", "pinterest", "snapchat",
-                     "amazon", "reddit", "twitter", "youtube", "shopify"):
+    for platform in (
+        "google",
+        "meta",
+        "tiktok",
+        "linkedin",
+        "pinterest",
+        "snapchat",
+        "amazon",
+        "reddit",
+        "twitter",
+        "youtube",
+        "shopify",
+    ):
         assert platform in rows
 
     # Canonical seed: google 60000 value on 12000 spend -> reported 5.0 x 0.82.
@@ -31,28 +42,30 @@ def test_creatives_and_anomalies(client, seeded_db, db_session):
 
     from app.models import CreativePerformance
 
-    db_session.add_all([
-        CreativePerformance(
-            workspace_id=ws_id,
-            platform="meta",
-            creative_id="CR-TIRED-001",
-            impressions=100_000,
-            spend=5000.0,
-            conversions=210.0,
-            fatigue_score=0.81,
-            hook_rate=0.29,
-        ),
-        CreativePerformance(
-            workspace_id=ws_id,
-            platform="google",
-            creative_id="CR-FRESH-002",
-            impressions=80_000,
-            spend=4200.0,
-            conversions=180.0,
-            fatigue_score=0.21,
-            hook_rate=0.55,
-        ),
-    ])
+    db_session.add_all(
+        [
+            CreativePerformance(
+                workspace_id=ws_id,
+                platform="meta",
+                creative_id="CR-TIRED-001",
+                impressions=100_000,
+                spend=5000.0,
+                conversions=210.0,
+                fatigue_score=0.81,
+                hook_rate=0.29,
+            ),
+            CreativePerformance(
+                workspace_id=ws_id,
+                platform="google",
+                creative_id="CR-FRESH-002",
+                impressions=80_000,
+                spend=4200.0,
+                conversions=180.0,
+                fatigue_score=0.21,
+                hook_rate=0.55,
+            ),
+        ]
+    )
     db_session.commit()
 
     resp = client.get("/api/creatives", headers={"X-Workspace-Id": str(ws_id)})

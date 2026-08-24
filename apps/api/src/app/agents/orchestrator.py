@@ -13,8 +13,10 @@ import, contract-faithful local fallbacks keep the pipeline functional.
 
 from __future__ import annotations
 
+import contextlib
 import inspect
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 __all__ = ["run_analysis"]
 
@@ -22,6 +24,7 @@ __all__ = ["run_analysis"]
 # --------------------------------------------------------------------------- #
 # small utilities
 # --------------------------------------------------------------------------- #
+
 
 def _get(row: Any, key: str, default: Any = None) -> Any:
     """Read an attribute from dict-like or object rows."""
@@ -83,6 +86,7 @@ def _row_to_dict(row: Any) -> Any:
 # input loading (best effort: caller-injected > mock store > database)
 # --------------------------------------------------------------------------- #
 
+
 def _load_inputs(workspace_id: Any) -> tuple[list[Any], list[Any]]:
     """Fetch spend/revenue rows for a workspace from mock dataset, store, or DB.
 
@@ -96,9 +100,7 @@ def _load_inputs(workspace_id: Any) -> tuple[list[Any], list[Any]]:
         except Exception:
             data = {}
         spends = [s for s in data.get("spend", []) if _match_ws(s, workspace_id)]
-        revenues = [
-            r for r in data.get("revenue", []) if _match_ws(r, workspace_id)
-        ]
+        revenues = [r for r in data.get("revenue", []) if _match_ws(r, workspace_id)]
         if spends or revenues:
             platform_by_account = {
                 a["id"]: a["platform"]
@@ -137,9 +139,7 @@ def _load_inputs(workspace_id: Any) -> tuple[list[Any], list[Any]]:
     AccountModel = _try_import("app.models", ("AdAccount",))
     if SessionLocal and SpendModel and RevenueModel:
         with SessionLocal() as session:
-            query = session.query(SpendModel).filter(
-                SpendModel.workspace_id == workspace_id
-            )
+            query = session.query(SpendModel).filter(SpendModel.workspace_id == workspace_id)
             if AccountModel is not None and hasattr(SpendModel, "ad_account_id"):
                 # join account -> platform onto each spend row
                 rows = (
@@ -153,10 +153,8 @@ def _load_inputs(workspace_id: Any) -> tuple[list[Any], list[Any]]:
                 )
                 spends = []
                 for row, platform in rows:
-                    try:
+                    with contextlib.suppress(Exception):
                         session.expunge(row)
-                    except Exception:
-                        pass
                     d = _row_to_dict(row)
                     d.setdefault("platform", platform)
                     spends.append(d)
@@ -182,6 +180,7 @@ def _match_ws(row: Any, workspace_id: Any) -> bool:
 # contract-faithful fallbacks (used only when sibling modules are absent)
 # --------------------------------------------------------------------------- #
 
+
 def _fallback_reconcile(spends: list[Any], revenues: list[Any]) -> dict:
     total_spend = float(sum(_get(s, "cost", 0) or 0 for s in spends))
     claimed = float(sum(_get(s, "conversion_value", 0) or 0 for s in spends))
@@ -192,16 +191,12 @@ def _fallback_reconcile(spends: list[Any], revenues: list[Any]) -> dict:
     channels: dict[str, dict] = {}
     for s in spends:
         key = _get(s, "platform") or str(_get(s, "ad_account_id", "unknown"))
-        ch = channels.setdefault(
-            key, {"platform": key, "spend": 0.0, "claimed_value": 0.0}
-        )
+        ch = channels.setdefault(key, {"platform": key, "spend": 0.0, "claimed_value": 0.0})
         ch["spend"] += float(_get(s, "cost", 0) or 0)
         ch["claimed_value"] += float(_get(s, "conversion_value", 0) or 0)
     per_channel = []
     for ch in channels.values():
-        ch["claimed_roas"] = (
-            round(ch["claimed_value"] / ch["spend"], 2) if ch["spend"] else 0.0
-        )
+        ch["claimed_roas"] = round(ch["claimed_value"] / ch["spend"], 2) if ch["spend"] else 0.0
         per_channel.append(ch)
 
     return {
@@ -253,9 +248,7 @@ def _fallback_attribute(
     }
 
 
-def _fallback_recommend(
-    workspace_id: Any, reconciliation: dict, attribution: dict
-) -> list[dict]:
+def _fallback_recommend(workspace_id: Any, reconciliation: dict, attribution: dict) -> list[dict]:
     recs: list[dict] = []
     if reconciliation.get("tracking_integrity_flag"):
         worst = max(
@@ -303,6 +296,7 @@ def _fallback_recommend(
 # --------------------------------------------------------------------------- #
 # public API
 # --------------------------------------------------------------------------- #
+
 
 def run_analysis(
     workspace_id: Any,
@@ -368,13 +362,9 @@ def run_analysis(
         revenues=revenues,
     )
     if raw_recommendations is None:
-        raw_recommendations = _fallback_recommend(
-            workspace_id, reconciliation, attribution
-        )
+        raw_recommendations = _fallback_recommend(workspace_id, reconciliation, attribution)
 
-    recommendations = [
-        r if isinstance(r, dict) else _orm_to_dict(r) for r in raw_recommendations
-    ]
+    recommendations = [r if isinstance(r, dict) else _orm_to_dict(r) for r in raw_recommendations]
 
     return {
         "reconcile": reconciliation,

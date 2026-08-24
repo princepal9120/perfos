@@ -8,6 +8,8 @@
   "scripts": {
     "api:dev": "nx run api:serve",
     "api:test": "nx run api:test",
+    "api:lint": "nx run api:lint",
+    "api:format": "nx run api:format",
     "api:build": "nx run api:build",
     "web:dev": "nx run web:dev",
     "web:build": "nx run web:build",

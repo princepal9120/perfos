@@ -1,7 +1,7 @@
 """External agent registry (ChatGPT / Claude / opencode) and audit trail."""
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -24,8 +24,8 @@ class ConnectedAgent(Base):
     provider: Mapped[str] = mapped_column(String(32))
     name: Mapped[str] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(String(32), default="idle")
-    config_json: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=None)
-    last_run_at: Mapped[Optional[datetime]] = mapped_column(default=None)
+    config_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    last_run_at: Mapped[datetime | None] = mapped_column(default=None)
 
 
 class AuditLog(Base):
@@ -36,7 +36,7 @@ class AuditLog(Base):
     actor: Mapped[str] = mapped_column(String(255))
     action: Mapped[str] = mapped_column(String(64))
     target: Mapped[str] = mapped_column(String(255))
-    payload_json: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=None)
+    payload_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
 
 
@@ -55,11 +55,11 @@ class MCPServer(Base):
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), index=True)
     name: Mapped[str] = mapped_column(String(255))
     transport: Mapped[str] = mapped_column(String(16), default="http")
-    endpoint: Mapped[Optional[str]] = mapped_column(String(512), default=None)
+    endpoint: Mapped[str | None] = mapped_column(String(512), default=None)
     enabled: Mapped[bool] = mapped_column(default=True)
     status: Mapped[str] = mapped_column(String(32), default="unknown")
-    config_json: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=None)
-    last_checked_at: Mapped[Optional[datetime]] = mapped_column(default=None)
+    config_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    last_checked_at: Mapped[datetime | None] = mapped_column(default=None)
 
 
 class ExternalIntegration(Base):
@@ -78,9 +78,9 @@ class ExternalIntegration(Base):
     name: Mapped[str] = mapped_column(String(255))
     category: Mapped[str] = mapped_column(String(32), default="ads")
     provider: Mapped[str] = mapped_column(String(32))
-    endpoint: Mapped[Optional[str]] = mapped_column(String(512), default=None)
-    api_key_encrypted: Mapped[Optional[str]] = mapped_column(String(1024), default=None)
+    endpoint: Mapped[str | None] = mapped_column(String(512), default=None)
+    api_key_encrypted: Mapped[str | None] = mapped_column(String(1024), default=None)
     enabled: Mapped[bool] = mapped_column(default=True)
     status: Mapped[str] = mapped_column(String(32), default="unknown")
-    config_json: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, default=None)
-    last_checked_at: Mapped[Optional[datetime]] = mapped_column(default=None)
+    config_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    last_checked_at: Mapped[datetime | None] = mapped_column(default=None)

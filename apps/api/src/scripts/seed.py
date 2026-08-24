@@ -6,6 +6,7 @@ aggregates against spec targets and exits without re-inserting.
 Usage: python scripts/seed.py [--db sqlite:///./perfos.db]
 Requires app.models + sqlalchemy to be installed (agents A/B land first).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,12 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.mock.dataset import TARGETS, WORKSPACE_NAME, compute_aggregates, get_mock_data  # noqa: E402
+from app.mock.dataset import (  # noqa: E402
+    TARGETS,
+    WORKSPACE_NAME,
+    compute_aggregates,
+    get_mock_data,
+)
 
 
 def _engine(db_url: str):
@@ -48,13 +54,19 @@ def _verify(session, workspace_id) -> tuple[bool, dict]:
         .one()
     )
 
-    actual = {p: {"spend": float(c or 0), "conversions": int(cv or 0), "value": float(v or 0)} for p, c, cv, v in rows}
+    actual = {
+        p: {"spend": float(c or 0), "conversions": int(cv or 0), "value": float(v or 0)}
+        for p, c, cv, v in rows
+    }
     ok = True
     for platform in ("google", "meta"):
         for key in ("spend", "conversions", "value"):
             if abs(actual.get(platform, {}).get(key, 0) - TARGETS[platform][key]) > 0.01:
                 ok = False
-    if order_count != TARGETS["shopify"]["orders"] or abs(float(revenue_sum) - TARGETS["shopify"]["revenue"]) > 0.01:
+    if (
+        order_count != TARGETS["shopify"]["orders"]
+        or abs(float(revenue_sum) - TARGETS["shopify"]["revenue"]) > 0.01
+    ):
         ok = False
     summary = {
         "platforms": actual,
@@ -142,7 +154,9 @@ def main() -> int:
         session.add(org)
         session.flush()
 
-        ws = Workspace(org_id=org.id, name=data["workspace"]["name"], currency=data["workspace"]["currency"])
+        ws = Workspace(
+            org_id=org.id, name=data["workspace"]["name"], currency=data["workspace"]["currency"]
+        )
         session.add(ws)
         session.flush()
         ws_id = ws.id
@@ -206,9 +220,11 @@ def main() -> int:
 
         expected = compute_aggregates(data)
         ok, summary = _verify(session, ws_id)
-        print(f"[seed] inserted workspace '{WORKSPACE_NAME}' (id={ws_id}): "
-              f"{len(data['accounts'])} accounts, {len(data['campaigns'])} campaigns, "
-              f"{len(data['spend'])} spend rows, {len(data['revenue'])} revenue rows")
+        print(
+            f"[seed] inserted workspace '{WORKSPACE_NAME}' (id={ws_id}): "
+            f"{len(data['accounts'])} accounts, {len(data['campaigns'])} campaigns, "
+            f"{len(data['spend'])} spend rows, {len(data['revenue'])} revenue rows"
+        )
         print(f"[seed] expected aggregates: {expected}")
         print(f"[seed] db aggregates:      {summary}")
         if not ok:

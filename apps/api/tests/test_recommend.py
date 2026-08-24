@@ -83,10 +83,7 @@ def test_exact_schema_fields():
 
 def test_reason_matches_contract_example_format():
     rec = generate_recommendations(MOCK_RECONCILE, MOCK_ATTRIBUTE)[0]
-    assert (
-        rec["reason"]
-        == "Meta over-credited by 33%; reallocate 10% to Google pending holdout"
-    )
+    assert rec["reason"] == "Meta over-credited by 33%; reallocate 10% to Google pending holdout"
 
 
 def test_source_is_most_inflated_target_least_inflated():

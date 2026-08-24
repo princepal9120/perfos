@@ -156,9 +156,7 @@ def test_failed_action_marks_failed_and_audits_both(env):
 
 
 def test_platform_resolved_from_campaign_when_omitted(env):
-    rec = make_rec(
-        proposed_changes={"set_budget": [{"campaign_id": 1, "new_daily_budget": 80.0}]}
-    )
+    rec = make_rec(proposed_changes={"set_budget": [{"campaign_id": 1, "new_daily_budget": 80.0}]})
     result = execute_recommendation(rec, workspace_id=1)
     assert result["status"] == "executed"
     assert ("set_budget", 1, 80.0) in [c for i in env.instances for c in i.calls]

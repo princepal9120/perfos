@@ -1,7 +1,6 @@
 """Organization and Workspace entities."""
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column

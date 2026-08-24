@@ -4,8 +4,8 @@ import hmac
 import json
 import os
 import time
-from datetime import datetime, timezone
-from typing import Annotated, Any, Literal, Optional, TypeAlias
+from datetime import UTC, datetime
+from typing import Annotated, Any, Literal, TypeAlias
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
@@ -59,7 +59,7 @@ TOKEN_TTL_SECONDS = 86400
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _sign(raw: bytes) -> str:
@@ -75,7 +75,7 @@ def issue_token(workspace_id: int) -> str:
     return f"{payload}.{_sign(payload.encode())}"
 
 
-def verify_token(token: str) -> Optional[int]:
+def verify_token(token: str) -> int | None:
     try:
         payload, sig = token.rsplit(".", 1)
         if not hmac.compare_digest(sig, _sign(payload.encode())):
@@ -89,36 +89,30 @@ def verify_token(token: str) -> Optional[int]:
 
 
 async def workspace_from_header(
-    x_workspace_id: Annotated[Optional[str], Header(alias="X-Workspace-Id")] = None,
+    x_workspace_id: Annotated[str | None, Header(alias="X-Workspace-Id")] = None,
 ) -> int:
     if not x_workspace_id:
         raise HTTPException(status_code=400, detail="Missing X-Workspace-Id header")
     try:
         return int(x_workspace_id)
     except ValueError as exc:
-        raise HTTPException(
-            status_code=400, detail="X-Workspace-Id must be an integer"
-        ) from exc
+        raise HTTPException(status_code=400, detail="X-Workspace-Id must be an integer") from exc
 
 
 async def optional_workspace_id(
-    x_workspace_id: Annotated[Optional[str], Header(alias="X-Workspace-Id")] = None,
-) -> Optional[int]:
+    x_workspace_id: Annotated[str | None, Header(alias="X-Workspace-Id")] = None,
+) -> int | None:
     if not x_workspace_id:
         return None
     try:
         return int(x_workspace_id)
     except ValueError as exc:
-        raise HTTPException(
-            status_code=400, detail="X-Workspace-Id must be an integer"
-        ) from exc
+        raise HTTPException(status_code=400, detail="X-Workspace-Id must be an integer") from exc
 
 
 DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
 WorkspaceId: TypeAlias = Annotated[int, Depends(workspace_from_header)]
-OptionalWorkspaceId: TypeAlias = Annotated[
-    Optional[int], Depends(optional_workspace_id)
-]
+OptionalWorkspaceId: TypeAlias = Annotated[int | None, Depends(optional_workspace_id)]
 
 
 class _ORMModel(BaseModel):
@@ -126,10 +120,10 @@ class _ORMModel(BaseModel):
 
 
 class TokenRequest(BaseModel):
-    api_key: Optional[str] = None
-    password: Optional[str] = None
-    workspace_id: Optional[int] = None
-    workspace: Optional[str] = None
+    api_key: str | None = None
+    password: str | None = None
+    workspace_id: int | None = None
+    workspace: str | None = None
 
 
 class TokenOut(BaseModel):
@@ -140,26 +134,26 @@ class TokenOut(BaseModel):
 
 class WorkspaceOut(_ORMModel):
     id: int
-    org_id: Optional[int] = None
+    org_id: int | None = None
     name: str
     currency: str = "USD"
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
 
 class AccountCreate(BaseModel):
     platform: PLATFORMS
-    platform_account_id: Optional[str] = None
-    name: Optional[str] = None
+    platform_account_id: str | None = None
+    name: str | None = None
 
 
 class AccountOut(_ORMModel):
     id: int
     workspace_id: int
     platform: str
-    platform_account_id: Optional[str] = None
+    platform_account_id: str | None = None
     name: str
     status: str
-    connected_at: Optional[datetime] = None
+    connected_at: datetime | None = None
 
 
 class ChannelStat(BaseModel):
@@ -192,19 +186,19 @@ class RecommendationOut(_ORMModel):
     workspace_id: int
     type: str
     reason: str
-    evidence_json: Optional[Any] = None
-    expected_impact: Optional[str] = None
+    evidence_json: Any | None = None
+    expected_impact: str | None = None
     confidence: float
     risk: str
-    proposed_changes_json: Optional[Any] = None
-    rollback_json: Optional[Any] = None
+    proposed_changes_json: Any | None = None
+    rollback_json: Any | None = None
     status: str
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
 
 class DecisionRequest(BaseModel):
     actor: str = "user"
-    note: Optional[str] = None
+    note: str | None = None
 
 
 class DecisionResult(BaseModel):
@@ -225,12 +219,12 @@ class ExperimentOut(_ORMModel):
     id: int
     workspace_id: int
     hypothesis: str
-    control_json: Optional[Any] = None
-    variant_json: Optional[Any] = None
+    control_json: Any | None = None
+    variant_json: Any | None = None
     primary_metric: str
     status: str
-    result_json: Optional[Any] = None
-    created_at: Optional[datetime] = None
+    result_json: Any | None = None
+    created_at: datetime | None = None
 
 
 class OutcomeOut(_ORMModel):
@@ -240,7 +234,7 @@ class OutcomeOut(_ORMModel):
     before: float
     after: float
     delta: float
-    recorded_at: Optional[datetime] = None
+    recorded_at: datetime | None = None
 
 
 class AgentCreate(BaseModel):
@@ -255,8 +249,8 @@ class AgentOut(_ORMModel):
     provider: str
     name: str
     status: str
-    config_json: Optional[Any] = None
-    last_run_at: Optional[datetime] = None
+    config_json: Any | None = None
+    last_run_at: datetime | None = None
 
 
 class DispatchRequest(BaseModel):
@@ -266,9 +260,9 @@ class DispatchRequest(BaseModel):
 class MCPServerCreate(BaseModel):
     name: str
     transport: Literal["http", "sse", "stdio"] = "http"
-    endpoint: Optional[str] = None
+    endpoint: str | None = None
     enabled: bool = True
-    config_json: Optional[dict[str, Any]] = None
+    config_json: dict[str, Any] | None = None
 
 
 class MCPServerOut(_ORMModel):
@@ -276,11 +270,11 @@ class MCPServerOut(_ORMModel):
     workspace_id: int
     name: str
     transport: str
-    endpoint: Optional[str] = None
+    endpoint: str | None = None
     enabled: bool
     status: str
-    config_json: Optional[dict[str, Any]] = None
-    last_checked_at: Optional[datetime] = None
+    config_json: dict[str, Any] | None = None
+    last_checked_at: datetime | None = None
 
 
 INTEGRATION_PROVIDERS = Literal[
@@ -300,9 +294,9 @@ class IntegrationCreate(BaseModel):
     name: str
     provider: INTEGRATION_PROVIDERS
     category: INTEGRATION_CATEGORIES = "ads"
-    endpoint: Optional[str] = None
-    api_key: Optional[str] = None
-    config_json: Optional[dict[str, Any]] = None
+    endpoint: str | None = None
+    api_key: str | None = None
+    config_json: dict[str, Any] | None = None
 
 
 class IntegrationOut(_ORMModel):
@@ -311,12 +305,12 @@ class IntegrationOut(_ORMModel):
     name: str
     category: str
     provider: str
-    endpoint: Optional[str] = None
-    api_key_encrypted: Optional[str] = None
+    endpoint: str | None = None
+    api_key_encrypted: str | None = None
     enabled: bool
     status: str
-    config_json: Optional[dict[str, Any]] = None
-    last_checked_at: Optional[datetime] = None
+    config_json: dict[str, Any] | None = None
+    last_checked_at: datetime | None = None
 
 
 def _audit(
@@ -396,7 +390,7 @@ def connect_account(body: AccountCreate, db: DbDep, workspace_id: WorkspaceId) -
 def get_reconcile(
     db: DbDep,
     header_workspace_id: OptionalWorkspaceId = None,
-    workspace_id: Annotated[Optional[int], Query()] = None,
+    workspace_id: Annotated[int | None, Query()] = None,
 ) -> dict:
     ws = workspace_id or header_workspace_id
     if ws is None:
@@ -438,9 +432,7 @@ def get_briefing(db: DbDep, workspace_id: WorkspaceId) -> dict:
 
 
 @router.get("/recommendations", response_model=list[RecommendationOut])
-def list_recommendations(
-    db: DbDep, workspace_id: WorkspaceId
-) -> list[Recommendation]:
+def list_recommendations(db: DbDep, workspace_id: WorkspaceId) -> list[Recommendation]:
     return (
         db.query(Recommendation)
         .filter(Recommendation.workspace_id == workspace_id)
@@ -650,6 +642,7 @@ def dispatch_agent(
 
 # ---- MCP servers (manage the tools your agents can call) ----
 
+
 @router.get("/mcp", response_model=list[MCPServerOut])
 def list_mcp_servers(db: DbDep, workspace_id: WorkspaceId) -> list[MCPServer]:
     return (
@@ -661,9 +654,7 @@ def list_mcp_servers(db: DbDep, workspace_id: WorkspaceId) -> list[MCPServer]:
 
 
 @router.post("/mcp", response_model=MCPServerOut, status_code=201)
-def register_mcp_server(
-    body: MCPServerCreate, db: DbDep, workspace_id: WorkspaceId
-) -> MCPServer:
+def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
     """Register an MCP server (http/sse/stdio). Status is mocked in demo mode."""
     server = MCPServer(
         workspace_id=workspace_id,
@@ -689,9 +680,7 @@ def register_mcp_server(
 
 
 @router.post("/mcp/{server_id}/toggle", response_model=MCPServerOut)
-def toggle_mcp_server(
-    server_id: int, db: DbDep, workspace_id: WorkspaceId
-) -> MCPServer:
+def toggle_mcp_server(server_id: int, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
     server = db.get(MCPServer, server_id)
     if server is None or server.workspace_id != workspace_id:
         raise HTTPException(status_code=404, detail="MCP server not found")
@@ -712,6 +701,7 @@ def toggle_mcp_server(
 
 
 # ---- External integrations (ads/analytics/crm/creative providers) ----
+
 
 @router.get("/integrations", response_model=list[IntegrationOut])
 def list_integrations(db: DbDep, workspace_id: WorkspaceId) -> list[ExternalIntegration]:
@@ -778,6 +768,7 @@ def toggle_integration(
 
 # ---- Command Center (pipeline / tool calls / agent dispatch) ----
 
+
 class ToolCallRequest(BaseModel):
     tool_name: str
     params: dict = {}
@@ -794,17 +785,13 @@ def call_tool(body: ToolCallRequest, db: DbDep, workspace_id: WorkspaceId) -> di
     """Call a supported integration tool (mock backends in demo mode)."""
     if not body.tool_name.strip():
         raise HTTPException(status_code=400, detail="tool_name is required")
-    return OrchestratorService.call_tool(
-        workspace_id, body.tool_name.strip(), body.params
-    )
+    return OrchestratorService.call_tool(workspace_id, body.tool_name.strip(), body.params)
 
 
 @router.post("/agents/dispatch-all")
 def dispatch_all_agents(db: DbDep, workspace_id: WorkspaceId) -> dict:
     """Set last_run_at on every connected agent and report who was dispatched."""
     return OrchestratorService.dispatch_all_agents(workspace_id, db)
-
-
 
 
 # ---- Measurement: iROAS / creatives / anomalies / optimizer / incrementality ----
@@ -902,15 +889,15 @@ class IncrementalityOut(_ORMModel):
     platform: str
     test_type: str
     status: str
-    markets_treated: Optional[Any] = None
-    markets_control: Optional[Any] = None
+    markets_treated: Any | None = None
+    markets_control: Any | None = None
     spend_treated: float
     spend_control: float
     conversions_treated: float
     conversions_control: float
-    lift_pct: Optional[float] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    lift_pct: float | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
 
 @router.get("/iroas", response_model=list[IroasRow])
@@ -941,9 +928,7 @@ def run_optimizer(db: DbDep, workspace_id: WorkspaceId) -> OptimizerPlan:
     return OptimizerPlan(**recommend_reallocation(workspace_id, db))
 
 
-def _incrementality_or_404(
-    db: Session, workspace_id: int, test_id: int
-) -> IncrementalityTest:
+def _incrementality_or_404(db: Session, workspace_id: int, test_id: int) -> IncrementalityTest:
     test = (
         db.query(IncrementalityTest)
         .filter(

@@ -55,18 +55,51 @@ def _to_date(value: Any) -> date:
 
 # Canonical Google campaigns (demo scenario).
 _DEFAULT_CAMPAIGNS: list[dict] = [
-    {"id": 1, "platform_campaign_id": "g-001", "name": "Search - Brand",
-     "status": "active", "daily_budget": 120.0},
-    {"id": 2, "platform_campaign_id": "g-002", "name": "Search - Non-Brand",
-     "status": "active", "daily_budget": 80.0},
-    {"id": 3, "platform_campaign_id": "g-003", "name": "Performance Max",
-     "status": "active", "daily_budget": 100.0},
+    {
+        "id": 1,
+        "platform_campaign_id": "g-001",
+        "name": "Search - Brand",
+        "status": "active",
+        "daily_budget": 120.0,
+    },
+    {
+        "id": 2,
+        "platform_campaign_id": "g-002",
+        "name": "Search - Non-Brand",
+        "status": "active",
+        "daily_budget": 80.0,
+    },
+    {
+        "id": 3,
+        "platform_campaign_id": "g-003",
+        "name": "Performance Max",
+        "status": "active",
+        "daily_budget": 100.0,
+    },
 ]
 
 _DAILY_SPLITS = {  # per-day share of the 3000/150/15000 aggregate, budget-weighted
-    1: {"impressions": 16000, "clicks": 320, "cost": 1200.0, "conversions": 50, "conversion_value": 5000.0},
-    2: {"impressions": 10700, "clicks": 213, "cost": 800.0, "conversions": 50, "conversion_value": 5000.0},
-    3: {"impressions": 13300, "clicks": 267, "cost": 1000.0, "conversions": 50, "conversion_value": 5000.0},
+    1: {
+        "impressions": 16000,
+        "clicks": 320,
+        "cost": 1200.0,
+        "conversions": 50,
+        "conversion_value": 5000.0,
+    },
+    2: {
+        "impressions": 10700,
+        "clicks": 213,
+        "cost": 800.0,
+        "conversions": 50,
+        "conversion_value": 5000.0,
+    },
+    3: {
+        "impressions": 13300,
+        "clicks": 267,
+        "cost": 1000.0,
+        "conversions": 50,
+        "conversion_value": 5000.0,
+    },
 }
 _DAYS_BACK = 4  # 4 days x splits == totals: 12000 / 600 / 60000
 
@@ -80,7 +113,9 @@ class GoogleConnector(BaseConnector):
         super().__init__(workspace)
         shared = _shared_mock("google_campaigns", "GOOGLE_CAMPAIGNS")
         self._campaigns: list[dict] = (
-            [dict(c) for c in shared if isinstance(c, dict)] if shared else [dict(c) for c in _DEFAULT_CAMPAIGNS]
+            [dict(c) for c in shared if isinstance(c, dict)]
+            if shared
+            else [dict(c) for c in _DEFAULT_CAMPAIGNS]
         )
 
     # ---- BaseConnector interface -------------------------------------------------
@@ -131,7 +166,11 @@ class GoogleConnector(BaseConnector):
             return self._set_budget_real(campaign_id, new_daily_budget)
         camp = self._find(campaign_id)
         if camp is None:
-            return {"success": False, "error": "campaign_not_found", "campaign_id": str(campaign_id)}
+            return {
+                "success": False,
+                "error": "campaign_not_found",
+                "campaign_id": str(campaign_id),
+            }
         previous = camp["daily_budget"]
         camp["daily_budget"] = float(new_daily_budget)
         return {
@@ -146,7 +185,11 @@ class GoogleConnector(BaseConnector):
             return self._pause_campaign_real(campaign_id)
         camp = self._find(campaign_id)
         if camp is None:
-            return {"success": False, "error": "campaign_not_found", "campaign_id": str(campaign_id)}
+            return {
+                "success": False,
+                "error": "campaign_not_found",
+                "campaign_id": str(campaign_id),
+            }
         camp["status"] = "paused"
         return {"success": True, "campaign_id": camp["platform_campaign_id"], "status": "paused"}
 

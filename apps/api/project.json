@@ -7,28 +7,42 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/api && .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+        "command": "cd apps/api && uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
         "cwd": "."
       }
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/api && .venv/bin/python -m pytest -q",
+        "command": "cd apps/api && uv run pytest -q",
+        "cwd": "."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && uv run ruff check .",
+        "cwd": "."
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && uv run ruff format .",
         "cwd": "."
       }
     },
     "seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/api && .venv/bin/python scripts/seed.py",
+        "command": "cd apps/api && uv run python scripts/seed.py",
         "cwd": "."
       }
     },
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd apps/api && .venv/bin/pip install -e '.[postgres]'",
+        "command": "cd apps/api && uv sync --all-extras",
         "cwd": "."
       }
     }

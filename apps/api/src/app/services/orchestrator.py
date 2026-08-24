@@ -12,7 +12,7 @@ returns realistic-shaped data without touching real provider APIs.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -46,7 +46,7 @@ _REC_FIELDS = (
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _rec_dict(rec: Recommendation) -> dict:
@@ -68,14 +68,11 @@ class OrchestratorService:
     @staticmethod
     def run_full_pipeline(workspace_id: int, session: Session) -> dict:
         """Run reconcile -> analysis -> recommend, then gather stack statuses."""
-        reconciliation = OrchestratorService._reconcile_from_db(
-            session, workspace_id
-        )
+        reconciliation = OrchestratorService._reconcile_from_db(session, workspace_id)
 
         analysis = run_analysis(workspace_id) or {}
         if not (
-            float(reconciliation.get("spend") or 0)
-            or float(reconciliation.get("actual") or 0)
+            float(reconciliation.get("spend") or 0) or float(reconciliation.get("actual") or 0)
         ):
             # Empty DB (pure mock mode): fall back to the orchestrator's own
             # reconcile output, which loads the canonical mock dataset.
@@ -144,9 +141,7 @@ class OrchestratorService:
         ]
         revenues = [
             {"amount": float(rev.amount or 0)}
-            for rev in session.query(Revenue)
-            .filter(Revenue.workspace_id == workspace_id)
-            .all()
+            for rev in session.query(Revenue).filter(Revenue.workspace_id == workspace_id).all()
         ]
         result = run_reconcile(spends, revenues) if (spends or revenues) else {}
         return {
@@ -158,9 +153,7 @@ class OrchestratorService:
         }
 
     @staticmethod
-    def _ensure_recommendations(
-        workspace_id: int, session: Session, analysis: dict
-    ) -> list[dict]:
+    def _ensure_recommendations(workspace_id: int, session: Session, analysis: dict) -> list[dict]:
         pending = (
             session.query(Recommendation)
             .filter(
@@ -209,9 +202,7 @@ class OrchestratorService:
     )
 
     @staticmethod
-    def call_tool(
-        workspace_id: int, tool_name: str, params: dict | None = None
-    ) -> dict:
+    def call_tool(workspace_id: int, tool_name: str, params: dict | None = None) -> dict:
         """Execute a supported tool against its mock backend."""
         params = params or {}
         echo = dict(params)
@@ -230,12 +221,8 @@ class OrchestratorService:
                 },
             }
 
-        handler = getattr(
-            OrchestratorService, f"_tool_{tool_name.split('.')[0]}", None
-        )
-        result = (
-            handler(echo) if handler else {"note": f"{tool_name} executed (mock)."}
-        )
+        handler = getattr(OrchestratorService, f"_tool_{tool_name.split('.')[0]}", None)
+        result = handler(echo) if handler else {"note": f"{tool_name} executed (mock)."}
         return {**base, "status": "ok", "result": result}
 
     @staticmethod
@@ -374,7 +361,7 @@ class OrchestratorService:
             .all()
         )
         dispatched: list[str] = []
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         for agent in agents:
             agent.last_run_at = now
             log_action(

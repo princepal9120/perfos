@@ -6,7 +6,7 @@ return SQLAlchemy rows directly.
 """
 
 from datetime import date, datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -61,15 +61,15 @@ class AdRead(_ORMModel):
     id: int
     ad_set_id: int
     name: str
-    creative_id: Optional[str] = None
+    creative_id: str | None = None
     status: str
 
 
 class SpendRead(_ORMModel):
     id: int
     workspace_id: int
-    ad_account_id: Optional[int] = None
-    campaign_id: Optional[int] = None
+    ad_account_id: int | None = None
+    campaign_id: int | None = None
     date: date
     impressions: int
     clicks: int
@@ -85,7 +85,7 @@ class RevenueRead(_ORMModel):
     order_id: str
     date: date
     amount: float
-    customer_id: Optional[str] = None
+    customer_id: str | None = None
     is_new_customer: bool
 
 
@@ -103,12 +103,12 @@ class RecommendationRead(_ORMModel):
     workspace_id: int
     type: str
     reason: str
-    evidence_json: Optional[dict[str, Any]] = None
-    expected_impact: Optional[float] = None
+    evidence_json: dict[str, Any] | None = None
+    expected_impact: float | None = None
     confidence: float
     risk: str
-    proposed_changes_json: Optional[dict[str, Any]] = None
-    rollback_json: Optional[dict[str, Any]] = None
+    proposed_changes_json: dict[str, Any] | None = None
+    rollback_json: dict[str, Any] | None = None
     status: str
     created_at: datetime
 
@@ -118,7 +118,7 @@ class ApprovalRead(_ORMModel):
     recommendation_id: int
     actor: str
     decision: str
-    note: Optional[str] = None
+    note: str | None = None
     created_at: datetime
 
 
@@ -126,11 +126,11 @@ class ExperimentRead(_ORMModel):
     id: int
     workspace_id: int
     hypothesis: str
-    control_json: Optional[dict[str, Any]] = None
-    variant_json: Optional[dict[str, Any]] = None
+    control_json: dict[str, Any] | None = None
+    variant_json: dict[str, Any] | None = None
     primary_metric: str
     status: str
-    result_json: Optional[dict[str, Any]] = None
+    result_json: dict[str, Any] | None = None
     created_at: datetime
 
 
@@ -150,8 +150,8 @@ class ConnectedAgentRead(_ORMModel):
     provider: str
     name: str
     status: str
-    config_json: Optional[dict[str, Any]] = None
-    last_run_at: Optional[datetime] = None
+    config_json: dict[str, Any] | None = None
+    last_run_at: datetime | None = None
 
 
 class AuditLogRead(_ORMModel):
@@ -160,5 +160,5 @@ class AuditLogRead(_ORMModel):
     actor: str
     action: str
     target: str
-    payload_json: Optional[dict[str, Any]] = None
+    payload_json: dict[str, Any] | None = None
     created_at: datetime

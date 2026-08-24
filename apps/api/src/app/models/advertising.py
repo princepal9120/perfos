@@ -1,7 +1,6 @@
 """Advertising hierarchy: AdAccount -> Campaign -> AdSet -> Ad."""
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import CheckConstraint, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -21,9 +20,7 @@ class AdAccount(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    workspace_id: Mapped[int] = mapped_column(
-        ForeignKey("workspaces.id"), index=True
-    )
+    workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), index=True)
     platform: Mapped[str] = mapped_column(String(32))
     platform_account_id: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(255))
@@ -35,9 +32,7 @@ class Campaign(Base):
     __tablename__ = "campaigns"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    ad_account_id: Mapped[int] = mapped_column(
-        ForeignKey("ad_accounts.id"), index=True
-    )
+    ad_account_id: Mapped[int] = mapped_column(ForeignKey("ad_accounts.id"), index=True)
     platform: Mapped[str] = mapped_column(String(32))
     platform_campaign_id: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(255))
@@ -61,5 +56,5 @@ class Ad(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     ad_set_id: Mapped[int] = mapped_column(ForeignKey("ad_sets.id"), index=True)
     name: Mapped[str] = mapped_column(String(255))
-    creative_id: Mapped[Optional[str]] = mapped_column(String(255), default=None)
+    creative_id: Mapped[str | None] = mapped_column(String(255), default=None)
     status: Mapped[str] = mapped_column(String(32), default="active")

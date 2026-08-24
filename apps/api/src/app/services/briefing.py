@@ -24,7 +24,6 @@ def build_briefing(workspace_id: Any) -> dict:
     """Build the daily-briefing payload for ``workspace_id``."""
     analysis = run_analysis(workspace_id)
     reconciliation = analysis.get("reconcile") or {}
-    attribution = analysis.get("attribution") or {}
     recs: list[dict] = analysis.get("recommendations") or []
 
     spend = float(_get(reconciliation, "total_spend", 0) or 0)

@@ -70,9 +70,7 @@ def test_boundary_values():
 def test_json_string_and_actions_shapes_parsed():
     string_form = evaluate(FakeRec(1, '{"budget_shift_pct": 40}'), 1)
     assert string_form["decision"] == "block"
-    actions_form = evaluate(
-        FakeRec(1, {"actions": [{"pct": 10}, {"budget_shift_pct": 60}]}), 1
-    )
+    actions_form = evaluate(FakeRec(1, {"actions": [{"pct": 10}, {"budget_shift_pct": 60}]}), 1)
     assert actions_form["decision"] == "block"
 
 

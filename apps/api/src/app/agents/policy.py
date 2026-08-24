@@ -50,9 +50,7 @@ def _budget_change_pct(proposed_changes: Any) -> float | None:
         actions = proposed_changes.get("actions") or []
         if isinstance(actions, list):
             pcts = [
-                a.get("budget_shift_pct") or a.get("pct")
-                for a in actions
-                if isinstance(a, dict)
+                a.get("budget_shift_pct") or a.get("pct") for a in actions if isinstance(a, dict)
             ]
             pct = max((float(p) for p in pcts if p is not None), default=None)
     if pct is None:

@@ -23,7 +23,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 os.environ.setdefault("MOCK_MODE", "true")
 
-from app.core.config import settings  # noqa: E402
 from app.core.db import Base, SessionLocal, engine, init_db  # noqa: E402
 
 PLATFORMS = [
@@ -163,38 +162,40 @@ def seed(reset: bool = False) -> None:
 
         started_at = datetime(2026, 7, 14, 9, 0, 0)
         completed_at = datetime(2026, 7, 28, 17, 0, 0)
-        db.add_all([
-            IncrementalityTest(
-                workspace_id=ws.id,
-                platform="meta",
-                test_type="geo_holdout",
-                status="completed",
-                markets_treated=["CA", "TX"],
-                markets_control=["NY", "FL"],
-                spend_treated=40_000.0,
-                spend_control=38_000.0,
-                conversions_treated=2100.0,
-                conversions_control=1900.0,
-                lift_pct=round(((2100 / 1900) / (40_000 / 38_000) - 1) * 100, 2),
-                started_at=started_at,
-                completed_at=completed_at,
-            ),
-            IncrementalityTest(
-                workspace_id=ws.id,
-                platform="google",
-                test_type="conversion_lift",
-                status="completed",
-                markets_treated=["US-Midwest"],
-                markets_control=["US-South"],
-                spend_treated=45_000.0,
-                spend_control=40_500.0,
-                conversions_treated=3100.0,
-                conversions_control=2500.0,
-                lift_pct=round(((3100 / 2500) / (45_000 / 40_500) - 1) * 100, 2),
-                started_at=started_at,
-                completed_at=completed_at,
-            ),
-        ])
+        db.add_all(
+            [
+                IncrementalityTest(
+                    workspace_id=ws.id,
+                    platform="meta",
+                    test_type="geo_holdout",
+                    status="completed",
+                    markets_treated=["CA", "TX"],
+                    markets_control=["NY", "FL"],
+                    spend_treated=40_000.0,
+                    spend_control=38_000.0,
+                    conversions_treated=2100.0,
+                    conversions_control=1900.0,
+                    lift_pct=round(((2100 / 1900) / (40_000 / 38_000) - 1) * 100, 2),
+                    started_at=started_at,
+                    completed_at=completed_at,
+                ),
+                IncrementalityTest(
+                    workspace_id=ws.id,
+                    platform="google",
+                    test_type="conversion_lift",
+                    status="completed",
+                    markets_treated=["US-Midwest"],
+                    markets_control=["US-South"],
+                    spend_treated=45_000.0,
+                    spend_control=40_500.0,
+                    conversions_treated=3100.0,
+                    conversions_control=2500.0,
+                    lift_pct=round(((3100 / 2500) / (45_000 / 40_500) - 1) * 100, 2),
+                    started_at=started_at,
+                    completed_at=completed_at,
+                ),
+            ]
+        )
 
         integrations = [
             ("Google Ads", "ads", "google_ads"),
@@ -217,22 +218,24 @@ def seed(reset: bool = False) -> None:
                 )
             )
 
-        db.add_all([
-            ConnectedAgent(
-                workspace_id=ws.id,
-                provider="opencode",
-                name="PerfOS Optimizer Agent",
-                status="idle",
-                config_json={"role": "budget_analysis"},
-            ),
-            ConnectedAgent(
-                workspace_id=ws.id,
-                provider="claude",
-                name="Briefing Writer",
-                status="idle",
-                config_json={"role": "daily_briefing"},
-            ),
-        ])
+        db.add_all(
+            [
+                ConnectedAgent(
+                    workspace_id=ws.id,
+                    provider="opencode",
+                    name="PerfOS Optimizer Agent",
+                    status="idle",
+                    config_json={"role": "budget_analysis"},
+                ),
+                ConnectedAgent(
+                    workspace_id=ws.id,
+                    provider="claude",
+                    name="Briefing Writer",
+                    status="idle",
+                    config_json={"role": "daily_briefing"},
+                ),
+            ]
+        )
 
         db.commit()
         print(

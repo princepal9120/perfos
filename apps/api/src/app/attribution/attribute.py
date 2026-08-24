@@ -6,7 +6,8 @@ never used as credit; they only inform the confidence score and rationale.
 
 from __future__ import annotations
 
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 __all__ = ["attribute_revenue"]
 
@@ -55,9 +56,7 @@ def attribute_revenue(
     """
     per_channel = list(reconcile_output.get("per_channel") or [])
     total_spend = float(_get(reconcile_output, "total_spend", 0.0) or 0.0)
-    claimed_total = float(
-        _get(reconcile_output, "platform_claimed_value", 0.0) or 0.0
-    )
+    claimed_total = float(_get(reconcile_output, "platform_claimed_value", 0.0) or 0.0)
     over_count_pct = float(_get(reconcile_output, "over_count_pct", 0.0) or 0.0)
 
     revenue_rows = list(revenues)
@@ -71,9 +70,7 @@ def attribute_revenue(
         return {
             "per_channel_credit": [],
             "confidence": 0.0,
-            "rationale": (
-                "No attributable spend data available; revenue left unallocated."
-            ),
+            "rationale": ("No attributable spend data available; revenue left unallocated."),
         }
 
     shares = [float(_get(c, "spend") or 0.0) / total_spend for c in per_channel]
@@ -106,9 +103,7 @@ def attribute_revenue(
     parts = [
         f"Allocated ${actual_revenue:,.2f} actual revenue across "
         f"{len(per_channel_credit)} channels by spend share "
-        + ", ".join(
-            f"{c['platform']} {c['share'] * 100:.1f}%" for c in per_channel_credit
-        )
+        + ", ".join(f"{c['platform']} {c['share'] * 100:.1f}%" for c in per_channel_credit)
         + "."
     ]
     if claimed_total > 0 and claimed_total > actual_revenue:

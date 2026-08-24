@@ -19,10 +19,8 @@ def mock_reconcile_output():
         "actual_revenue": 78000,
         "blended_mer": 3.9,
         "per_channel": [
-            {"platform": "google", "spend": 12000, "claimed_value": 60000,
-             "claimed_roas": 5.0},
-            {"platform": "meta", "spend": 8000, "claimed_value": 44000,
-             "claimed_roas": 5.5},
+            {"platform": "google", "spend": 12000, "claimed_value": 60000, "claimed_roas": 5.0},
+            {"platform": "meta", "spend": 8000, "claimed_value": 44000, "claimed_roas": 5.5},
         ],
         "over_count_value": 26000,
         "over_count_pct": 33.0,
@@ -84,10 +82,10 @@ def test_rationale_mentions_actuals_and_over_count():
 
 
 def test_dict_and_object_revenues_equivalent():
-    obj_out = attribute_revenue("ws-1", mock_reconcile_output(),
-                                [Revenue(50000), Revenue(28000)])
-    dict_out = attribute_revenue("ws-1", mock_reconcile_output(),
-                                 [{"amount": 50000}, {"amount": 28000}])
+    obj_out = attribute_revenue("ws-1", mock_reconcile_output(), [Revenue(50000), Revenue(28000)])
+    dict_out = attribute_revenue(
+        "ws-1", mock_reconcile_output(), [{"amount": 50000}, {"amount": 28000}]
+    )
     assert obj_out == dict_out
 
 
@@ -122,8 +120,9 @@ def test_single_channel_gets_full_credit():
         "platform_claimed_value": 30000,
         "actual_revenue": 15000,
         "blended_mer": 0.75,
-        "per_channel": [{"platform": "google", "spend": 20000, "claimed_value": 30000,
-                         "claimed_roas": 1.5}],
+        "per_channel": [
+            {"platform": "google", "spend": 20000, "claimed_value": 30000, "claimed_roas": 1.5}
+        ],
         "over_count_value": 15000,
         "over_count_pct": 100.0,
         "tracking_integrity_flag": True,
@@ -135,10 +134,8 @@ def test_single_channel_gets_full_credit():
 
 
 def test_deterministic_same_input_same_output():
-    a = attribute_revenue("ws-1", mock_reconcile_output(),
-                          [Revenue(70000), Revenue(8000)])
-    b = attribute_revenue("ws-1", mock_reconcile_output(),
-                          [Revenue(70000), Revenue(8000)])
+    a = attribute_revenue("ws-1", mock_reconcile_output(), [Revenue(70000), Revenue(8000)])
+    b = attribute_revenue("ws-1", mock_reconcile_output(), [Revenue(70000), Revenue(8000)])
     assert a == b
 
 

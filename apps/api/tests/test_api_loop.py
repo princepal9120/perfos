@@ -34,9 +34,7 @@ def _rebuild_if_needed() -> int:
         ws = session.query(Workspace).filter(Workspace.name == WORKSPACE_NAME).first()
         if ws is not None:
             spend = (
-                session.query(func.sum(Spend.cost))
-                .filter(Spend.workspace_id == ws.id)
-                .scalar()
+                session.query(func.sum(Spend.cost)).filter(Spend.workspace_id == ws.id).scalar()
                 or 0.0
             )
             revenue = (
@@ -168,11 +166,7 @@ def test_full_loop_generate_approve_executes_and_audits(api):
         assert row is not None
         assert row.status == "executed"
 
-        audits = (
-            session.query(AuditLog)
-            .filter(AuditLog.workspace_id == row.workspace_id)
-            .all()
-        )
+        audits = session.query(AuditLog).filter(AuditLog.workspace_id == row.workspace_id).all()
         assert audits, "approval loop must leave AuditLog rows behind"
         actions = {a.action for a in audits}
         targets = {a.target for a in audits}

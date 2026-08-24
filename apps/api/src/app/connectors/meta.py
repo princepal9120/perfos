@@ -21,8 +21,8 @@ from typing import Any
 from app.connectors.base import BaseConnector
 from app.models import Campaign, Spend
 
-WORKSPACE_ID = 1   # demo Workspace.id
-ACCOUNT_ID = 2     # mock AdAccount.id for Meta in the demo workspace (google=1)
+WORKSPACE_ID = 1  # demo Workspace.id
+ACCOUNT_ID = 2  # mock AdAccount.id for Meta in the demo workspace (google=1)
 
 META_DATE_START = date(2026, 8, 1)  # aligns with app.mock.dataset window
 DAYS = 7
@@ -101,12 +101,26 @@ def _split_int(total: int) -> list[int]:
 # Canonical Meta campaigns (demo scenario): per-campaign totals split across
 # DAYS days sum EXACTLY to 8000 spend / 500 conversions / 44000 claimed value.
 _CAMPAIGN_TOTALS: list[dict] = [
-    {"id": 11, "platform_campaign_id": "m-444", "name": "Prospecting - Broad",
-     "status": "active", "daily_budget": 750.0,
-     "spend": 5200.0, "conversions": 330, "conversion_value": 29000.0},
-    {"id": 12, "platform_campaign_id": "m-555", "name": "Retargeting - Dynamic",
-     "status": "active", "daily_budget": 400.0,
-     "spend": 2800.0, "conversions": 170, "conversion_value": 15000.0},
+    {
+        "id": 11,
+        "platform_campaign_id": "m-444",
+        "name": "Prospecting - Broad",
+        "status": "active",
+        "daily_budget": 750.0,
+        "spend": 5200.0,
+        "conversions": 330,
+        "conversion_value": 29000.0,
+    },
+    {
+        "id": 12,
+        "platform_campaign_id": "m-555",
+        "name": "Retargeting - Dynamic",
+        "status": "active",
+        "daily_budget": 400.0,
+        "spend": 2800.0,
+        "conversions": 170,
+        "conversion_value": 15000.0,
+    },
 ]
 
 _DAILY_SPLITS: dict[int, dict[str, list]] = {
@@ -188,7 +202,11 @@ class MetaConnector(BaseConnector):
             return self._set_budget_real(campaign_id, new_daily_budget)
         camp = self._find(campaign_id)
         if camp is None:
-            return {"success": False, "error": "campaign_not_found", "campaign_id": str(campaign_id)}
+            return {
+                "success": False,
+                "error": "campaign_not_found",
+                "campaign_id": str(campaign_id),
+            }
         previous = camp["daily_budget"]
         camp["daily_budget"] = float(new_daily_budget)
         return {
@@ -203,7 +221,11 @@ class MetaConnector(BaseConnector):
             return self._pause_campaign_real(campaign_id)
         camp = self._find(campaign_id)
         if camp is None:
-            return {"success": False, "error": "campaign_not_found", "campaign_id": str(campaign_id)}
+            return {
+                "success": False,
+                "error": "campaign_not_found",
+                "campaign_id": str(campaign_id),
+            }
         camp["status"] = "paused"
         return {"success": True, "campaign_id": camp["platform_campaign_id"], "status": "paused"}
 
@@ -226,9 +248,7 @@ class MetaConnector(BaseConnector):
             id=_coerce_id(d.get("id")),
             ad_account_id=_coerce_id(d.get("ad_account_id") or ACCOUNT_ID),
             platform=d.get("platform") or self.platform,
-            platform_campaign_id=d.get(
-                "platform_campaign_id", f"m-{_coerce_id(d.get('id'))}"
-            ),
+            platform_campaign_id=d.get("platform_campaign_id", f"m-{_coerce_id(d.get('id'))}"),
             name=d.get("name", ""),
             status=d.get("status", "active"),
             daily_budget=float(d.get("daily_budget") or 0),

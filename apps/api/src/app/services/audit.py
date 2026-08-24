@@ -1,6 +1,6 @@
 """Audit trail service. Every state-changing action gets an immutable AuditLog row."""
 
-from typing import Any, Optional
+from typing import Any
 
 from app.core.db import SessionLocal
 from app.models import AuditLog
@@ -11,7 +11,7 @@ def log_action(
     actor: str,
     action: str,
     target: str,
-    payload: Optional[Any] = None,
+    payload: Any | None = None,
     session=None,
 ):
     """Write one AuditLog row and return it.

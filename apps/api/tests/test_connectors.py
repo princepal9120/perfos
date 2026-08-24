@@ -15,8 +15,8 @@ import pytest
 
 from app.connectors.google import GoogleConnector
 from app.connectors.meta import MetaConnector
-from app.connectors.revenue import RevenueConnector
 from app.connectors.registry import get_connector
+from app.connectors.revenue import RevenueConnector
 
 WIDE_START = date(2000, 1, 1)
 WIDE_END = date(2100, 1, 1)

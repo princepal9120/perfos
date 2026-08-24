@@ -128,15 +128,18 @@ def seeded_db(db_session):
     )
 
     # Shopify revenue: 950 orders totalling exactly 78000 (source of truth).
-    orders = [Revenue(
-        workspace_id=workspace.id,
-        source="shopify",
-        order_id=f"SHOPIFY-{i:04d}",
-        date=day,
-        amount=80 if i < 900 else 120,
-        customer_id=f"c-{i % 300:03d}",
-        is_new_customer=i < 200,
-    ) for i in range(950)]
+    orders = [
+        Revenue(
+            workspace_id=workspace.id,
+            source="shopify",
+            order_id=f"SHOPIFY-{i:04d}",
+            date=day,
+            amount=80 if i < 900 else 120,
+            customer_id=f"c-{i % 300:03d}",
+            is_new_customer=i < 200,
+        )
+        for i in range(950)
+    ]
     assert sum(o.amount for o in orders) == 78_000
     db_session.add_all(orders)
 

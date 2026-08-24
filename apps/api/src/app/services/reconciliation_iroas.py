@@ -58,8 +58,7 @@ def compute_iroas(workspace_id: int, session: Session) -> list[dict]:
         .all()
     )
     reported = {
-        row.platform: round(row.value / row.cost, 4) if row.cost else None
-        for row in spend_rows
+        row.platform: round(row.value / row.cost, 4) if row.cost else None for row in spend_rows
     }
 
     out: list[dict] = []

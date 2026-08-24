@@ -24,7 +24,9 @@ class RevenueConnector:
         self.workspace = workspace
 
     # -- source of truth --------------------------------------------------- #
-    def fetch_actual_revenue(self, date_start: str | None = None, date_end: str | None = None) -> list[dict]:
+    def fetch_actual_revenue(
+        self, date_start: str | None = None, date_end: str | None = None
+    ) -> list[dict]:
         """Return revenue rows. Mock mode pulls from the demo dataset; the real
         adapter would query Shopify orders / Stripe charges in [date_start, date_end]."""
         if getattr(settings, "MOCK_MODE", True):

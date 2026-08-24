@@ -6,19 +6,15 @@ token) and exposes get_current_workspace for all /api routes.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from fastapi import Header, HTTPException, status
 
 from app.core.security import get_workspace_from_header
 
 
 def get_current_workspace(
-    x_workspace_id: Optional[str] = Header(
-        default=None, alias="X-Workspace-Id"
-    ),
-    x_api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
-    authorization: Optional[str] = Header(default=None),
+    x_workspace_id: str | None = Header(default=None, alias="X-Workspace-Id"),
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> str | int:
     """Return the authenticated workspace_id or raise 401."""
     workspace_id = get_workspace_from_header(
