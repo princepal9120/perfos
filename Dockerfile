@@ -9,10 +9,10 @@ FROM node:20-alpine AS web
 WORKDIR /app/web
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY web/package.json web/package-lock.json ./
+COPY apps/web/package.json apps/web/package-lock.json ./
 RUN npm ci
 
-COPY web ./
+COPY apps/web ./
 RUN npm run build
 
 EXPOSE 3000

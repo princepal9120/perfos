@@ -248,7 +248,7 @@ export default function MeasurementPage() {
                       style={{ width: `${(row.current_spend / maxSpend) * 100}%` }}
                     />
                     <div
-                      className="h-2 rounded bg-violet-500/70"
+                      className="h-2 rounded bg-accent-blue/70"
                       style={{ width: `${(row.recommended_spend / maxSpend) * 100}%` }}
                     />
                   </div>

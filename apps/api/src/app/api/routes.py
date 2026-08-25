@@ -161,7 +161,7 @@ class ChannelStat(BaseModel):
     platform: str
     spend: float
     claimed_value: float
-    claimed_roas: float
+    claimed_roas: float | None
 
 
 class ReconcileOut(BaseModel):
@@ -488,6 +488,10 @@ def approve_recommendation(
     rec = db.get(Recommendation, recommendation_id)
     if rec is None or rec.workspace_id != workspace_id:
         raise HTTPException(status_code=404, detail="Recommendation not found")
+    if rec.status != "pending":
+        raise HTTPException(
+            status_code=409, detail=f"Recommendation is {rec.status}, not pending"
+        )
     decision = evaluate_policy(rec, workspace_id=workspace_id)
     outcome = decision.get("decision", "block")
     reasons = decision.get("reasons", [])
@@ -533,6 +537,10 @@ def reject_recommendation(
     rec = db.get(Recommendation, recommendation_id)
     if rec is None or rec.workspace_id != workspace_id:
         raise HTTPException(status_code=404, detail="Recommendation not found")
+    if rec.status != "pending":
+        raise HTTPException(
+            status_code=409, detail=f"Recommendation is {rec.status}, not pending"
+        )
     rec.status = "rejected"
     db.add(
         Approval(

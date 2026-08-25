@@ -130,7 +130,7 @@ function NavSection({
   return (
     <div>
       {!collapsed && (
-        <p className="px-3 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5b5b73]">
+        <p className="px-3 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
           {label}
         </p>
       )}
@@ -144,15 +144,15 @@ function NavSection({
               aria-current={active ? "page" : undefined}
               title={collapsed ? item.label : undefined}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50",
+                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
                 item.href === "/command-center" && "hidden md:flex",
                 collapsed ? "justify-center px-2 py-2" : "",
                 active
-                  ? "bg-white/[0.06] text-white"
-                  : "text-[#8b8ba3] hover:bg-white/[0.04] hover:text-[#f0f0f5]"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
               )}
             >
-              <span className={cn("shrink-0", active ? "text-[#3b82f6]" : "text-[#5b5b73]")}>
+              <span className={cn("shrink-0", active ? "text-blue-400" : "text-zinc-500")}>
                 {item.icon}
               </span>
               {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
@@ -173,36 +173,36 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     "PerfOS";
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-[#050508] text-[#f0f0f5]">
+    <div className="flex h-[100dvh] overflow-hidden bg-[#09090b] text-zinc-100">
       {/* Sidebar */}
       <aside
         className={cn(
-          "hidden shrink-0 flex-col border-r border-white/[0.06] bg-[#0a0a12]/80 backdrop-blur-xl transition-[width] duration-200 ease-out md:flex",
-          collapsed ? "w-[56px]" : "w-[196px]"
+          "hidden shrink-0 flex-col border-r border-white/[0.08] bg-[#0c0c0f] transition-[width] duration-200 ease-out md:flex",
+          collapsed ? "w-[56px]" : "w-[200px]"
         )}
         aria-label="Sidebar"
       >
         <div
           className={cn(
-            "flex h-14 shrink-0 items-center border-b border-white/[0.06] px-2.5",
+            "flex h-14 shrink-0 items-center border-b border-white/[0.08] px-3",
             collapsed ? "justify-center" : "justify-between gap-1.5"
           )}
         >
           {collapsed ? (
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-sm font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.3)]">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900 border border-white/15 text-xs font-semibold text-white">
               P
             </span>
           ) : (
             <>
-              <Link href="/overview" className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50 rounded-lg">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] text-[13px] font-bold text-white shadow-[0_4px_20px_rgba(99,102,241,0.3)]">
+              <Link href="/overview" className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-lg">
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900 border border-white/15 text-xs font-semibold text-white">
                   P
                 </span>
-                <span className="text-sm font-semibold tracking-tight text-[#f0f0f5]">PerfOS</span>
+                <span className="text-sm font-semibold tracking-tight text-zinc-100">PerfOS</span>
               </Link>
               <button
                 onClick={() => setCollapsed(true)}
-                className="flex h-7 w-7 items-center justify-center rounded-md text-[#5b5b73] hover:bg-white/[0.06] hover:text-[#f0f0f5] focus-visible:ring-2 focus-visible:ring-[#3b82f6]/50"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 hover:bg-white/[0.06] hover:text-zinc-200 focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 aria-label="Collapse sidebar"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4"><path d="M11 4H4v16h7M13 12h8M13 12l3-3M13 12l3 3" /></svg>
@@ -217,12 +217,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {!collapsed && (
-          <div className="border-t border-white/[0.06] px-2 py-2">
-            <div className="flex items-center justify-between gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1.5 text-xs">
-              <span className="rounded bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+          <div className="border-t border-white/[0.08] px-3 py-2.5">
+            <div className="flex items-center justify-between gap-1.5 rounded-md border border-white/[0.08] bg-zinc-900/60 px-2.5 py-1.5 text-xs">
+              <span className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-300">
                 Demo
               </span>
-              <span className="truncate text-[11px] font-semibold text-[#f0f0f5]">PerfOS Mock</span>
+              <span className="truncate text-[11px] font-medium text-zinc-300">PerfOS Mock</span>
             </div>
           </div>
         )}
@@ -230,21 +230,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/[0.06] bg-[#0a0a12]/60 px-4 backdrop-blur-xl sm:px-8">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] bg-[#09090b] px-4 sm:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
-            <span className="hidden text-[#5b5b73] sm:inline">Console</span>
-            <span className="hidden text-[#5b5b73]/40 sm:inline" aria-hidden="true">/</span>
-            <h1 className="text-base font-semibold tracking-tight text-[#f0f0f5]">{title}</h1>
+            <span className="hidden text-zinc-500 sm:inline">Console</span>
+            <span className="hidden text-zinc-600 sm:inline" aria-hidden="true">/</span>
+            <h1 className="text-sm font-medium tracking-tight text-zinc-200">{title}</h1>
           </nav>
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
               Mock data
             </span>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-[#09090b]">
           <div className="mx-auto w-full max-w-[1720px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
             {children}
           </div>

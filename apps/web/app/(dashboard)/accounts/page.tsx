@@ -50,7 +50,7 @@ const PLATFORMS: PlatformMeta[] = [
   {
     id: "shopify",
     name: "Shopify",
-    description: "Actual revenue — the source of truth.",
+    description: "Actual revenue. The source of truth.",
     dotClass: "bg-emerald-600",
   },
   {

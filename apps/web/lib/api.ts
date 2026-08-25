@@ -10,26 +10,32 @@ import axios from "axios";
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.length > 0
     ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "")
-    : "/api";
+    : "http://127.0.0.1:8000/api";
 
 export const api = axios.create({
   baseURL: API_BASE,
-  headers: { "Content-Type": "application/json" },
+  timeout: 30_000,
+  headers: {
+    "Content-Type": "application/json",
+    "X-Workspace-Id": "1",
+  },
 });
 
 export function setWorkspaceId(id: string | number) {
   api.defaults.headers.common["X-Workspace-Id"] = String(id);
 }
 
-/** Generic GET by absolute app path (e.g. "/api/recommendations"). */
+/** Generic GET by absolute or relative app path. */
 export async function apiGet<T>(path: string): Promise<T> {
-  const { data } = await axios.get<T>(path);
+  const cleanPath = path.startsWith("/api") ? path.slice(4) : path;
+  const { data } = await api.get<T>(cleanPath);
   return data;
 }
 
-/** Generic POST by absolute app path. */
+/** Generic POST by absolute or relative app path. */
 export async function apiPost<T = unknown>(path: string, body?: unknown): Promise<T> {
-  const { data } = await axios.post<T>(path, body ?? {});
+  const cleanPath = path.startsWith("/api") ? path.slice(4) : path;
+  const { data } = await api.post<T>(cleanPath, body ?? {});
   return data;
 }
 

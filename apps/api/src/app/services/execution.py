@@ -73,6 +73,11 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                         response = connector.pause_campaign(campaign_id)
                     else:
                         raise ValueError(f"unknown_action:{kind}")
+                    # connectors return {"success": False} instead of raising; surface it
+                    if isinstance(response, dict) and response.get("success") is False:
+                        raise RuntimeError(
+                            f"connector_failure:{response.get('error', 'unknown')}"
+                        )
                 results.append(
                     {
                         "action": kind,

@@ -47,7 +47,7 @@ def test_registry_is_case_insensitive():
 
 def test_registry_unknown_platform_raises():
     with pytest.raises(LookupError):
-        get_connector("tiktok", None)
+        get_connector("nonexistent_platform", None)
 
 
 def test_google_fetch_campaigns_returns_mock_rows():
@@ -105,7 +105,7 @@ def test_revenue_fetch_actual_revenue_sums_near_78000():
 
 
 def test_connectors_expose_base_interface():
-    for platform in ("google", "meta"):
+    for platform in ("google", "meta", "tiktok", "linkedin", "twitter"):
         conn = get_connector(platform, None)
         for method in ("fetch_campaigns", "fetch_metrics", "set_budget", "pause_campaign"):
             assert callable(getattr(conn, method))

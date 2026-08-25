@@ -172,3 +172,10 @@ def test_full_loop_generate_approve_executes_and_audits(api):
         targets = {a.target for a in audits}
         assert "reallocate_budget" in actions  # written by system:executor
         assert f"recommendation:{rec_id}" in targets  # written by the API route
+
+    again = client.post(
+        f"/api/recommendations/{rec_id}/approve",
+        headers=headers,
+        json={"actor": "e2e-test"},
+    )
+    assert again.status_code == 409, again.text

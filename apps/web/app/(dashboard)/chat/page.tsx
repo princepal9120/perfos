@@ -13,7 +13,7 @@ const SUGGESTIONS = [
 ];
 
 const inputCls =
-  "w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-[#3b82f6]/60 focus:outline-none focus:ring-1 focus:ring-[#3b82f6]/40";
+  "w-full resize-none rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-white/20 focus:outline-none";
 
 function ChatInner() {
   const searchParams = useSearchParams();
@@ -78,8 +78,8 @@ function ChatInner() {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold tracking-tight">Agent</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold tracking-tight text-zinc-100">Agent</h2>
+        <p className="mt-1 text-xs text-zinc-400">
           Talk to PerfOS in plain language. The agent plans actions and asks for
           approval before anything touches your accounts.
         </p>
@@ -87,7 +87,7 @@ function ChatInner() {
 
       <div
         ref={scrollRef}
-        className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4"
+        className="flex-1 space-y-4 overflow-y-auto rounded-xl border border-white/10 bg-[#111114] p-4"
       >
         {messages.map((m, i) => (
           <div
@@ -97,27 +97,27 @@ function ChatInner() {
             <div
               className={
                 m.role === "user"
-                  ? "max-w-[80%] rounded-2xl rounded-br-sm bg-[#3b82f6] px-4 py-3 text-sm text-white"
-                  : "max-w-[85%] rounded-2xl rounded-bl-sm border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-foreground"
+                  ? "max-w-[80%] rounded-xl bg-white px-4 py-3 text-xs leading-relaxed text-zinc-950 font-medium"
+                  : "max-w-[85%] rounded-xl border border-white/10 bg-zinc-900/90 px-4 py-3 text-xs leading-relaxed text-zinc-200"
               }
             >
-              <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+              <p className="whitespace-pre-wrap">{m.content}</p>
               {m.actions && m.actions.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/[0.08] pt-2.5">
                   {m.actions.map((a, j) => (
                     <Link
                       key={j}
                       href={a.href ?? "#"}
                       className={
-                        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors " +
+                        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors " +
                         (a.pending_approval
                           ? "border-amber-400/40 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20"
-                          : "border-[#3b82f6]/40 bg-[#3b82f6]/10 text-[#93c5fd] hover:bg-[#3b82f6]/20")
+                          : "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20")
                       }
                     >
                       {a.label}
                       {a.pending_approval && (
-                        <span className="rounded bg-amber-400/20 px-1.5 text-[10px] uppercase tracking-wide">
+                        <span className="rounded bg-amber-400/20 px-1 text-[9px] uppercase tracking-wide">
                           approval
                         </span>
                       )}
@@ -130,7 +130,7 @@ function ChatInner() {
         ))}
         {sending && (
           <div className="flex justify-start">
-            <div className="rounded-2xl rounded-bl-sm border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-muted-foreground">
+            <div className="rounded-xl border border-white/10 bg-zinc-900/90 px-4 py-3 text-xs text-zinc-400">
               <span className="animate-pulse">Agent is thinking…</span>
             </div>
           </div>
@@ -138,13 +138,13 @@ function ChatInner() {
       </div>
 
       {messages.length <= 1 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => void send(s)}
-              className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-[#3b82f6]/40 hover:text-foreground"
+              className="rounded-md border border-white/10 bg-zinc-900/60 px-2.5 py-1 text-[11px] text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-200"
             >
               {s}
             </button>
@@ -171,9 +171,9 @@ function ChatInner() {
             type="submit"
             disabled={sending || !input.trim()}
             aria-label="Send message"
-            className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-xl bg-[#3b82f6] text-white transition-opacity hover:bg-[#2563eb] disabled:opacity-40"
+            className="absolute bottom-2.5 right-2.5 flex h-7 w-7 items-center justify-center rounded-md bg-white text-zinc-950 transition-colors hover:bg-zinc-200 disabled:opacity-30"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M12 19V5M5 12l7-7 7 7"
                 stroke="currentColor"
@@ -191,7 +191,7 @@ function ChatInner() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading…</div>}>
+    <Suspense fallback={<div className="p-4 text-xs text-zinc-500">Loading…</div>}>
       <ChatInner />
     </Suspense>
   );
