@@ -84,13 +84,10 @@ def test_normal_computation_uses_real_data(db_session):
 
 
 def test_no_data_falls_back_deterministically(db_session):
-    from app.core.db import Base
     import app.models  # noqa: F401
+    from app.core.db import Base
 
     Base.metadata.create_all(bind=db_session.get_bind())
-    org = None
-    from datetime import date
-
     from app.models import Organization, Workspace
 
     org = Organization(name="empty-org")

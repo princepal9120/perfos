@@ -11,8 +11,8 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
-from app.agents.policy import evaluate as evaluate_policy
 from app.agents.orchestrator import run_analysis
+from app.agents.policy import evaluate as evaluate_policy
 from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
 from app.models import (
@@ -667,16 +667,17 @@ def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: Workspac
         status="connected" if body.enabled else "disabled",
     )
     db.add(server)
-    db.commit()
-    db.refresh(server)
+    # audit before commit so the log row joins the same transaction
     _audit(
         db,
         workspace_id,
         "system",
         "mcp.register",
-        f"mcp:{server.id}",
+        "mcp:pending",
         {"transport": body.transport, "endpoint": body.endpoint},
     )
+    db.commit()
+    db.refresh(server)
     return server
 
 
@@ -731,16 +732,17 @@ def register_integration(
         status="connected",
     )
     db.add(integration)
-    db.commit()
-    db.refresh(integration)
+    # audit before commit so the log row joins the same transaction
     _audit(
         db,
         workspace_id,
         "system",
         "integrations.register",
-        f"integration:{integration.id}",
+        "integration:pending",
         {"provider": body.provider, "category": body.category, "endpoint": body.endpoint},
     )
+    db.commit()
+    db.refresh(integration)
     return integration
 
 
@@ -1062,8 +1064,8 @@ def chat_agent(body: ChatRequest, db: DbDep, workspace_id: WorkspaceId) -> ChatR
     if intent == "reconcile":
         result = run_analysis(workspace_id)
         recon = result.get("reconcile") or {}
-        over_claim = float(recon.get("over_claim_pct", 0.0) or 0.0)
-        flag = recon.get("flag", False)
+        over_claim = float(recon.get("over_count_pct", 0.0) or 0.0)
+        flag = bool(recon.get("tracking_integrity_flag", False))
         reply = (
             f"Ran reconciliation across your connected ad accounts. "
             f"Platforms are over-claiming by about {over_claim:.0f}% "
