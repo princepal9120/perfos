@@ -85,5 +85,6 @@ def test_dict_rec_supported():
 
 
 def test_missing_fields_default_safe():
-    # No changes, no confidence -> treated as fully confident, allowed.
-    assert evaluate(FakeRec())["decision"] == "allow"
+    # No changes, missing/unparseable confidence -> fail closed.
+    assert evaluate(FakeRec(confidence=None))["decision"] == "needs_approval"
+    assert evaluate({"workspace_id": 1, "proposed_changes_json": None})["decision"] == "needs_approval"

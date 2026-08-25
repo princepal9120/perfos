@@ -83,9 +83,9 @@ def evaluate(rec: Any, workspace_id: Any | None = None) -> dict:
 
     confidence = _get(rec, "confidence")
     try:
-        confidence = float(confidence) if confidence is not None else 1.0
+        confidence = float(confidence) if confidence is not None else 0.0
     except (TypeError, ValueError):
-        confidence = 1.0
+        confidence = 0.0
     if confidence < CONFIDENCE_APPROVAL_THRESHOLD:
         reasons.append(
             f"low_confidence: {confidence:.2f} < {CONFIDENCE_APPROVAL_THRESHOLD:.2f} "
