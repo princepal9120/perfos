@@ -39,11 +39,16 @@ Thumbs.db
 .nx/
 *.tsbuildinfo
 
+# Accidental pip/uv version-spec files (e.g. apps/api/=1.0.0)
+=*
+
 # Agent/IDE state
 .build/
-.omc/
 .omx/
+.omc/
 .agents/
 .claude/
 .opencode/
+.hallmark/
+.playwright-mcp/
 plans/
