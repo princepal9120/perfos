@@ -57,18 +57,28 @@ def compute_iroas(workspace_id: int, session: Session) -> list[dict]:
         .group_by(Campaign.platform)
         .all()
     )
+    # NULL sums from empty partitions guard to 0; zero cost -> reported 0.0,
+    # never a fabricated fallback ROAS.
     reported = {
-        row.platform: round(row.value / row.cost, 4) if row.cost else None for row in spend_rows
+        row.platform: round((row.value or 0) / (row.cost or 0), 4)
+        if (row.cost or 0) > 0
+        else 0.0
+        for row in spend_rows
     }
 
     out: list[dict] = []
     for platform in CHANNELS:
         calibration = IROAS_CALIBRATION.get(platform, DEFAULT_CALIBRATION)
-        reported_roas = (
-            reported.get(platform)
-            if reported.get(platform) is not None
-            else FALLBACK_REPORTED_ROAS[platform]
-        )
+        if platform in reported:
+            # Real spend rows exist: zero spend must yield iroas = 0, not fallback.
+            reported_roas = reported[platform]
+        else:
+            fallback = FALLBACK_REPORTED_ROAS.get(platform)
+            if fallback is None:
+                raise ValueError(
+                    f"No spend data and no fallback ROAS configured for platform '{platform}'"
+                )
+            reported_roas = fallback
         out.append(
             {
                 "platform": platform,
