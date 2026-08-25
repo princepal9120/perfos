@@ -31,7 +31,7 @@ import {
 const PROVIDERS: { id: AgentProvider; label: string; dotClass: string }[] = [
   { id: "chatgpt", label: "ChatGPT", dotClass: "bg-emerald-500" },
   { id: "claude", label: "Claude", dotClass: "bg-orange-500" },
-  { id: "opencode", label: "opencode", dotClass: "bg-violet-500" },
+  { id: "opencode", label: "opencode", dotClass: "bg-accent-blue" },
   { id: "openai", label: "OpenAI API", dotClass: "bg-sky-400" },
   { id: "anthropic", label: "Anthropic API", dotClass: "bg-rose-400" },
 ];

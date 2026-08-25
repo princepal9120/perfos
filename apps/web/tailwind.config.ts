@@ -10,32 +10,48 @@ const config: Config = {
     extend: {
       colors: {
         bg: {
-          deep: "#050508",
-          surface: "#0a0a12",
-          elevated: "#0f0f1a",
+          deep: "#09090b",
+          surface: "#111114",
+          elevated: "#18181c",
         },
         border: {
-          subtle: "rgba(255, 255, 255, 0.06)",
-          glow: "rgba(99, 102, 241, 0.3)",
+          subtle: "rgba(255, 255, 255, 0.08)",
+          hover: "rgba(255, 255, 255, 0.16)",
         },
         text: {
-          primary: "#f0f0f5",
-          secondary: "#8b8ba3",
-          muted: "#5b5b73",
+          primary: "#f4f4f6",
+          secondary: "#a1a1aa",
+          muted: "#71717a",
         },
         accent: {
-          blue: "#3b82f6",
-          violet: "#8b5cf6",
-          cyan: "#06b6d4",
+          DEFAULT: "#3b82f6",
+          hover: "#2563eb",
+          muted: "rgba(59, 130, 246, 0.12)",
         },
+        // shadcn-style semantic tokens used across dashboard pages
+        background: "#09090b",
+        foreground: "#f4f4f6",
+        muted: "rgba(255, 255, 255, 0.06)",
+        "muted-foreground": "#a1a1aa",
+        destructive: "#ef4444",
+        "destructive-foreground": "#fecaca",
+        success: "#34d399",
+        warning: "#fbbf24",
+        primary: {
+          DEFAULT: "#3b82f6",
+          foreground: "#ffffff",
+        },
+        input: "rgba(255, 255, 255, 0.12)",
+        ring: "#3b82f6",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-body-face, Inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        display: ["var(--font-display-face, 'Space Grotesk')", "Inter", "sans-serif"],
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--radius, 0.75rem)",
+        md: "calc(var(--radius, 0.75rem) - 2px)",
+        sm: "calc(var(--radius, 0.75rem) - 4px)",
       },
       transitionTimingFunction: {
         out: "cubic-bezier(0.23, 1, 0.32, 1)",
