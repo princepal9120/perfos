@@ -17,6 +17,9 @@ _PLATFORM_CONNECTORS: dict[str, str] = {
     "google": "app.connectors.google:GoogleConnector",
     "meta": "app.connectors.meta:MetaConnector",
     "shopify": "app.connectors.revenue:RevenueConnector",
+    "tiktok": "app.connectors.tiktok:TikTokConnector",
+    "twitter": "app.connectors.twitter:TwitterAdsConnector",
+    "linkedin": "app.connectors.linkedin:LinkedInConnector",
 }
 
 _REGISTRY: dict[str, type[BaseConnector]] = {}

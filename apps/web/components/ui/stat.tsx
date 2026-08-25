@@ -18,11 +18,11 @@ function Stat({ label, value, sub, delta, className }: StatProps) {
   return (
     <Card className={className}>
       <CardContent className="pt-5">
-        <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5b5b73]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
           {label}
         </p>
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-3xl font-semibold tabular-nums tracking-tight text-[#f0f0f5]">
+          <span className="text-3xl font-bold tabular-nums tracking-tight text-white">
             {value}
           </span>
           {typeof delta === "number" && (
@@ -36,7 +36,7 @@ function Stat({ label, value, sub, delta, className }: StatProps) {
             </span>
           )}
         </div>
-        {sub && <p className="mt-2 text-xs leading-4 text-[#5b5b73]">{sub}</p>}
+        {sub && <p className="mt-2 text-xs leading-relaxed text-zinc-400">{sub}</p>}
       </CardContent>
     </Card>
   );

@@ -44,7 +44,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function formatDate(iso: string | null) {
-  if (!iso) return "—";
+  if (!iso) return "n/a";
   const d = new Date(iso);
   return Number.isNaN(d.getTime())
     ? iso

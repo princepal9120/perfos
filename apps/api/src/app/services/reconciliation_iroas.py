@@ -14,7 +14,7 @@ IROAS_CALIBRATION: dict[str, float] = {
     "google": 0.82,
     "meta": 0.71,
     "tiktok": 0.88,
-    "linkedin": 0.79,
+    "linkedin": 0.75,
     "pinterest": 0.84,
     "snapchat": 0.81,
     "amazon": 0.90,

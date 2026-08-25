@@ -46,7 +46,7 @@ function TransportChip({ transport }: { transport: string }) {
             ? "bg-primary"
             : transport === "sse"
               ? "bg-amber-500"
-              : "bg-violet-500"
+              : "bg-accent-blue"
         }`}
         aria-hidden="true"
       />
@@ -145,6 +145,16 @@ export default function McpPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           Connect Model Context Protocol servers so your agents can call external
           tools (analytics, ad platforms, databases) during performance work.
+        </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Built-in PerfOS tools (FastMCP):{" "}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
+            http://127.0.0.1:8000/mcp
+          </code>
+          {" "}
+          or stdio <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
+            python -m app.mcp_server
+          </code>
         </p>
       </div>
 
@@ -268,7 +278,7 @@ export default function McpPage() {
                       <StatusBadge status={s.status} />
                     </TableCell>
                     <TableCell className="max-w-[220px] truncate px-4 py-3 text-muted-foreground">
-                      {s.endpoint ?? "—"}
+                      {s.endpoint ?? "n/a"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3 text-right">
                       <Button

@@ -9,9 +9,9 @@ export function Narrative({ narrative }: { narrative: string | null }) {
       </CardHeader>
       <CardContent>
         {narrative ? (
-          <p className="text-sm leading-relaxed text-muted-foreground">{narrative}</p>
+          <p className="text-xs leading-relaxed text-zinc-300">{narrative}</p>
         ) : (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-zinc-500">
             Narrative will appear once today&apos;s data is reconciled.
           </p>
         )}

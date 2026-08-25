@@ -65,7 +65,7 @@ cd apps/api && pip install -e '.[postgres]'
 cd apps/api && PYTHONPATH=src .venv/bin/python scripts/seed.py
 
 # Run API
-cd apps/api && uvicorn app.main:app --port 8000
+cd apps/api && uvicorn app.main:app --app-dir src --port 8000
 
 # Run web
 cd apps/web && npm run dev

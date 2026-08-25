@@ -33,7 +33,7 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   return (
     <th
       className={cn(
-        "h-10 px-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.1em] text-[#5b5b73]",
+        "h-10 px-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500",
         className
       )}
       {...props}
@@ -42,7 +42,7 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
 }
 
 function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-3 py-3 align-middle text-[#8b8ba3]", className)} {...props} />;
+  return <td className={cn("px-3 py-3 align-middle text-zinc-400", className)} {...props} />;
 }
 
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell };
