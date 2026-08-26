@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black */
 @import "tailwindcss";
 
 @theme {
@@ -16,104 +17,66 @@
 }
 
 @layer base {
-  :root {
-    --background: #ECEDEF;
-    --foreground: #171717;
-    --card: #E4E5E8;
-    --card-foreground: #171717;
-    --border: rgba(0, 0, 0, 0.08);
+  :root, .dark {
+    --background: #08080a;
+    --foreground: #f4f4f6;
+    --card: #121318;
+    --card-elevated: #181920;
+    --card-foreground: #f4f4f6;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    
     --primary: #d86f82;
     --primary-foreground: #ffffff;
     --primary-hover: #c85c6f;
-    --primary-dark: #a8455a;
-    --muted: #DEDFE2;
-    --muted-foreground: #52525B;
+    --primary-dark: #b0485c;
+    --primary-muted: rgba(216, 111, 130, 0.12);
     
-    --bg-deep: var(--background);
-    --bg-card: var(--card);
-    --bg-card-hover: var(--muted);
-    --border-subtle: var(--border);
-    --border-accent: rgba(200, 92, 111, 0.35);
-    --accent: var(--primary);
+    --muted: #171822;
+    --muted-foreground: #a1a1aa;
+    --text-muted: #71717a;
+    --accent: #d86f82;
     
     --font-display: var(--font-display-face, 'Space Grotesk'), -apple-system, sans-serif;
     --font-body: var(--font-body-face, 'Inter'), -apple-system, sans-serif;
   }
-  
-  .dark {
-    --background: #08080a;
-    --foreground: #ecedef;
-    --card: #12131a;
-    --card-foreground: #ecedef;
-    --border: rgba(255, 255, 255, 0.08);
-    --primary: #a855f7;
-    --primary-foreground: #ffffff;
-    --primary-hover: #9333ea;
-    --primary-dark: #7e22ce;
-    --muted: #171822;
-    --muted-foreground: #a1a1aa;
-    
-    --bg-deep: var(--background);
-    --bg-card: var(--card);
-    --bg-card-hover: var(--muted);
-    --border-subtle: var(--border);
-    --border-accent: rgba(168, 85, 247, 0.35);
-    --accent: var(--primary);
-  }
 
-  html {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
+  html, body {
+    background-color: #08080a;
+    color: #f4f4f6;
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
     margin: 0;
     padding: 0;
   }
+  
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-style: normal;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     margin: 0;
   }
 }
 
-/* Custom Utilities for Premium Design */
-.bg-deep { background-color: var(--background); }
-.bg-card-dark { background-color: var(--card); }
-.bg-card-dark-hover:hover { background-color: var(--muted); }
-.border-subtle { border-color: var(--border); }
-.border-accent { border-color: var(--border-accent); }
-.glow-purple { box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.25); }
-.glow-purple-lg { box-shadow: 0 20px 60px -15px rgba(168, 85, 247, 0.35); }
+/* Strict Hallmark anti-gradient utilities */
+.bg-canvas { background-color: #08080a; }
+.bg-surface { background-color: #121318; }
+.bg-surface-elevated { background-color: #181920; }
+.border-line { border: 1px solid rgba(255, 255, 255, 0.08); }
+.border-line-hover:hover { border-color: rgba(255, 255, 255, 0.18); }
 
-/* Daisy.now Warm Glow and Rose styling */
-.glow-daisy {
-  box-shadow: 0 0 50px -10px var(--border-accent);
-}
-
-.glow-daisy-lg {
-  box-shadow: 0 20px 70px -15px var(--border-accent);
-}
-
-.btn-daisy {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 50%, var(--primary-dark) 100%);
-  box-shadow: 0 4px 20px var(--border-accent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+/* Solid Crisp Daisy Button */
+.btn-daisy-solid {
+  background-color: #d86f82;
   color: #ffffff;
-  border: 1px solid var(--border-accent);
-  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 1px solid rgba(216, 111, 130, 0.4);
+  transition: background-color 150ms cubic-bezier(0.23, 1, 0.32, 1), transform 100ms ease;
 }
-
-.btn-daisy:hover {
-  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 50%, var(--primary-dark) 100%);
-  box-shadow: 0 6px 28px var(--border-accent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+.btn-daisy-solid:hover {
+  background-color: #c85c6f;
 }
-
-.btn-daisy:active {
-  transform: translateY(1px);
+.btn-daisy-solid:active {
+  transform: scale(0.98);
 }

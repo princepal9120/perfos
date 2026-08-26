@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ThemeToggle } from "../theme-toggle";
+import { PerfOSLogo } from "@/components/marketing/icons";
 import { useState, useEffect } from "react";
 
 export function MarketingNavbar() {
@@ -17,18 +17,14 @@ export function MarketingNavbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
-        scrolled
-          ? "bg-background/85 backdrop-blur-md border-b border-border shadow-lg shadow-black/20"
-          : "bg-transparent border-b border-transparent"
-      }`}
+      className={"fixed top-0 left-0 right-0 z-50 transition-colors duration-150 " + (scrolled ? "bg-[#08080a]/95 backdrop-blur-md border-b border-white/10" : "bg-transparent border-b border-transparent")}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-linear-to-tr from-purple-600 via-violet-500 to-indigo-500 flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-lg bg-[#d86f82] flex items-center justify-center text-white shadow-sm group-hover:bg-[#c85c6f] transition-colors">
             <svg
-              className="w-4 h-4 text-foreground dark:text-white"
+              className="w-4 h-4 text-white"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -40,29 +36,27 @@ export function MarketingNavbar() {
             </svg>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-display font-bold text-lg tracking-tight text-foreground dark:text-white">
+            <span className="font-display font-bold text-lg tracking-tight text-white">
               PerfOS
             </span>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-primary border border-purple-500/20 font-semibold">
-              by AdKit
+            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#d86f82]/10 text-[#d86f82] border border-[#d86f82]/20 font-semibold">
+              BY ADKIT
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          {/* Features Mega Dropdown */}
+          {/* Features Dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setActiveDropdown("features")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
+            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-400 hover:text-white rounded-md transition-colors hover:bg-white/5 cursor-pointer">
               <span>Features</span>
               <svg
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeDropdown === "features" ? "rotate-180 text-primary" : "text-muted-foreground"
-                }`}
+                className={"w-3.5 h-3.5 transition-transform duration-150 " + (activeDropdown === "features" ? "rotate-180 text-[#d86f82]" : "text-zinc-500")}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -72,63 +66,63 @@ export function MarketingNavbar() {
             </button>
 
             {activeDropdown === "features" && (
-              <div className="absolute top-full left-0 w-[460px] p-3 mt-1 bg-card border border-border rounded-xl shadow-2xl backdrop-blur-xl grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="absolute top-full left-0 w-[460px] p-3 mt-1 bg-[#121318] border border-white/10 rounded-xl shadow-2xl grid grid-cols-2 gap-2">
                 <Link
                   href="/features/ad-library"
-                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10 group"
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="p-1 rounded bg-purple-500/10 text-primary">⚡</span>
-                    <span className="text-sm font-semibold text-foreground group-hover:text-primary">
+                    <span className="text-[#d86f82]">⚡</span>
+                    <span className="text-sm font-semibold text-white group-hover:text-[#d86f82]">
                       Ad Library
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Track & spy on 500k+ competitor ads across 7 major networks.
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Track &amp; spy on 500k+ competitor ads across 7 major networks.
                   </p>
                 </Link>
 
                 <Link
                   href="/features/ai-ads-generator"
-                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10 group"
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="p-1 rounded bg-indigo-500/10 text-indigo-400">✨</span>
-                    <span className="text-sm font-semibold text-foreground group-hover:text-indigo-300">
+                    <span className="text-[#d86f82]">✨</span>
+                    <span className="text-sm font-semibold text-white group-hover:text-[#d86f82]">
                       AI Ads Generator
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     Instantly craft on-brand copy, hooks, and static assets.
                   </p>
                 </Link>
 
                 <Link
                   href="/features/ads-cloner"
-                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10 group"
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="p-1 rounded bg-pink-500/10 text-pink-400">🧬</span>
-                    <span className="text-sm font-semibold text-foreground group-hover:text-pink-300">
+                    <span className="text-[#d86f82]">🧬</span>
+                    <span className="text-sm font-semibold text-white group-hover:text-[#d86f82]">
                       AI Ad Cloner
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     Clone top-performing competitor creatives and remix for your brand.
                   </p>
                 </Link>
 
                 <Link
                   href="/features/ads-cli"
-                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/10 group"
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="p-1 rounded bg-emerald-500/10 text-emerald-400">💻</span>
-                    <span className="text-sm font-semibold text-foreground group-hover:text-emerald-300">
+                    <span className="text-[#d86f82]">💻</span>
+                    <span className="text-sm font-semibold text-white group-hover:text-[#d86f82]">
                       Ads CLI
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     Terminal-native ad management and deployment pipelines.
                   </p>
                 </Link>
@@ -142,22 +136,22 @@ export function MarketingNavbar() {
             onMouseEnter={() => setActiveDropdown("mcp")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
+            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-400 hover:text-white rounded-md transition-colors hover:bg-white/5 cursor-pointer">
               <span>Ads MCP</span>
-              <span className="px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded-full bg-purple-500/20 text-primary border border-primary/30">
-                Protocols
+              <span className="px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded bg-[#d86f82]/15 text-[#d86f82] border border-[#d86f82]/30">
+                PROTOCOLS
               </span>
             </button>
 
             {activeDropdown === "mcp" && (
-              <div className="absolute top-full left-0 w-[420px] p-3 mt-1 bg-card border border-border rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="mb-2 pb-2 border-b border-border flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase text-muted-foreground font-medium">
+              <div className="absolute top-full left-0 w-[420px] p-3 mt-1 bg-[#121318] border border-white/10 rounded-xl shadow-2xl">
+                <div className="mb-2 pb-2 border-b border-white/10 flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase text-zinc-500 font-medium">
                     Native MCP Connectors
                   </span>
                   <Link
                     href="/features/ads-mcp"
-                    className="text-xs text-primary hover:text-primary font-semibold"
+                    className="text-xs text-[#d86f82] hover:underline font-semibold"
                   >
                     All MCPs →
                   </Link>
@@ -165,120 +159,31 @@ export function MarketingNavbar() {
                 <div className="grid grid-cols-2 gap-1.5">
                   <Link
                     href="/features/ads-mcp/meta"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-2"
                   >
-                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d86f82]"></span>
                     Meta Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/google"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-2"
                   >
-                    <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d86f82]"></span>
                     Google Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/tiktok"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-2"
                   >
-                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d86f82]"></span>
                     TikTok Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/linkedin"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-2"
                   >
-                    <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d86f82]"></span>
                     LinkedIn Ads MCP
-                  </Link>
-                  <Link
-                    href="/features/ads-mcp/reddit"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                    Reddit Ads MCP
-                  </Link>
-                  <Link
-                    href="/features/ads-mcp/x"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-zinc-200"></span>
-                    X Ads MCP
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Integrations Mega Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setActiveDropdown("integrations")}
-            onMouseLeave={() => setActiveDropdown(null)}
-          >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
-              <span>Integrations</span>
-              <svg
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  activeDropdown === "integrations" ? "rotate-180 text-primary" : "text-muted-foreground"
-                }`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {activeDropdown === "integrations" && (
-              <div className="absolute top-full left-0 w-[420px] p-3 mt-1 bg-card border border-border rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="mb-2 pb-2 border-b border-border flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase text-muted-foreground font-medium">
-                    AI Agent Ecosystem
-                  </span>
-                  <Link
-                    href="/integrations"
-                    className="text-xs text-primary hover:text-primary font-semibold"
-                  >
-                    All Integrations →
-                  </Link>
-                </div>
-                <div className="grid grid-cols-2 gap-1.5">
-                  <Link
-                    href="/integrations/claude"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-amber-400">🤖</span> Claude Code / Desktop
-                  </Link>
-                  <Link
-                    href="/integrations/cursor"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-indigo-400">⚡</span> Cursor IDE
-                  </Link>
-                  <Link
-                    href="/integrations/chatgpt"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-emerald-400">🧠</span> ChatGPT & GPT-4o
-                  </Link>
-                  <Link
-                    href="/integrations/grok"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-pink-400">🚀</span> Grok (xAI)
-                  </Link>
-                  <Link
-                    href="/integrations/codex"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-cyan-400">⚙️</span> Codex & OpenCode
-                  </Link>
-                  <Link
-                    href="/integrations/perplexity"
-                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
-                  >
-                    <span className="text-teal-400">🔍</span> Perplexity AI
                   </Link>
                 </div>
               </div>
@@ -287,7 +192,7 @@ export function MarketingNavbar() {
 
           <Link
             href="/pricing"
-            className="px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4"
+            className="px-3 py-2 text-sm font-medium text-zinc-400 hover:text-white rounded-md transition-colors hover:bg-white/5"
           >
             Pricing
           </Link>
@@ -297,13 +202,13 @@ export function MarketingNavbar() {
         <div className="hidden sm:flex items-center gap-3">
           <Link
             href="/command-center"
-            className="text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white px-3 py-2 transition-colors"
+            className="text-xs font-medium text-zinc-400 hover:text-white px-3 py-2 transition-colors"
           >
             Sign In
           </Link>
           <Link
             href="/pricing"
-            className="relative inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-foreground dark:text-white bg-linear-to-r from-primary to-primary-dark rounded-lg hover:from-primary-hover hover:to-primary-dark shadow-md shadow-primary/25 border border-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-lg transition-colors border border-[#d86f82]/30 active:scale-[0.98]"
           >
             Start Free Trial →
           </Link>
@@ -312,7 +217,7 @@ export function MarketingNavbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground dark:text-white hover:bg-black/5 dark:bg-white/5"
+          className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5"
           aria-label="Toggle Navigation"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -324,79 +229,6 @@ export function MarketingNavbar() {
           </svg>
         </button>
       </div>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border bg-background px-4 pt-2 pb-6 space-y-3">
-          <div className="space-y-1">
-            <Link
-              href="/features/ad-library"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              Ad Library
-            </Link>
-            <Link
-              href="/features/ai-ads-generator"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              AI Ads Generator
-            </Link>
-            <Link
-              href="/features/ads-cloner"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              AI Ad Cloner
-            </Link>
-            <Link
-              href="/features/ads-mcp"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              Ads MCP Server
-            </Link>
-            <Link
-              href="/features/ads-cli"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              Ads CLI
-            </Link>
-            <Link
-              href="/integrations"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              AI Integrations
-            </Link>
-            <Link
-              href="/pricing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
-            >
-              Pricing
-            </Link>
-          </div>
-          <div className="pt-3 border-t border-border flex flex-col gap-2">
-            <Link
-              href="/command-center"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-xs font-semibold text-muted-foreground dark:text-zinc-300 bg-black/4 dark:bg-white/4 rounded-lg border border-border"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/pricing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-xs font-semibold text-foreground dark:text-white bg-primary rounded-lg shadow"
-            >
-              Get Started Free
-            </Link>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
