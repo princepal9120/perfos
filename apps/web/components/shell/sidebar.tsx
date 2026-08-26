@@ -62,14 +62,14 @@ export default function Sidebar() {
     <>
       <aside
         aria-label="Primary navigation"
-        className="hidden w-64 shrink-0 flex-col border-r border-border bg-background text-zinc-300 md:flex select-none"
+        className="hidden w-64 shrink-0 flex-col border-r border-border bg-background text-foreground md:flex select-none"
       >
         {/* Top Project Selector (Exact match to Image #1) */}
         <div className="relative flex h-14 shrink-0 items-center justify-between border-b border-border px-3.5">
           <button
             type="button"
             onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
-            className="flex items-center gap-2 rounded-lg py-1 px-1.5 text-left text-xs font-semibold text-foreground dark:text-white transition-colors hover:bg-white/6 focus:outline-none"
+            className="flex items-center gap-2 rounded-lg py-1 px-1.5 text-left text-xs font-semibold text-foreground dark:text-white transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none"
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-md border border-white/20 bg-zinc-800 text-[10px] font-bold text-foreground">
               Np
@@ -89,7 +89,7 @@ export default function Sidebar() {
           <button
             type="button"
             title="Collapse sidebar"
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/6 hover:text-foreground dark:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
@@ -105,7 +105,7 @@ export default function Sidebar() {
               </div>
               <button
                 onClick={() => setIsProjectDropdownOpen(false)}
-                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-foreground dark:text-white bg-purple-950/40 border border-primary/30"
+                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-foreground dark:text-white bg-primary/10 border border-primary/30"
               >
                 <span className="flex items-center gap-2">
                   <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-800 text-[9px]">Np</span>
@@ -115,7 +115,7 @@ export default function Sidebar() {
               </button>
               <button
                 onClick={() => setIsProjectDropdownOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-white/5 hover:text-foreground dark:text-white"
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
               >
                 <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-800 text-[9px]">Q3</span>
                 Q3 Scaling Sprint
@@ -123,7 +123,7 @@ export default function Sidebar() {
               <div className="my-1 border-t border-border" />
               <button
                 onClick={() => setIsProjectDropdownOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-primary hover:bg-purple-950/20"
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-primary hover:bg-primary/10"
               >
                 <span>+</span> Create New Project
               </button>
@@ -138,7 +138,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => toggleSection("inspiration")}
-              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-zinc-300"
+              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
               <span>INSPIRATION</span>
               <svg
@@ -166,8 +166,8 @@ export default function Sidebar() {
                       className={cn(
                         "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
                         active
-                          ? "bg-purple-950/40 text-primary"
-                          : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
                       )}
                     >
                       <LockIcon />
@@ -184,7 +184,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => toggleSection("create")}
-              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-zinc-300"
+              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
               <span>CREATE</span>
               <svg
@@ -203,8 +203,8 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
                     pathname === "/creative"
-                      ? "bg-purple-950/40 text-primary"
-                      : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
                   )}
                 >
                   <LockIcon />
@@ -219,7 +219,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => toggleSection("ads_manager")}
-              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-zinc-300"
+              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
               <span>ADS MANAGER</span>
               <svg
@@ -238,8 +238,8 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
                     pathname === "/accounts"
-                      ? "bg-purple-950/40 text-primary"
-                      : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
                   )}
                 >
                   <LockIcon />
@@ -250,8 +250,8 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
                     pathname === "/recommendations"
-                      ? "bg-purple-950/40 text-primary"
-                      : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
                   )}
                 >
                   <LockIcon />
@@ -266,7 +266,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => toggleSection("settings")}
-              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-zinc-300"
+              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
               <span>SETTINGS</span>
               <svg
@@ -285,8 +285,8 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors",
                     isSettingsActive
-                      ? "bg-purple-950/30 text-primary"
-                      : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
                   )}
                 >
                   <GearIcon className={isSettingsActive ? "text-primary" : "text-muted-foreground"} />
@@ -303,7 +303,7 @@ export default function Sidebar() {
           <button
             type="button"
             onClick={() => setIsSetupOpen(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-red-500 via-rose-500 to-orange-500 px-4 py-2.5 text-xs font-semibold text-foreground dark:text-white shadow-lg shadow-orange-950/40 transition-all duration-150 hover:brightness-110 active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-150 hover:bg-primary/90 active:scale-[0.98]"
           >
             <span className="text-sm">🤖</span>
             <span>AI Agents Setup</span>
@@ -313,7 +313,7 @@ export default function Sidebar() {
           <div className="space-y-0.5 text-xs text-muted-foreground">
             <Link
               href="/chat"
-              className="flex items-center gap-2 rounded-lg px-2.5 py-1 transition-colors hover:bg-white/4 hover:text-foreground dark:text-white"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-1 transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -327,7 +327,7 @@ export default function Sidebar() {
                 e.preventDefault();
                 setIsSetupOpen(true);
               }}
-              className="flex items-center justify-between rounded-lg px-2.5 py-1 transition-colors hover:bg-white/4 hover:text-foreground dark:text-white"
+              className="flex items-center justify-between rounded-lg px-2.5 py-1 transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
             >
               <span className="flex items-center gap-2">
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -341,7 +341,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => {}}
-              className="flex w-full items-center justify-between rounded-lg px-2.5 py-1 text-left transition-colors hover:bg-white/4 hover:text-foreground dark:text-white"
+              className="flex w-full items-center justify-between rounded-lg px-2.5 py-1 text-left transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
             >
               <span className="flex items-center gap-2">
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -355,7 +355,7 @@ export default function Sidebar() {
 
           {/* User Profile Row: prince / pal265354@gmail.com */}
           <div className="relative border-t border-border pt-2.5">
-            <div className="flex items-center justify-between rounded-lg p-1.5 hover:bg-white/4">
+            <div className="flex items-center justify-between rounded-lg p-1.5 hover:bg-accent hover:text-accent-foreground">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-900/60 border border-purple-500/40 text-primary text-xs font-semibold">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -389,7 +389,7 @@ export default function Sidebar() {
                 <Link
                   href="/settings"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="block rounded-md px-2 py-1.5 text-xs text-foreground dark:text-white hover:bg-white/5"
+                  className="block rounded-md px-2 py-1.5 text-xs text-foreground dark:text-white hover:bg-accent hover:text-accent-foreground"
                 >
                   Workspace Settings
                 </Link>
@@ -398,7 +398,7 @@ export default function Sidebar() {
                     setIsProfileMenuOpen(false);
                     setIsSetupOpen(true);
                   }}
-                  className="w-full text-left rounded-md px-2 py-1.5 text-xs text-primary hover:bg-purple-950/20"
+                  className="w-full text-left rounded-md px-2 py-1.5 text-xs text-primary hover:bg-primary/10"
                 >
                   AI Agent Tokens
                 </button>

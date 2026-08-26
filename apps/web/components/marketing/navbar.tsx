@@ -57,7 +57,7 @@ export function MarketingNavbar() {
             onMouseEnter={() => setActiveDropdown("features")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-white/4">
+            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
               <span>Features</span>
               <svg
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -75,7 +75,7 @@ export function MarketingNavbar() {
               <div className="absolute top-full left-0 w-[460px] p-3 mt-1 bg-card border border-border rounded-xl shadow-2xl backdrop-blur-xl grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
                 <Link
                   href="/features/ad-library"
-                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="p-1 rounded bg-purple-500/10 text-primary">⚡</span>
@@ -90,7 +90,7 @@ export function MarketingNavbar() {
 
                 <Link
                   href="/features/ai-ads-generator"
-                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="p-1 rounded bg-indigo-500/10 text-indigo-400">✨</span>
@@ -105,7 +105,7 @@ export function MarketingNavbar() {
 
                 <Link
                   href="/features/ads-cloner"
-                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="p-1 rounded bg-pink-500/10 text-pink-400">🧬</span>
@@ -120,7 +120,7 @@ export function MarketingNavbar() {
 
                 <Link
                   href="/features/ads-cli"
-                  className="p-2.5 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-border group"
+                  className="p-2.5 rounded-lg hover:bg-black/5 dark:bg-white/5 transition-colors border border-transparent hover:border-border group"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="p-1 rounded bg-emerald-500/10 text-emerald-400">💻</span>
@@ -142,7 +142,7 @@ export function MarketingNavbar() {
             onMouseEnter={() => setActiveDropdown("mcp")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-white/4">
+            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
               <span>Ads MCP</span>
               <span className="px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded-full bg-purple-500/20 text-primary border border-primary/30">
                 Protocols
@@ -165,42 +165,42 @@ export function MarketingNavbar() {
                 <div className="grid grid-cols-2 gap-1.5">
                   <Link
                     href="/features/ads-mcp/meta"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     Meta Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/google"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                     Google Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/tiktok"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-rose-500"></span>
                     TikTok Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/linkedin"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-sky-500"></span>
                     LinkedIn Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/reddit"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                     Reddit Ads MCP
                   </Link>
                   <Link
                     href="/features/ads-mcp/x"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-zinc-200"></span>
                     X Ads MCP
@@ -216,7 +216,7 @@ export function MarketingNavbar() {
             onMouseEnter={() => setActiveDropdown("integrations")}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-white/4">
+            <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4">
               <span>Integrations</span>
               <svg
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -246,37 +246,37 @@ export function MarketingNavbar() {
                 <div className="grid grid-cols-2 gap-1.5">
                   <Link
                     href="/integrations/claude"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-amber-400">🤖</span> Claude Code / Desktop
                   </Link>
                   <Link
                     href="/integrations/cursor"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-indigo-400">⚡</span> Cursor IDE
                   </Link>
                   <Link
                     href="/integrations/chatgpt"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-emerald-400">🧠</span> ChatGPT & GPT-4o
                   </Link>
                   <Link
                     href="/integrations/grok"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-pink-400">🚀</span> Grok (xAI)
                   </Link>
                   <Link
                     href="/integrations/codex"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-cyan-400">⚙️</span> Codex & OpenCode
                   </Link>
                   <Link
                     href="/integrations/perplexity"
-                    className="px-2.5 py-2 rounded-lg hover:bg-white/5 text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
+                    className="px-2.5 py-2 rounded-lg hover:bg-black/5 dark:bg-white/5 text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white flex items-center gap-2"
                   >
                     <span className="text-teal-400">🔍</span> Perplexity AI
                   </Link>
@@ -287,7 +287,7 @@ export function MarketingNavbar() {
 
           <Link
             href="/pricing"
-            className="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-white/4"
+            className="px-3 py-2 text-sm font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white rounded-md transition-colors hover:bg-black/4 dark:bg-white/4"
           >
             Pricing
           </Link>
@@ -297,7 +297,7 @@ export function MarketingNavbar() {
         <div className="hidden sm:flex items-center gap-3">
           <Link
             href="/command-center"
-            className="text-xs font-medium text-zinc-300 hover:text-foreground dark:text-white px-3 py-2 transition-colors"
+            className="text-xs font-medium text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white px-3 py-2 transition-colors"
           >
             Sign In
           </Link>
@@ -312,7 +312,7 @@ export function MarketingNavbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground dark:text-white hover:bg-white/5"
+          className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground dark:text-white hover:bg-black/5 dark:bg-white/5"
           aria-label="Toggle Navigation"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -332,49 +332,49 @@ export function MarketingNavbar() {
             <Link
               href="/features/ad-library"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               Ad Library
             </Link>
             <Link
               href="/features/ai-ads-generator"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               AI Ads Generator
             </Link>
             <Link
               href="/features/ads-cloner"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               AI Ad Cloner
             </Link>
             <Link
               href="/features/ads-mcp"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               Ads MCP Server
             </Link>
             <Link
               href="/features/ads-cli"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               Ads CLI
             </Link>
             <Link
               href="/integrations"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               AI Integrations
             </Link>
             <Link
               href="/pricing"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-zinc-300 hover:text-foreground dark:text-white hover:bg-white/4 rounded-md"
+              className="block px-3 py-2 text-sm text-muted-foreground dark:text-zinc-300 hover:text-foreground dark:text-white hover:bg-black/4 dark:bg-white/4 rounded-md"
             >
               Pricing
             </Link>
@@ -383,7 +383,7 @@ export function MarketingNavbar() {
             <Link
               href="/command-center"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2 text-xs font-semibold text-zinc-300 bg-white/4 rounded-lg border border-border"
+              className="w-full text-center py-2 text-xs font-semibold text-muted-foreground dark:text-zinc-300 bg-black/4 dark:bg-white/4 rounded-lg border border-border"
             >
               Dashboard
             </Link>

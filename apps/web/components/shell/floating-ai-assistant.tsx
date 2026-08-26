@@ -50,7 +50,7 @@ export function FloatingAiAssistant() {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Open AI Copilot"
           className={cn(
-            "group relative flex h-12 w-12 items-center justify-center rounded-full shadow-xl shadow-purple-950/50 transition-all duration-200 ease-out active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400/80",
+            "group relative flex h-12 w-12 items-center justify-center rounded-full shadow-xl shadow-purple-500/20 transition-all duration-200 ease-out active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400/80",
             isOpen
               ? "bg-purple-700 text-foreground dark:text-white rotate-90"
               : "bg-linear-to-tr from-purple-600 to-indigo-500 text-foreground dark:text-white hover:from-purple-500 hover:to-indigo-400 hover:scale-105"
@@ -72,7 +72,7 @@ export function FloatingAiAssistant() {
 
       {/* Flyout Drawer */}
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-50 flex h-[480px] w-88 max-w-[calc(100vw-2rem)] sm:w-96 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-purple-950/60 animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-20 right-6 z-50 flex h-[480px] w-88 max-w-[calc(100vw-2rem)] sm:w-96 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-purple-500/20 animate-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-3">
             <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export function FloatingAiAssistant() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="rounded p-1 text-muted-foreground hover:bg-white/10 hover:text-foreground dark:text-white"
+              className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground dark:text-white"
             >
               ✕
             </button>
@@ -133,7 +133,7 @@ export function FloatingAiAssistant() {
               <button
                 key={prompt}
                 onClick={() => handleSend(prompt)}
-                className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] text-zinc-300 transition-colors hover:border-purple-500/40 hover:bg-purple-950/30 hover:text-primary"
+                className="shrink-0 rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
               >
                 {prompt}
               </button>

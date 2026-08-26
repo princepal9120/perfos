@@ -131,9 +131,9 @@ export default function HomePage() {
           <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-linear-to-tr from-purple-600/20 via-violet-500/15 to-indigo-500/10 blur-[100px] pointer-events-none rounded-full" />
 
           {/* Social Proof Quote Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/4 border border-border shadow-inner mb-6 hover:border-primary/30 transition-colors">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/4 dark:bg-white/4 border border-border shadow-inner mb-6 hover:border-primary/30 transition-colors">
             <span className="flex h-2 w-2 rounded-full bg-purple-400 animate-ping" />
-            <span className="text-xs font-medium text-zinc-300">
+            <span className="text-xs font-medium text-muted-foreground dark:text-zinc-300">
               “Basically Ahrefs but for advertising”
             </span>
             <span className="text-xs text-primary font-semibold flex items-center">
@@ -164,7 +164,7 @@ export default function HomePage() {
 
             <Link
               href="/features/ads-mcp"
-              className="w-full sm:w-auto px-6 py-3.5 text-sm font-semibold text-zinc-300 bg-white/4 hover:bg-white/8 rounded-xl border border-border hover:text-foreground dark:text-white transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 py-3.5 text-sm font-semibold text-muted-foreground dark:text-zinc-300 bg-black/4 dark:bg-white/4 hover:bg-black/8 dark:bg-white/8 rounded-xl border border-border hover:text-foreground dark:text-white transition-all flex items-center justify-center gap-2"
             >
               <span className="text-primary font-mono">⌘</span> Explore Ads MCP
             </Link>
@@ -188,8 +188,8 @@ export default function HomePage() {
           </div>
 
           {/* Social Proof Testimonial Callout */}
-          <div className="mt-10 max-w-3xl mx-auto p-4 rounded-xl bg-white/2 border border-border text-left">
-            <p className="text-xs sm:text-sm text-zinc-300 italic">
+          <div className="mt-10 max-w-3xl mx-auto p-4 rounded-xl bg-black/2 dark:bg-white/2 border border-border text-left">
+            <p className="text-xs sm:text-sm text-muted-foreground dark:text-zinc-300 italic">
               &quot;My agent analyzed my account using AdKit, found what to optimize, and drafted all the changes on its own. I only had to click &apos;Approve&apos;. The first 30 minutes already saved me 8 hours of work.&quot;
             </p>
             <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
@@ -301,7 +301,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-2 text-rose-400 font-mono text-xs uppercase font-semibold">
                   <span>😩</span> Without AdKit
                 </div>
-                <ul className="space-y-3.5 text-xs sm:text-sm text-zinc-300">
+                <ul className="space-y-3.5 text-xs sm:text-sm text-muted-foreground dark:text-zinc-300">
                   <li className="flex items-start gap-2.5">
                     <span className="text-rose-400 mt-0.5">✕</span>
                     <span>Scroll ad libraries and feeds hoping to find inspiration.</span>
@@ -373,7 +373,7 @@ export default function HomePage() {
                   className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
                     activeWorkflow === idx
                       ? "bg-primary text-white dark:text-white shadow-lg shadow-primary/30 border border-purple-400/40"
-                      : "bg-white/4 text-muted-foreground hover:text-foreground dark:text-white border border-border"
+                      : "bg-black/4 dark:bg-white/4 text-muted-foreground hover:text-foreground dark:text-white border border-border"
                   }`}
                 >
                   {wf.title}
@@ -390,14 +390,14 @@ export default function HomePage() {
                 </div>
                 <button
                   onClick={handleCopyCmd}
-                  className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-zinc-300 border border-border text-[11px]"
+                  className="px-2.5 py-1 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 text-muted-foreground dark:text-zinc-300 border border-border text-[11px]"
                 >
                   {copiedCmd ? "✓ Copied MCP Config" : "Copy MCP Server"}
                 </button>
               </div>
 
               {/* User Prompt */}
-              <div className="p-4 rounded-xl bg-black/40 border border-border space-y-1">
+              <div className="p-4 rounded-xl bg-black/5 dark:bg-black/40 border border-border space-y-1">
                 <span className="text-[10px] font-mono uppercase text-primary font-bold block">You (Marketer / Founder)</span>
                 <p className="text-sm font-medium text-foreground">&quot;{currentWorkflow.userPrompt}&quot;</p>
               </div>
@@ -405,9 +405,9 @@ export default function HomePage() {
               {/* Agent Action & Output */}
               <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/20 space-y-3 text-xs">
                 <div className="flex items-center gap-2 text-primary font-mono font-semibold">
-                  <span className="animate-spin">⚙</span> Calling Tool: <code className="text-foreground bg-black/40 px-1.5 py-0.5 rounded">{currentWorkflow.agentAction}</code>
+                  <span className="animate-spin">⚙</span> Calling Tool: <code className="text-foreground bg-black/5 dark:bg-black/40 px-1.5 py-0.5 rounded">{currentWorkflow.agentAction}</code>
                 </div>
-                <div className="p-3.5 rounded-lg bg-black/60 border border-border text-zinc-300 leading-relaxed font-sans text-xs sm:text-sm">
+                <div className="p-3.5 rounded-lg bg-black/5 dark:bg-black/60 border border-border text-muted-foreground dark:text-zinc-300 leading-relaxed font-sans text-xs sm:text-sm">
                   {currentWorkflow.agentOutput}
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-white/4 text-[11px]">
@@ -474,7 +474,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="space-y-4 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-border pt-6">
+              <div className="space-y-4 text-xs sm:text-sm text-muted-foreground dark:text-zinc-300 leading-relaxed border-t border-border pt-6">
                 <p>
                   Before building startups, I was a media buyer. I managed over <strong>$1,000,000 in ads</strong>, sold two startups grown entirely with performance marketing, and helped 1,000+ founders learn Meta Ads through my guides.
                 </p>
@@ -519,7 +519,7 @@ export default function HomePage() {
                 <span className="text-rose-400 font-mono text-xs font-bold block">
                   ...letting an AI agent run my ads is risky 😰
                 </span>
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-xs text-muted-foreground dark:text-zinc-300 leading-relaxed">
                   <strong>Not with AdKit.</strong> Every change your agent makes is a draft by default. Campaigns, ad sets, and creatives sit safely in your AdKit dashboard until you click &quot;Approve&quot;. Nothing touches your live accounts without approval.
                 </p>
               </div>
@@ -528,7 +528,7 @@ export default function HomePage() {
                 <span className="text-amber-400 font-mono text-xs font-bold block">
                   ...MCPs will get my account banned 😱
                 </span>
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-xs text-muted-foreground dark:text-zinc-300 leading-relaxed">
                   Other tools use unofficial scraping endpoints. AdKit is an <strong>officially approved Meta and Google Tech Partner</strong>, so every action travels through verified, rate-limited partner APIs.
                 </p>
               </div>
@@ -537,7 +537,7 @@ export default function HomePage() {
                 <span className="text-primary font-mono text-xs font-bold block">
                   ...setting up an MCP is too technical 😳
                 </span>
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-xs text-muted-foreground dark:text-zinc-300 leading-relaxed">
                   It takes 3 clicks. Connect your ad accounts in the web console, paste one line into your Claude / Cursor config, done. If you can use an AI chat, you can use AdKit.
                 </p>
               </div>
@@ -560,7 +560,7 @@ export default function HomePage() {
               </p>
 
               {/* Billing Toggle */}
-              <div className="pt-3 inline-flex items-center gap-3 p-1 rounded-xl bg-white/4 border border-border">
+              <div className="pt-3 inline-flex items-center gap-3 p-1 rounded-xl bg-black/4 dark:bg-white/4 border border-border">
                 <button
                   onClick={() => setAnnualBilling(false)}
                   className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
@@ -597,7 +597,7 @@ export default function HomePage() {
                     </span>
                     <span className="text-xs text-muted-foreground font-mono">/ month</span>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-border pt-5">
+                  <ul className="space-y-2.5 text-xs text-muted-foreground dark:text-zinc-300 border-t border-border pt-5">
                     <li className="flex items-center gap-2">✓ Multi-platform Ad Library (500k+ ads)</li>
                     <li className="flex items-center gap-2">✓ Competitor Longevity & Activity Alerts</li>
                     <li className="flex items-center gap-2">✓ AI Ads Generator & Creative Cloner</li>
@@ -607,7 +607,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/pricing"
-                  className="block w-full py-3 text-center text-xs font-semibold text-foreground dark:text-white bg-white/6 hover:bg-white/12 rounded-xl border border-border transition-colors"
+                  className="block w-full py-3 text-center text-xs font-semibold text-foreground dark:text-white bg-black/6 dark:bg-white/6 hover:bg-black/12 dark:bg-white/12 rounded-xl border border-border transition-colors"
                 >
                   Start 7-Day Trial
                 </Link>
@@ -620,16 +620,16 @@ export default function HomePage() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-display font-bold text-foreground dark:text-white">Multiple Projects</h3>
-                    <p className="text-xs text-muted-foreground mt-1">For agencies, media buyers, and operators with multiple brands.</p>
+                    <h3 className="text-xl font-display font-bold text-white">Multiple Projects</h3>
+                    <p className="text-xs text-zinc-400 mt-1">For agencies, media buyers, and operators with multiple brands.</p>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-display font-bold text-foreground dark:text-white">
+                    <span className="text-4xl font-display font-bold text-white">
                       ${annualBilling ? "89" : "149"}
                     </span>
-                    <span className="text-xs text-muted-foreground font-mono">/ month</span>
+                    <span className="text-xs text-zinc-400 font-mono">/ month</span>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-foreground border-t border-border pt-5">
+                  <ul className="space-y-2.5 text-xs text-white border-t border-border pt-5">
                     <li className="flex items-center gap-2">✓ <strong>Unlimited</strong> Brands & Client Workspaces</li>
                     <li className="flex items-center gap-2">✓ Unlimited Competitor Ad Search & Downloads</li>
                     <li className="flex items-center gap-2">✓ 1,000 AI Creative Generations / mo</li>
@@ -639,7 +639,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/pricing"
-                  className="block w-full py-3 text-center text-xs font-semibold text-foreground dark:text-white bg-primary hover:bg-primary rounded-xl shadow-lg shadow-primary/30 transition-colors"
+                  className="block w-full py-3 text-center text-xs font-semibold text-white bg-primary hover:bg-primary rounded-xl shadow-lg shadow-primary/30 transition-colors"
                 >
                   Start Agency Trial →
                 </Link>
@@ -666,7 +666,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase font-semibold">
                   <span>🎯</span> AdKit is made for you if...
                 </div>
-                <ul className="space-y-3 text-xs sm:text-sm text-zinc-300">
+                <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground dark:text-zinc-300">
                   {FIT_CHECK_YES.map((item, i) => (
                     <li key={i} className="flex items-start gap-2.5">
                       <span className="text-emerald-400 mt-0.5">✓</span>

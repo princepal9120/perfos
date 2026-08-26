@@ -758,7 +758,7 @@ function DiscoveryContent() {
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="border-border text-xs text-muted-foreground hover:bg-white/4 hover:text-foreground"
+              className="border-border text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
             >
               Clear scan
             </Button>
@@ -796,8 +796,8 @@ function DiscoveryContent() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all",
               activeTab === tab.id
-                ? "border-b-2 border-purple-500 bg-purple-950/20 text-primary"
-                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+                ? "border-b-2 border-primary bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
             )}
           >
             <span>{tab.icon}</span>
@@ -1163,7 +1163,7 @@ function DiscoveryContent() {
                             "cursor-pointer transition-colors duration-150 ease-out",
                             isSelected
                               ? "bg-blue-500/8 hover:bg-blue-500/12"
-                              : "hover:bg-white/3"
+                              : "hover:bg-accent hover:text-accent-foreground"
                           )}
                         >
                           <TableCell>
@@ -1218,7 +1218,7 @@ function DiscoveryContent() {
                                 "h-7 text-xs",
                                 isSelected
                                   ? "bg-blue-600 text-foreground dark:text-white hover:bg-blue-500"
-                                  : "border-border text-zinc-300 hover:bg-white/4"
+                                  : "border-border text-zinc-300 hover:bg-accent hover:text-accent-foreground"
                               )}
                             >
                               {isSelected ? "Inspecting" : "Inspect"}

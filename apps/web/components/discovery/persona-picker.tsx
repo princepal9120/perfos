@@ -47,7 +47,7 @@ interface PersonaPickerProps {
 export function PersonaPicker({ value, onChange, className }: PersonaPickerProps) {
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className="font-display text-sm font-semibold tracking-tight text-text-primary">
+      <legend className="font-display text-sm font-semibold tracking-tight text-foreground">
         Pick your business type
       </legend>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -66,8 +66,8 @@ export function PersonaPicker({ value, onChange, className }: PersonaPickerProps
               className={cn(
                 "group relative flex cursor-pointer select-none flex-col rounded-lg border p-4 transition-[background-color,border-color,box-shadow] duration-150 ease-out active:scale-[0.98]",
                 selected
-                  ? "border-accent bg-accent-muted shadow-[0_0_0_1px_rgba(59,130,246,0.35)]"
-                  : "border-border-subtle bg-bg-surface hover:border-border-hover hover:bg-white/4",
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-card hover:bg-accent/50 hover:border-border",
                 "focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500/50"
               )}
             >
@@ -83,7 +83,7 @@ export function PersonaPicker({ value, onChange, className }: PersonaPickerProps
                 <span
                   className={cn(
                     "text-sm font-medium transition-colors duration-150",
-                    selected ? "text-text-primary" : "text-foreground"
+                    selected ? "text-foreground" : "text-foreground"
                   )}
                 >
                   {persona.label}
@@ -93,8 +93,8 @@ export function PersonaPicker({ value, onChange, className }: PersonaPickerProps
                   className={cn(
                     "h-4 w-4 shrink-0 rounded-full border transition-[border-color,background-color,box-shadow] duration-150 ease-out",
                     selected
-                      ? "border-accent bg-accent shadow-[inset_0_0_0_3px_bg-surface]"
-                      : "border-white/20 group-hover:border-white/40"
+                      ? "border-primary bg-primary shadow-[inset_0_0_0_3px_white]"
+                      : "border-input group-hover:border-primary/50"
                   )}
                 />
               </span>

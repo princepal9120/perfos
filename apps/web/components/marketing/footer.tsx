@@ -157,16 +157,16 @@ export function MarketingFooter() {
             © {new Date().getFullYear()} PerfOS AdKit Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-muted-foreground">
-            <Link href="/pricing" className="hover:text-zinc-300 transition-colors">
+            <Link href="/pricing" className="hover:text-foreground dark:hover:text-zinc-300 transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/pricing" className="hover:text-zinc-300 transition-colors">
+            <Link href="/pricing" className="hover:text-foreground dark:hover:text-zinc-300 transition-colors">
               Terms of Service
             </Link>
-            <Link href="/pricing" className="hover:text-zinc-300 transition-colors">
+            <Link href="/pricing" className="hover:text-foreground dark:hover:text-zinc-300 transition-colors">
               Security
             </Link>
-            <Link href="/command-center" className="hover:text-zinc-300 transition-colors">
+            <Link href="/command-center" className="hover:text-foreground dark:hover:text-zinc-300 transition-colors">
               Console
             </Link>
           </div>
