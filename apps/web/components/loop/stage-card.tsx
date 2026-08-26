@@ -39,8 +39,8 @@ function StageCard({
         "group rounded-lg border bg-bg-surface p-4 transition-[border-color,background-color] duration-150 ease-out",
         "hover:border-border-hover hover:bg-bg-elevated focus-within:border-border-hover",
         status === "active" && "border-blue-500/40",
-        status === "done" && "border-white/8",
-        status === "pending" && "border-white/6 opacity-70",
+        status === "done" && "border-border",
+        status === "pending" && "border-border opacity-70",
         status === "error" && "border-red-500/30",
         className
       )}
@@ -69,7 +69,7 @@ function StageCard({
 /** Skeleton matching StageCard layout for loading states. */
 function StageCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-lg border border-white/6 bg-bg-surface p-4", className)}>
+    <div className={cn("rounded-lg border border-border bg-bg-surface p-4", className)}>
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-5 w-14 rounded-full" />

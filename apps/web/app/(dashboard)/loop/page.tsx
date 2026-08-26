@@ -186,19 +186,19 @@ function StageFlow({
     <div className={cn("w-full", className)}>
       <div className="flex items-center justify-between pb-3">
         <div>
-          <h3 className="text-sm font-semibold tracking-tight text-zinc-100">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
             Pipeline sequence
           </h3>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-muted-foreground">
             Continuous closed-loop orchestration cycle
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Active
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
             Gate paused
           </span>
@@ -215,18 +215,18 @@ function StageFlow({
               <React.Fragment key={stage.id}>
                 <div
                   className={cn(
-                    "group relative flex flex-1 flex-col justify-between rounded-lg border bg-[#111114] p-3.5 transition-all duration-150 ease-out",
-                    "hover:border-white/16 hover:bg-[#18181c]",
+                    "group relative flex flex-1 flex-col justify-between rounded-lg border bg-card p-3.5 transition-all duration-150 ease-out",
+                    "hover:border-white/16 hover:bg-muted",
                     stage.status === "running" && "border-blue-500/40 shadow-sm shadow-blue-500/10",
                     stage.status === "paused" && "border-amber-500/30",
-                    stage.status === "ok" && "border-white/8",
-                    stage.status === "idle" && "border-white/6 opacity-80",
+                    stage.status === "ok" && "border-border",
+                    stage.status === "idle" && "border-border opacity-80",
                     stage.status === "error" && "border-red-500/40"
                   )}
                 >
                   <div>
                     <div className="flex items-center justify-between gap-1.5">
-                      <span className="font-mono text-[11px] font-semibold tabular-nums text-zinc-500 group-hover:text-accent">
+                      <span className="font-mono text-[11px] font-semibold tabular-nums text-muted-foreground group-hover:text-accent">
                         {stage.stepNumber}
                       </span>
                       {stage.status === "running" ? (
@@ -252,19 +252,19 @@ function StageFlow({
                       )}
                     </div>
 
-                    <h4 className="mt-2 text-xs font-semibold text-zinc-100">
+                    <h4 className="mt-2 text-xs font-semibold text-foreground">
                       {stage.label}
                     </h4>
-                    <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-400">
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
                       {stage.shortDesc}
                     </p>
                   </div>
 
                   <div className="mt-3 flex items-baseline justify-between border-t border-white/4 pt-2">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                       Yield
                     </span>
-                    <span className="font-mono text-xs font-medium tabular-nums text-zinc-200">
+                    <span className="font-mono text-xs font-medium tabular-nums text-foreground">
                       {stage.count !== undefined ? stage.count : "—"}
                     </span>
                   </div>
@@ -345,20 +345,20 @@ function AuditLog({ entries, className }: AuditLogProps) {
               placeholder="Filter actions or targets…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-8 rounded-md border border-white/8 bg-[#0c0c0f] px-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="h-8 rounded-md border border-border bg-background px-2.5 text-xs text-foreground placeholder-zinc-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
             {query && (
               <button
                 onClick={() => setQuery("")}
                 aria-label="Clear filter"
-                className="absolute right-2 top-2 text-xs text-zinc-500 hover:text-zinc-300"
+                className="absolute right-2 top-2 text-xs text-muted-foreground hover:text-zinc-300"
               >
                 &times;
               </button>
             )}
           </div>
 
-          <div className="inline-flex rounded-md border border-white/8 bg-[#0c0c0f] p-0.5 text-xs">
+          <div className="inline-flex rounded-md border border-border bg-background p-0.5 text-xs">
             {(
               [
                 { id: "all", label: "All" },
@@ -373,8 +373,8 @@ function AuditLog({ entries, className }: AuditLogProps) {
                 className={cn(
                   "rounded px-2.5 py-1 text-xs font-medium transition-colors",
                   filter === tab.id
-                    ? "bg-[#18181c] text-zinc-100"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {tab.label}
@@ -388,21 +388,21 @@ function AuditLog({ entries, className }: AuditLogProps) {
         <div className="relative w-full overflow-x-auto">
           <table className="w-full caption-bottom text-left text-xs">
             <thead>
-              <tr className="border-y border-white/8 bg-white/2">
-                <th className="px-4 py-2.5 font-medium text-zinc-400">
+              <tr className="border-y border-border bg-white/2">
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Timestamp
                 </th>
-                <th className="px-4 py-2.5 font-medium text-zinc-400">Actor</th>
-                <th className="px-4 py-2.5 font-medium text-zinc-400">
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">Actor</th>
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Action
                 </th>
-                <th className="px-4 py-2.5 font-medium text-zinc-400">
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Target
                 </th>
-                <th className="px-4 py-2.5 font-medium text-zinc-400">
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Decision
                 </th>
-                <th className="px-4 py-2.5 font-medium text-zinc-400">
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Details
                 </th>
               </tr>
@@ -410,7 +410,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
             <tbody className="divide-y divide-white/4">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-zinc-500">
+                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                     No matching audit trail events found.
                   </td>
                 </tr>
@@ -420,16 +420,16 @@ function AuditLog({ entries, className }: AuditLogProps) {
                     key={entry.id}
                     className="transition-colors duration-150 ease-out hover:bg-white/4"
                   >
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] tabular-nums text-zinc-500">
+                    <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] tabular-nums text-muted-foreground">
                       {entry.timestamp}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] text-zinc-300">
                       {entry.actor}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 font-medium text-zinc-100">
+                    <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
                       {entry.action}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] text-zinc-400">
+                    <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] text-muted-foreground">
                       {entry.target}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
@@ -459,7 +459,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
                         </Badge>
                       )}
                     </td>
-                    <td className="max-w-xs truncate px-4 py-3 text-zinc-400">
+                    <td className="max-w-xs truncate px-4 py-3 text-muted-foreground">
                       {entry.detail}
                     </td>
                   </tr>
@@ -514,7 +514,7 @@ function LastRunViewer({
               variant="outline"
               size="sm"
               onClick={handleCopy}
-              className="h-7 px-2.5 text-xs text-zinc-300 hover:text-zinc-100"
+              className="h-7 px-2.5 text-xs text-zinc-300 hover:text-foreground"
             >
               {copied ? "Copied" : "Copy JSON"}
             </Button>
@@ -524,8 +524,8 @@ function LastRunViewer({
 
       <CardContent>
         {!result ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 bg-white/2 px-6 py-12 text-center">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-white/8 bg-[#18181c] text-zinc-400">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-white/2 px-6 py-12 text-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted text-muted-foreground">
               <svg
                 width="16"
                 height="16"
@@ -544,10 +544,10 @@ function LastRunViewer({
                 <polyline points="10 9 9 9 8 9" />
               </svg>
             </span>
-            <p className="mt-3 text-sm font-medium text-zinc-200">
+            <p className="mt-3 text-sm font-medium text-foreground">
               No loop execution recorded in this session
             </p>
-            <p className="mt-1 max-w-sm text-xs leading-relaxed text-zinc-400">
+            <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
               Run a dry-run to execute one complete cycle across all six stages
               without making changes to connected ad networks.
             </p>
@@ -563,7 +563,7 @@ function LastRunViewer({
           </div>
         ) : (
           <div className="relative">
-            <pre className="max-h-96 overflow-auto rounded-lg border border-white/8 bg-[#09090b] p-4 font-mono text-xs leading-relaxed text-zinc-300 scrollbar-thin">
+            <pre className="max-h-96 overflow-auto rounded-lg border border-border bg-background p-4 font-mono text-xs leading-relaxed text-zinc-300 scrollbar-thin">
               {JSON.stringify(result, null, 2)}
             </pre>
           </div>
@@ -709,14 +709,14 @@ export default function LoopPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold tracking-tight text-zinc-100">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
               The loop
             </h2>
             <Badge variant="default" shape="square">
               Autonomous cycle
             </Badge>
           </div>
-          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-zinc-400">
+          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
             Find &rarr; score &rarr; create &rarr; launch &rarr; track &rarr; double down.
             Every external platform write is gated by safety policies and stays paused until human confirmation.
           </p>
@@ -726,7 +726,7 @@ export default function LoopPage() {
       </div>
 
       {/* Safety Gate Banner */}
-      <div className="flex items-center justify-between rounded-lg border border-white/8 bg-[#111114] px-4 py-3">
+      <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-400">
             <svg
@@ -744,10 +744,10 @@ export default function LoopPage() {
             </svg>
           </span>
           <div>
-            <p className="text-xs font-medium text-zinc-200">
+            <p className="text-xs font-medium text-foreground">
               Safety gate active
             </p>
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-muted-foreground">
               Draft campaigns and budget changes remain paused until manually approved. Zero unexpected live spend.
             </p>
           </div>
@@ -773,10 +773,10 @@ export default function LoopPage() {
       {/* Stage Cards Grid (StageCard) */}
       <section aria-label="Loop stage details">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold tracking-tight text-zinc-100">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground">
             Stage metrics
           </h3>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-muted-foreground">
             Click dry-run to refresh stage yields
           </span>
         </div>

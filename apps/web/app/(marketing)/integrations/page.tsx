@@ -17,13 +17,13 @@ export default function IntegrationsIndexPage() {
   return (
     <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
       <div className="text-center max-w-3xl mx-auto space-y-5">
-        <span className="px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full">
+        <span className="px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-primary bg-purple-500/10 border border-purple-500/20 rounded-full">
           AI Agent Ecosystem
         </span>
-        <h1 className="text-4xl sm:text-6xl font-display font-bold text-white tracking-tight">
+        <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight">
           Works with every <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">AI Agent</span>
         </h1>
-        <p className="text-zinc-400 text-base sm:text-lg">
+        <p className="text-muted-foreground text-base sm:text-lg">
           Add one line of config to your favorite IDE, agent framework, or desktop assistant to unlock autonomous ad management.
         </p>
       </div>
@@ -33,18 +33,18 @@ export default function IntegrationsIndexPage() {
           <Link
             key={i}
             href={`/integrations/${agent.slug}`}
-            className="p-6 rounded-2xl bg-[#111218] border border-white/10 hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-4 group hover:-translate-y-1"
+            className="p-6 rounded-2xl bg-card border border-border hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-4 group hover:-translate-y-1"
           >
             <div className="space-y-3">
               <span className="text-3xl">{agent.icon}</span>
-              <h3 className="font-display font-bold text-white text-base group-hover:text-purple-300 transition-colors">
+              <h3 className="font-display font-bold text-foreground dark:text-white text-base group-hover:text-primary transition-colors">
                 {agent.name}
               </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {agent.desc}
               </p>
             </div>
-            <span className="text-xs font-semibold text-purple-400 group-hover:text-purple-300">
+            <span className="text-xs font-semibold text-primary group-hover:text-primary">
               Setup Guide →
             </span>
           </Link>

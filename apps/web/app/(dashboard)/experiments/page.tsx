@@ -448,7 +448,7 @@ function ExpRow({
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-display text-sm font-semibold tracking-tight text-text-primary transition-colors duration-fast hover:text-white">
+              <span className="font-display text-sm font-semibold tracking-tight text-text-primary transition-colors duration-fast hover:text-foreground dark:text-white">
                 {experiment.name}
               </span>
               <span className="rounded bg-white/5 px-1 py-0.2 text-[10px] font-mono text-text-muted">
@@ -464,7 +464,7 @@ function ExpRow({
 
       {/* Platform */}
       <TableCell className="whitespace-nowrap py-3.5">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-white/8 bg-bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary">
           <span className={cn("h-1.5 w-1.5 rounded-full", pMeta.dot)} />
           <span>{pMeta.label}</span>
         </div>
@@ -616,10 +616,10 @@ function ExpDetailPanel({
   onApplyWinner: () => void;
 }) {
   return (
-    <div className="border-y border-white/8 bg-[#0c0c0f] p-5">
+    <div className="border-y border-border bg-background p-5">
       <div className="space-y-4">
         {/* Full Hypothesis Block */}
-        <div className="rounded-lg border border-white/8 bg-bg-surface p-4">
+        <div className="rounded-lg border border-border bg-bg-surface p-4">
           <div className="flex items-center gap-2">
             <span className="flex h-5 w-5 items-center justify-center rounded bg-accent-muted text-accent">
               <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
@@ -638,8 +638,8 @@ function ExpDetailPanel({
         {/* Side-by-Side Comparison Cards */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Control Card */}
-          <div className="rounded-lg border border-white/8 bg-bg-surface p-4">
-            <div className="flex items-center justify-between border-b border-white/6 pb-3">
+          <div className="rounded-lg border border-border bg-bg-surface p-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <span className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] font-semibold text-text-secondary">
                   Control (A)
@@ -688,10 +688,10 @@ function ExpDetailPanel({
               "rounded-lg border p-4 bg-bg-surface transition-colors",
               experiment.winner === "variant"
                 ? "border-emerald-500/30 bg-emerald-500/2"
-                : "border-white/8"
+                : "border-border"
             )}
           >
-            <div className="flex items-center justify-between border-b border-white/6 pb-3">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[11px] font-semibold text-blue-400">
                   Challenger (B)
@@ -743,7 +743,7 @@ function ExpDetailPanel({
         </div>
 
         {/* Rigor & Recommendation Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-white/8 bg-bg-elevated p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-bg-elevated p-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-text-secondary">
@@ -842,10 +842,10 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
     >
       <div
-        className="w-full max-w-xl rounded-xl border border-white/12 bg-[#111114] p-6 shadow-2xl transition-all"
+        className="w-full max-w-xl rounded-xl border border-white/12 bg-card p-6 shadow-2xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/8 pb-4">
+        <div className="flex items-center justify-between border-b border-border pb-4">
           <div>
             <h3 className="font-display text-lg font-semibold text-text-primary">
               Create new experiment
@@ -969,7 +969,7 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-white/8 pt-4">
+          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
@@ -1158,7 +1158,7 @@ export default function ExperimentsPage() {
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-lg border border-accent/30 bg-[#111114] px-4 py-3 text-sm text-text-primary shadow-xl shadow-black/50"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-lg border border-accent/30 bg-card px-4 py-3 text-sm text-text-primary shadow-xl shadow-black/50"
         >
           <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
           <span>{toastMessage}</span>
@@ -1249,11 +1249,11 @@ export default function ExperimentsPage() {
       </div>
 
       {/* Filters, Search & View Controls */}
-      <Card className="border border-white/8 bg-bg-surface">
+      <Card className="border border-border bg-bg-surface">
         <CardContent className="p-4 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Status Tabs */}
-            <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-white/8 bg-bg-elevated p-1">
+            <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-bg-elevated p-1">
               {[
                 { id: "all", label: `All (${experiments.length})` },
                 { id: "running", label: `Running (${runningCount})` },
@@ -1297,14 +1297,14 @@ export default function ExperimentsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter experiments…"
-                  className="h-8 w-48 rounded-md border border-white/10 bg-bg-elevated pl-8 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="h-8 w-48 rounded-md border border-border bg-bg-elevated pl-8 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>
 
               <select
                 value={platformFilter}
                 onChange={(e) => setPlatformFilter(e.target.value)}
-                className="h-8 rounded-md border border-white/10 bg-bg-elevated px-3 text-xs text-text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="h-8 rounded-md border border-border bg-bg-elevated px-3 text-xs text-text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               >
                 <option value="all">All platforms</option>
                 <option value="meta">Meta Ads</option>
@@ -1321,7 +1321,7 @@ export default function ExperimentsPage() {
       </Card>
 
       {/* Main Experiments Table */}
-      <div className="rounded-xl border border-white/8 bg-bg-surface overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-border bg-bg-surface overflow-hidden shadow-sm">
         {loading ? (
           <div className="p-6 space-y-4" aria-busy="true" aria-label="Loading experiments">
             {[0, 1, 2, 3].map((i) => (
@@ -1337,7 +1337,7 @@ export default function ExperimentsPage() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-white/8 hover:bg-transparent">
+              <TableRow className="border-b border-border hover:bg-transparent">
                 <TableHead
                   sortable
                   active={sortKey === "name"}
@@ -1395,7 +1395,7 @@ export default function ExperimentsPage() {
             <TableBody>
               {sortedRows.length === 0 ? (
                 <TableEmpty colSpan={9}>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/8 bg-bg-elevated text-text-muted">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-border bg-bg-elevated text-text-muted">
                     <svg
                       className="h-6 w-6"
                       fill="none"
@@ -1450,7 +1450,7 @@ export default function ExperimentsPage() {
                       onApplyWinner={handleApplyWinner}
                     />
                     {expandedIds.has(exp.id) && (
-                      <TableRow className="border-b border-white/8 hover:bg-transparent">
+                      <TableRow className="border-b border-border hover:bg-transparent">
                         <TableCell colSpan={9} className="p-0">
                           <ExpDetailPanel
                             experiment={exp}

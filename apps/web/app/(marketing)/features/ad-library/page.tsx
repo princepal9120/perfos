@@ -138,26 +138,26 @@ export default function AdLibraryPage() {
     <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
       {/* Hero */}
       <div className="text-center max-w-4xl mx-auto space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-mono font-semibold">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-primary text-xs font-mono font-semibold">
           <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
           500,000+ Tracked Competitor Ads
         </div>
-        <h1 className="text-4xl sm:text-6xl font-display font-bold text-white tracking-tight leading-[1.08]">
+        <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight leading-[1.08]">
           The Ad Library for <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">SaaS & Mobile Apps</span>
         </h1>
-        <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
           Stop scrolling through laggy Meta & Google ad libraries. Search 500k+ ads, filter by active longevity, and uncover competitor money-makers that have run for 90+ consecutive days.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
           <Link
             href="/pricing"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02]"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-linear-to-r from-primary to-primary-dark hover:from-purple-500 hover:to-indigo-500 text-white dark:text-white text-xs font-semibold shadow-lg shadow-primary/30 transition-all hover:scale-[1.02]"
           >
             Start Free Search Trial (7 Days) →
           </Link>
           <Link
             href="/features/ads-cloner"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/4 hover:bg-white/8 text-zinc-300 text-xs font-semibold border border-white/10 transition-colors"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/4 hover:bg-white/8 text-zinc-300 text-xs font-semibold border border-border transition-colors"
           >
             Remix Competitor Winner 🧬
           </Link>
@@ -165,29 +165,29 @@ export default function AdLibraryPage() {
       </div>
 
       {/* Interactive Spy Simulator Engine */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#111218] border border-white/10 space-y-6 shadow-2xl shadow-purple-950/20">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 border-b border-white/6 pb-6">
-          <div className="flex items-center gap-3 w-full lg:w-96 bg-black/40 border border-white/10 rounded-xl px-3.5 py-2">
-            <span className="text-zinc-500">🔍</span>
+      <div className="p-6 sm:p-8 rounded-2xl bg-card border border-border space-y-6 shadow-2xl shadow-black/5 dark:shadow-purple-950/20">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 border-b border-border pb-6">
+          <div className="flex items-center gap-3 w-full lg:w-96 bg-black/40 border border-border rounded-xl px-3.5 py-2">
+            <span className="text-muted-foreground">🔍</span>
             <input
               type="text"
               placeholder="Search by brand, category, or hook angle..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-transparent text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
+              className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/8">
+            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
               {["all", "Meta", "LinkedIn", "Google", "X"].map((plat) => (
                 <button
                   key={plat}
                   onClick={() => setFilter(plat)}
                   className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
                     filter === plat
-                      ? "bg-purple-600 text-white shadow"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-primary text-white dark:text-white shadow"
+                      : "text-muted-foreground hover:text-foreground dark:text-white"
                   }`}
                 >
                   {plat === "all" ? "All Networks" : plat}
@@ -195,7 +195,7 @@ export default function AdLibraryPage() {
               ))}
             </div>
 
-            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/8">
+            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
               {[
                 { id: "all", label: "Any Duration" },
                 { id: "90", label: "90+ Days" },
@@ -207,8 +207,8 @@ export default function AdLibraryPage() {
                   onClick={() => setDurationFilter(dur.id)}
                   className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
                     durationFilter === dur.id
-                      ? "bg-indigo-600 text-white shadow"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-indigo-600 text-foreground dark:text-white shadow"
+                      : "text-muted-foreground hover:text-foreground dark:text-white"
                   }`}
                 >
                   {dur.label}
@@ -223,22 +223,22 @@ export default function AdLibraryPage() {
           {filteredAds.map((ad, i) => (
             <div
               key={i}
-              className="p-5 rounded-xl bg-black/40 border border-white/8 hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-4 group hover:shadow-lg hover:shadow-purple-950/30"
+              className="p-5 rounded-xl bg-black/40 border border-border hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-4 group hover:shadow-lg hover:shadow-purple-950/30"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-display font-bold text-sm text-white">
+                    <span className="font-display font-bold text-sm text-foreground dark:text-white">
                       {ad.brand}
                     </span>
-                    <span className="text-[10px] text-zinc-500 font-mono">
+                    <span className="text-[10px] text-muted-foreground font-mono">
                       {ad.domain}
                     </span>
                   </div>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
                     ad.daysActive >= 100
-                      ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
-                      : "bg-white/5 text-zinc-400 border-white/10"
+                      ? "bg-purple-500/15 text-primary border-primary/30"
+                      : "bg-white/5 text-muted-foreground border-border"
                   }`}>
                     {ad.daysActive}d active
                   </span>
@@ -246,7 +246,7 @@ export default function AdLibraryPage() {
 
                 <div
                   onClick={() => setSelectedAd(ad)}
-                  className="h-44 rounded-lg bg-linear-to-br from-purple-950/20 via-zinc-900 to-indigo-950/20 border border-white/5 flex flex-col justify-between p-3.5 text-left cursor-pointer group-hover:border-purple-500/30 transition-colors"
+                  className="h-44 rounded-lg bg-linear-to-br from-purple-950/20 via-zinc-900 to-indigo-950/20 border border-white/5 flex flex-col justify-between p-3.5 text-left cursor-pointer group-hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/8 text-zinc-300">
@@ -257,24 +257,24 @@ export default function AdLibraryPage() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-zinc-200 line-clamp-3 leading-snug">
+                    <p className="text-xs font-semibold text-foreground line-clamp-3 leading-snug">
                       &quot;{ad.hookCopy}&quot;
                     </p>
                   </div>
-                  <div className="text-[10px] text-purple-400 font-medium flex items-center justify-between">
+                  <div className="text-[10px] text-primary font-medium flex items-center justify-between">
                     <span>Angle: {ad.angle}</span>
                     <span className="underline">View details</span>
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-zinc-400 pt-1">
+                <div className="space-y-1.5 text-xs text-muted-foreground pt-1">
                   <div className="flex justify-between">
                     <span>Network:</span>
-                    <span className="text-zinc-200 font-medium">{ad.platform}</span>
+                    <span className="text-foreground font-medium">{ad.platform}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Target Category:</span>
-                    <span className="text-zinc-200">{ad.category}</span>
+                    <span className="text-foreground">{ad.category}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Primary CTA:</span>
@@ -283,10 +283,10 @@ export default function AdLibraryPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/6 flex gap-2">
+              <div className="pt-3 border-t border-border flex gap-2">
                 <Link
                   href={`/features/ads-cloner?source=${encodeURIComponent(ad.brand)}`}
-                  className="flex-1 py-2 text-center rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                  className="flex-1 py-2 text-center rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1"
                 >
                   <span>Remix Angle</span> ⚡
                 </Link>
@@ -294,7 +294,7 @@ export default function AdLibraryPage() {
                   onClick={() => toggleSave(ad.brand)}
                   className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                     savedAds.includes(ad.brand)
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary text-white dark:text-white"
                       : "bg-white/5 hover:bg-white/10 text-zinc-300"
                   }`}
                 >
@@ -309,20 +309,20 @@ export default function AdLibraryPage() {
       {/* Selected Ad Modal Dialog */}
       {selectedAd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="max-w-2xl w-full bg-[#14151c] border border-white/10 rounded-2xl p-6 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/6 pb-4">
+          <div className="max-w-2xl w-full bg-card border border-border rounded-2xl p-6 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
                   {selectedAd.brand[0]}
                 </div>
                 <div>
-                  <h3 className="text-lg font-display font-bold text-white">{selectedAd.brand}</h3>
-                  <p className="text-xs text-zinc-400">{selectedAd.domain} · Active on {selectedAd.platform}</p>
+                  <h3 className="text-lg font-display font-bold text-foreground dark:text-white">{selectedAd.brand}</h3>
+                  <p className="text-xs text-muted-foreground">{selectedAd.domain} · Active on {selectedAd.platform}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedAd(null)}
-                className="text-zinc-400 hover:text-white p-2 text-lg"
+                className="text-muted-foreground hover:text-foreground dark:text-white p-2 text-lg"
               >
                 ✕
               </button>
@@ -330,22 +330,22 @@ export default function AdLibraryPage() {
 
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-black/50 border border-white/5 space-y-2">
-                <span className="text-xs font-mono uppercase text-purple-400 font-semibold">Full Primary Hook Copy</span>
-                <p className="text-sm text-zinc-200 leading-relaxed">&quot;{selectedAd.hookCopy}&quot;</p>
+                <span className="text-xs font-mono uppercase text-primary font-semibold">Full Primary Hook Copy</span>
+                <p className="text-sm text-foreground leading-relaxed">&quot;{selectedAd.hookCopy}&quot;</p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-zinc-500 block">Days Running</span>
-                  <span className="text-purple-300 font-bold text-base">{selectedAd.daysActive} days</span>
+                  <span className="text-muted-foreground block">Days Running</span>
+                  <span className="text-primary font-bold text-base">{selectedAd.daysActive} days</span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-zinc-500 block">Estimated CTR</span>
+                  <span className="text-muted-foreground block">Estimated CTR</span>
                   <span className="text-emerald-400 font-bold text-base">{selectedAd.ctrEstimate}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-zinc-500 block">Format Type</span>
-                  <span className="text-zinc-200 font-semibold text-sm">{selectedAd.format}</span>
+                  <span className="text-muted-foreground block">Format Type</span>
+                  <span className="text-foreground font-semibold text-sm">{selectedAd.format}</span>
                 </div>
               </div>
             </div>
@@ -353,13 +353,13 @@ export default function AdLibraryPage() {
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setSelectedAd(null)}
-                className="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs text-muted-foreground hover:text-foreground dark:text-white"
               >
                 Close
               </button>
               <Link
                 href={`/features/ads-cloner?source=${encodeURIComponent(selectedAd.brand)}`}
-                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold"
+                className="px-5 py-2 rounded-xl bg-primary hover:bg-primary text-white dark:text-white text-xs font-semibold"
               >
                 Remix for My Brand →
               </Link>
@@ -370,32 +370,32 @@ export default function AdLibraryPage() {
 
       {/* Feature Pillar Deep-Dive */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="p-8 rounded-2xl bg-[#111218] border border-white/10 space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-primary text-2xl">
             ⏱️
           </div>
-          <h3 className="font-display font-bold text-white text-lg">Longevity Filter</h3>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Longevity Filter</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Eliminate low-budget test creatives from your research. When an ad has been active for 90+ consecutive days across Meta and Google, you can bet it&apos;s profitable.
           </p>
         </div>
 
-        <div className="p-8 rounded-2xl bg-[#111218] border border-white/10 space-y-4">
+        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
           <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-2xl">
             📁
           </div>
-          <h3 className="font-display font-bold text-white text-lg">Swipe File Sync</h3>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Swipe File Sync</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Organize winning creatives into categorized folders. Export structured JSON schemas directly to Claude or Cursor through our native Ads MCP server.
           </p>
         </div>
 
-        <div className="p-8 rounded-2xl bg-[#111218] border border-white/10 space-y-4">
+        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
           <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
             📬
           </div>
-          <h3 className="font-display font-bold text-white text-lg">Weekly Competitor Digests</h3>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Weekly Competitor Digests</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Automated alerts sent to Slack or email whenever competitors launch new angles, scale budgets, or shut down fatigued ad variants.
           </p>
         </div>

@@ -54,15 +54,15 @@ export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/8 bg-[#0c0d12] px-4 sm:px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className="truncate font-display text-sm font-semibold tracking-tight text-zinc-100">
+        <span className="truncate font-display text-sm font-semibold tracking-tight text-foreground">
           {getTitle()}
         </span>
         <span aria-hidden="true" className="text-zinc-600 text-xs">
           /
         </span>
-        <span className="hidden text-xs text-zinc-400 sm:inline">New project</span>
+        <span className="hidden text-xs text-muted-foreground sm:inline">New project</span>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
@@ -70,11 +70,11 @@ export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
           type="button"
           onClick={handleOpenCommand}
           aria-label="Open command menu"
-          className="group flex h-8 items-center gap-2 rounded-lg border border-white/8 bg-[#14151e] px-2.5 text-xs text-zinc-400 outline-none transition duration-150 ease-out hover:border-white/20 hover:bg-[#1a1b26] hover:text-zinc-200 focus-visible:ring-2 focus-visible:ring-purple-500/50 active:scale-[0.98]"
+          className="group flex h-8 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-xs text-muted-foreground outline-none transition duration-150 ease-out hover:border-white/20 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-purple-500/50 active:scale-[0.98]"
         >
           <SearchIcon />
           <span className="hidden sm:inline">Search or jump to</span>
-          <kbd className="hidden rounded border border-white/10 bg-[#1e202c] px-1.5 py-0.5 font-sans text-[10px] text-zinc-400 sm:inline">
+          <kbd className="hidden rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] text-muted-foreground sm:inline">
             ⌘K
           </kbd>
         </button>
@@ -84,7 +84,7 @@ export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
         <button
           type="button"
           aria-label="Open profile menu"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/10 font-display text-xs font-semibold text-purple-300 outline-none transition duration-150 ease-out hover:border-purple-400/60 hover:bg-purple-500/20 focus-visible:ring-2 focus-visible:ring-purple-500/60 active:scale-[0.98]"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-purple-500/10 font-display text-xs font-semibold text-primary outline-none transition duration-150 ease-out hover:border-purple-400/60 hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-purple-500/60 active:scale-[0.98]"
         >
           P
         </button>

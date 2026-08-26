@@ -475,21 +475,21 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
   ];
 
   return (
-    <Card className="border-white/8 bg-[#0c0c0f]">
+    <Card className="border-border bg-background">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-semibold text-zinc-100">
+          <CardTitle className="text-sm font-semibold text-foreground">
             Winner score breakdown
           </CardTitle>
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-white tabular-nums">
+            <span className="text-xl font-bold tracking-tight text-foreground dark:text-white tabular-nums">
               {winner.score}
-              <span className="text-xs font-normal text-zinc-500">/100</span>
+              <span className="text-xs font-normal text-muted-foreground">/100</span>
             </span>
             {tierBadge(winner.tier)}
           </div>
         </div>
-        <CardDescription className="text-xs text-zinc-400">
+        <CardDescription className="text-xs text-muted-foreground">
           Deterministic 0–100 score synthesized from ad longevity, hook retention, and library persistence.
         </CardDescription>
       </CardHeader>
@@ -501,7 +501,7 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
               <div key={b.label} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-medium text-zinc-300">{b.label}</span>
-                  <span className="font-semibold text-zinc-200 tabular-nums">
+                  <span className="font-semibold text-foreground tabular-nums">
                     {pct}%
                   </span>
                 </div>
@@ -511,14 +511,14 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <p className="text-[11px] text-zinc-500">{b.desc}</p>
+                <p className="text-[11px] text-muted-foreground">{b.desc}</p>
               </div>
             );
           })}
         </div>
 
-        <div className="rounded-lg border border-white/6 bg-white/2 p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+        <div className="rounded-lg border border-border bg-white/2 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Ad DNA tags
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -549,25 +549,25 @@ interface EmptyDiscoveryProps {
 
 function EmptyDiscoveryState({ onRun, loading }: EmptyDiscoveryProps) {
   return (
-    <Card className="border-dashed border-white/12 bg-[#0c0c0f]/60 py-12 text-center">
+    <Card className="border-dashed border-white/12 bg-background/60 py-12 text-center">
       <CardContent className="flex flex-col items-center justify-center p-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/4 text-blue-400 shadow-inner">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-white/4 text-blue-400 shadow-inner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3M11 8v6M8 11h6" />
           </svg>
         </div>
-        <h3 className="mt-4 text-base font-semibold text-zinc-100">
+        <h3 className="mt-4 text-base font-semibold text-foreground">
           No competitor ads scanned yet
         </h3>
-        <p className="mt-1 max-w-md text-sm text-zinc-400">
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">
           Select your target business persona and scan public ad libraries to surface high-longevity winner creative and persuasion angles.
         </p>
         <div className="mt-6">
           <Button
             onClick={onRun}
             disabled={loading}
-            className="bg-blue-600 px-5 text-white hover:bg-blue-500 active:scale-[0.98]"
+            className="bg-blue-600 px-5 text-foreground dark:text-white hover:bg-blue-500 active:scale-[0.98]"
           >
             {loading ? "Scanning public libraries..." : "Run discovery scan"}
           </Button>
@@ -727,7 +727,7 @@ function DiscoveryContent() {
           </div>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-blue-400 hover:text-white"
+            className="text-blue-400 hover:text-foreground dark:text-white"
           >
             ✕
           </button>
@@ -737,14 +737,14 @@ function DiscoveryContent() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold tracking-tight text-white">
+          <h1 className="font-display text-xl font-bold tracking-tight text-foreground dark:text-white">
             {activeTab === "competitors"
               ? "Competitor Tracking"
               : activeTab === "saved"
               ? "Saved Ads & Boards"
               : "Ads Library & Swipe File"}
           </h1>
-          <p className="mt-0.5 text-sm text-zinc-400">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {activeTab === "competitors"
               ? "Monitor rival brand spend, scan frequency, and winning ad rotations in real time."
               : activeTab === "saved"
@@ -758,7 +758,7 @@ function DiscoveryContent() {
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="border-white/8 text-xs text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+              className="border-border text-xs text-muted-foreground hover:bg-white/4 hover:text-foreground"
             >
               Clear scan
             </Button>
@@ -766,11 +766,11 @@ function DiscoveryContent() {
           <Button
             onClick={runDiscovery}
             disabled={loading}
-            className="bg-purple-600 text-white hover:bg-purple-500 text-xs"
+            className="bg-primary text-white dark:text-white hover:bg-primary text-xs"
           >
             {loading ? (
               <span className="flex items-center gap-1.5">
-                <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                <svg className="h-4 w-4 animate-spin text-foreground dark:text-white" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -784,7 +784,7 @@ function DiscoveryContent() {
       </div>
 
       {/* Navigation Subtabs (Matching Sidebar: Competitors / Ads Library / Saved Ads) */}
-      <div className="flex items-center gap-1 border-b border-white/8 pb-1">
+      <div className="flex items-center gap-1 border-b border-border pb-1">
         {[
           { id: "library", label: "Ads Library (Swipe File)", icon: "🔍" },
           { id: "competitors", label: "Competitor Tracking", icon: "🏢" },
@@ -796,8 +796,8 @@ function DiscoveryContent() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all",
               activeTab === tab.id
-                ? "border-b-2 border-purple-500 bg-purple-950/20 text-purple-300"
-                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+                ? "border-b-2 border-purple-500 bg-purple-950/20 text-primary"
+                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
             )}
           >
             <span>{tab.icon}</span>
@@ -810,7 +810,7 @@ function DiscoveryContent() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="border-white/8 bg-[#0c0c0f] p-5">
+            <Card key={i} className="border-border bg-background p-5">
               <Skeleton className="h-3 w-20" />
               <Skeleton className="mt-3 h-8 w-28" />
               <Skeleton className="mt-2 h-3 w-36" />
@@ -823,35 +823,35 @@ function DiscoveryContent() {
               value={kpis.spend}
               delta={14.8}
               sub="Est. 30-day market spend velocity"
-              className="border-white/8 bg-[#0c0c0f]"
+              className="border-border bg-background"
             />
             <Stat
               label="Surfaced winners"
               value={kpis.winnersCount}
               delta={8.2}
               sub="Scored ≥ 75 with ≥ 14d runtime"
-              className="border-white/8 bg-[#0c0c0f]"
+              className="border-border bg-background"
             />
             <Stat
               label="Average winner score"
               value={kpis.avgScore}
               delta={3.5}
               sub="Ad Oracle heuristic composite"
-              className="border-white/8 bg-[#0c0c0f]"
+              className="border-border bg-background"
             />
             <Stat
               label="Average ad runtime"
               value={kpis.avgRuntime}
               delta={12.0}
               sub="Observed active duration across platforms"
-              className="border-white/8 bg-[#0c0c0f]"
+              className="border-border bg-background"
             />
           </>
         )}
       </div>
 
       {/* Persona Picker Section */}
-      <Card className="border-white/8 bg-[#0c0c0f]">
+      <Card className="border-border bg-background">
         <CardContent className="pt-5">
           <PersonaPicker
             value={persona}
@@ -865,13 +865,13 @@ function DiscoveryContent() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-display text-sm font-semibold text-white">Tracked Competitor Brands</h3>
-              <p className="text-xs text-zinc-400">Continuous ad intelligence monitoring and creative velocity alerts.</p>
+              <h3 className="font-display text-sm font-semibold text-foreground dark:text-white">Tracked Competitor Brands</h3>
+              <p className="text-xs text-muted-foreground">Continuous ad intelligence monitoring and creative velocity alerts.</p>
             </div>
             <Button
               onClick={() => setToastMessage("Added new competitor tracker")}
               size="sm"
-              className="bg-purple-600 hover:bg-purple-500 text-white text-xs"
+              className="bg-primary hover:bg-primary text-white dark:text-white text-xs"
             >
               + Track New Brand
             </Button>
@@ -886,15 +886,15 @@ function DiscoveryContent() {
               { name: "Notion", handle: "notion.so", status: "Active (Synced 1h ago)", ads: 42, spend: "$90k/mo", topHook: "Workspace Template Demo", category: "Productivity" },
               { name: "Figma", handle: "figma.com", status: "Active (Synced 5h ago)", ads: 29, spend: "$75k/mo", topHook: "Realtime Collaboration", category: "Design" },
             ].map((comp) => (
-              <div key={comp.name} className="rounded-2xl border border-white/8 bg-[#121319] p-5 space-y-3 shadow-lg hover:border-purple-500/30 transition-all">
+              <div key={comp.name} className="rounded-2xl border border-border bg-card p-5 space-y-3 shadow-lg hover:border-primary/30 transition-all">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-950/60 border border-purple-500/30 text-xs font-bold text-purple-300">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-950/60 border border-primary/30 text-xs font-bold text-primary">
                       {comp.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-white">{comp.name}</h4>
-                      <p className="text-[10px] text-zinc-400 font-mono">{comp.handle}</p>
+                      <h4 className="text-xs font-semibold text-foreground dark:text-white">{comp.name}</h4>
+                      <p className="text-[10px] text-muted-foreground font-mono">{comp.handle}</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-[9px] text-emerald-400">
@@ -904,28 +904,28 @@ function DiscoveryContent() {
 
                 <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-white/4">
                   <div>
-                    <span className="text-zinc-500 text-[10px]">Active Ads:</span>
-                    <p className="text-white font-semibold">{comp.ads} variations</p>
+                    <span className="text-muted-foreground text-[10px]">Active Ads:</span>
+                    <p className="text-foreground dark:text-white font-semibold">{comp.ads} variations</p>
                   </div>
                   <div>
-                    <span className="text-zinc-500 text-[10px]">Est. Monthly Spend:</span>
-                    <p className="text-purple-300 font-semibold">{comp.spend}</p>
+                    <span className="text-muted-foreground text-[10px]">Est. Monthly Spend:</span>
+                    <p className="text-primary font-semibold">{comp.spend}</p>
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-[#181924] p-2 text-[11px] text-zinc-300 border border-white/5">
-                  <span className="text-zinc-500 text-[10px] block">Top Winning Hook Type:</span>
-                  <span className="text-zinc-200 font-medium">{comp.topHook}</span>
+                <div className="rounded-lg bg-muted p-2 text-[11px] text-zinc-300 border border-white/5">
+                  <span className="text-muted-foreground text-[10px] block">Top Winning Hook Type:</span>
+                  <span className="text-foreground font-medium">{comp.topHook}</span>
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-zinc-400">{comp.category}</span>
+                  <span className="text-[10px] text-muted-foreground">{comp.category}</span>
                   <button
                     onClick={() => {
                       setActiveTab("library");
                       setSearchQuery(comp.name);
                     }}
-                    className="text-xs text-purple-400 hover:text-purple-300 font-medium"
+                    className="text-xs text-primary hover:text-primary font-medium"
                   >
                     View All Ads →
                   </button>
@@ -945,8 +945,8 @@ function DiscoveryContent() {
                   className={cn(
                     "rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors",
                     activeBoard === b
-                      ? "bg-purple-600 text-white"
-                      : "bg-[#161722] text-zinc-400 hover:text-white border border-white/8"
+                      ? "bg-primary text-white dark:text-white"
+                      : "bg-muted text-muted-foreground hover:text-foreground dark:text-white border border-border"
                   )}
                 >
                   {b}
@@ -961,7 +961,7 @@ function DiscoveryContent() {
                     setToastMessage(`Created board "${name}"`);
                   }
                 }}
-                className="rounded-xl border border-dashed border-white/20 bg-transparent px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+                className="rounded-xl border border-dashed border-white/20 bg-transparent px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground dark:text-white"
               >
                 + New Board
               </button>
@@ -974,7 +974,7 @@ function DiscoveryContent() {
                 navigator.clipboard?.writeText("https://perfos.app/board/share_99a82b");
                 setToastMessage("Shareable board link copied to clipboard! 📋");
               }}
-              className="text-xs border-white/10"
+              className="text-xs border-border"
             >
               Share Board Link ↗
             </Button>
@@ -982,26 +982,26 @@ function DiscoveryContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentDataset.slice(0, 4).map((ad) => (
-              <div key={ad.id} className="rounded-2xl border border-white/8 bg-[#121319] p-4 space-y-3 shadow-xl">
+              <div key={ad.id} className="rounded-2xl border border-border bg-card p-4 space-y-3 shadow-xl">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="border-purple-500/30 bg-purple-500/10 text-purple-300 text-[10px]">
+                  <Badge variant="outline" className="border-primary/30 bg-purple-500/10 text-primary text-[10px]">
                     {ad.platform.toUpperCase()} &middot; {ad.format}
                   </Badge>
-                  <span className="text-[10px] text-zinc-400 font-mono">Score: {ad.score}/100</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Score: {ad.score}/100</span>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold text-white line-clamp-1">{ad.headline}</h4>
-                  <p className="mt-1 text-[11px] text-zinc-400 line-clamp-2">{ad.body}</p>
+                  <h4 className="text-xs font-semibold text-foreground dark:text-white line-clamp-1">{ad.headline}</h4>
+                  <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2">{ad.body}</p>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-white/6 pt-3">
+                <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-[10px] text-emerald-400 font-medium">Est. Spend: {ad.spendEst}</span>
                   <div className="flex gap-1.5">
                     <Button
                       size="sm"
                       onClick={() => handleClone(ad)}
-                      className="h-7 px-2.5 text-[11px] bg-purple-600 hover:bg-purple-500 text-white"
+                      className="h-7 px-2.5 text-[11px] bg-primary hover:bg-primary text-white dark:text-white"
                     >
                       Clone to Studio
                     </Button>
@@ -1032,14 +1032,14 @@ function DiscoveryContent() {
           )}
 
           {/* Winners Table (C08) */}
-          <Card className="border-white/8 bg-[#0c0c0f]">
+          <Card className="border-border bg-background">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <CardTitle className="text-base font-semibold text-zinc-100">
+                  <CardTitle className="text-base font-semibold text-foreground">
                     Scored competitor winners
                   </CardTitle>
-                  <CardDescription className="text-xs text-zinc-400">
+                  <CardDescription className="text-xs text-muted-foreground">
                     Ranked by longevity, hook retention, and estimated spend. Select a row to preview ad DNA.
                   </CardDescription>
                 </div>
@@ -1052,12 +1052,12 @@ function DiscoveryContent() {
                       placeholder="Search advertiser or hook..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-8 w-44 rounded-md border border-white/8 bg-white/4 px-2.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-56"
+                      className="h-8 w-44 rounded-md border border-border bg-white/4 px-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-56"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-2 top-2 text-[10px] text-zinc-500 hover:text-zinc-300"
+                        className="absolute right-2 top-2 text-[10px] text-muted-foreground hover:text-zinc-300"
                       >
                         ✕
                       </button>
@@ -1067,25 +1067,25 @@ function DiscoveryContent() {
                   <select
                     value={platformFilter}
                     onChange={(e) => setPlatformFilter(e.target.value)}
-                    className="h-8 rounded-md border border-white/8 bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="h-8 rounded-md border border-border bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
-                    <option value="all" className="bg-[#111114]">All platforms</option>
-                    <option value="meta" className="bg-[#111114]">Meta</option>
-                    <option value="tiktok" className="bg-[#111114]">TikTok</option>
-                    <option value="google" className="bg-[#111114]">Google</option>
-                    <option value="linkedin" className="bg-[#111114]">LinkedIn</option>
-                    <option value="x" className="bg-[#111114]">X</option>
+                    <option value="all" className="bg-card">All platforms</option>
+                    <option value="meta" className="bg-card">Meta</option>
+                    <option value="tiktok" className="bg-card">TikTok</option>
+                    <option value="google" className="bg-card">Google</option>
+                    <option value="linkedin" className="bg-card">LinkedIn</option>
+                    <option value="x" className="bg-card">X</option>
                   </select>
 
                   <select
                     value={tierFilter}
                     onChange={(e) => setTierFilter(e.target.value)}
-                    className="h-8 rounded-md border border-white/8 bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="h-8 rounded-md border border-border bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
-                    <option value="all" className="bg-[#111114]">All tiers</option>
-                    <option value="high_conf" className="bg-[#111114]">High confidence</option>
-                    <option value="winner" className="bg-[#111114]">Proven winner</option>
-                    <option value="emerging" className="bg-[#111114]">Emerging</option>
+                    <option value="all" className="bg-card">All tiers</option>
+                    <option value="high_conf" className="bg-card">High confidence</option>
+                    <option value="winner" className="bg-card">Proven winner</option>
+                    <option value="emerging" className="bg-card">Emerging</option>
                   </select>
                 </div>
               </div>
@@ -1094,7 +1094,7 @@ function DiscoveryContent() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-white/8 hover:bg-transparent">
+                  <TableRow className="border-b border-border hover:bg-transparent">
                     <TableHead
                       sortable
                       active={sortKey === "platform"}
@@ -1148,7 +1148,7 @@ function DiscoveryContent() {
                   ) : sortedRows.length === 0 ? (
                     <TableEmpty colSpan={7}>
                       <p className="text-sm font-medium text-zinc-300">No matching winner ads found</p>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         Try adjusting your search query or relaxing the platform/tier filters.
                       </p>
                     </TableEmpty>
@@ -1174,23 +1174,23 @@ function DiscoveryContent() {
                           </TableCell>
                           <TableCell>
                             <div>
-                              <p className="text-xs font-semibold text-zinc-100">{row.advertiser}</p>
-                              <p className="text-[11px] text-zinc-500">{row.handle}</p>
+                              <p className="text-xs font-semibold text-foreground">{row.advertiser}</p>
+                              <p className="text-[11px] text-muted-foreground">{row.handle}</p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="max-w-md">
-                              <p className="truncate text-xs font-medium text-zinc-200" title={row.headline}>
+                              <p className="truncate text-xs font-medium text-foreground" title={row.headline}>
                                 {row.headline}
                               </p>
-                              <p className="line-clamp-1 text-[11px] text-zinc-500" title={row.body}>
+                              <p className="line-clamp-1 text-[11px] text-muted-foreground" title={row.body}>
                                 {row.body}
                               </p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-white tabular-nums">
+                              <span className="text-xs font-bold text-foreground dark:text-white tabular-nums">
                                 {row.score}
                               </span>
                               {tierBadge(row.tier)}
@@ -1202,7 +1202,7 @@ function DiscoveryContent() {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <span className="text-xs text-zinc-400 tabular-nums">
+                            <span className="text-xs text-muted-foreground tabular-nums">
                               {row.spendEst}
                             </span>
                           </TableCell>
@@ -1217,8 +1217,8 @@ function DiscoveryContent() {
                               className={cn(
                                 "h-7 text-xs",
                                 isSelected
-                                  ? "bg-blue-600 text-white hover:bg-blue-500"
-                                  : "border-white/8 text-zinc-300 hover:bg-white/4"
+                                  ? "bg-blue-600 text-foreground dark:text-white hover:bg-blue-500"
+                                  : "border-border text-zinc-300 hover:bg-white/4"
                               )}
                             >
                               {isSelected ? "Inspecting" : "Inspect"}
@@ -1240,7 +1240,7 @@ function DiscoveryContent() {
 
 export default function DiscoveryPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-xs text-zinc-400">Loading Discovery...</div>}>
+    <Suspense fallback={<div className="p-8 text-xs text-muted-foreground">Loading Discovery...</div>}>
       <DiscoveryContent />
     </Suspense>
   );

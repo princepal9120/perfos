@@ -14,11 +14,11 @@ const variants: Record<Variant, string> = {
   default:
     "bg-white text-zinc-950 hover:bg-zinc-200 active:bg-zinc-300 font-medium shadow-sm active:scale-[0.98]",
   secondary:
-    "bg-zinc-900 text-zinc-100 border border-white/10 hover:bg-zinc-800 hover:border-white/20 active:scale-[0.98]",
+    "bg-zinc-900 text-foreground border border-border hover:bg-zinc-800 hover:border-white/20 active:scale-[0.98]",
   outline:
-    "border border-white/10 bg-transparent text-zinc-200 hover:bg-white/4 hover:border-white/20 active:scale-[0.98]",
+    "border border-border bg-transparent text-foreground hover:bg-white/4 hover:border-white/20 active:scale-[0.98]",
   ghost:
-    "text-zinc-400 hover:bg-white/6 hover:text-zinc-100 active:scale-[0.98]",
+    "text-muted-foreground hover:bg-white/6 hover:text-foreground active:scale-[0.98]",
   destructive:
     "bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/25 active:scale-[0.98]",
   success:

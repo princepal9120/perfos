@@ -13,7 +13,7 @@ const SUGGESTIONS = [
 ];
 
 const inputCls =
-  "w-full resize-none rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-white/20 focus:outline-none";
+  "w-full resize-none rounded-xl border border-border bg-zinc-900/80 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-white/20 focus:outline-none";
 
 function ChatInner() {
   const searchParams = useSearchParams();
@@ -78,8 +78,8 @@ function ChatInner() {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold tracking-tight text-zinc-100">Agent</h2>
-        <p className="mt-1 text-xs text-zinc-400">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">Agent</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
           Talk to PerfOS in plain language. The agent plans actions and asks for
           approval before anything touches your accounts.
         </p>
@@ -87,7 +87,7 @@ function ChatInner() {
 
       <div
         ref={scrollRef}
-        className="flex-1 space-y-4 overflow-y-auto rounded-xl border border-white/10 bg-[#111114] p-4"
+        className="flex-1 space-y-4 overflow-y-auto rounded-xl border border-border bg-card p-4"
       >
         {messages.map((m, i) => (
           <div
@@ -98,12 +98,12 @@ function ChatInner() {
               className={
                 m.role === "user"
                   ? "max-w-[80%] rounded-xl bg-white px-4 py-3 text-xs leading-relaxed text-zinc-950 font-medium"
-                  : "max-w-[85%] rounded-xl border border-white/10 bg-zinc-900/90 px-4 py-3 text-xs leading-relaxed text-zinc-200"
+                  : "max-w-[85%] rounded-xl border border-border bg-zinc-900/90 px-4 py-3 text-xs leading-relaxed text-foreground"
               }
             >
               <p className="whitespace-pre-wrap">{m.content}</p>
               {m.actions && m.actions.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/8 pt-2.5">
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-2.5">
                   {m.actions.map((a, j) => (
                     <Link
                       key={j}
@@ -130,7 +130,7 @@ function ChatInner() {
         ))}
         {sending && (
           <div className="flex justify-start">
-            <div className="rounded-xl border border-white/10 bg-zinc-900/90 px-4 py-3 text-xs text-zinc-400">
+            <div className="rounded-xl border border-border bg-zinc-900/90 px-4 py-3 text-xs text-muted-foreground">
               <span className="animate-pulse">Agent is thinking…</span>
             </div>
           </div>
@@ -144,7 +144,7 @@ function ChatInner() {
               key={s}
               type="button"
               onClick={() => void send(s)}
-              className="rounded-md border border-white/10 bg-zinc-900/60 px-2.5 py-1 text-[11px] text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-200"
+              className="rounded-md border border-border bg-zinc-900/60 px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
             >
               {s}
             </button>
@@ -191,7 +191,7 @@ function ChatInner() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-xs text-zinc-500">Loading…</div>}>
+    <Suspense fallback={<div className="p-4 text-xs text-muted-foreground">Loading…</div>}>
       <ChatInner />
     </Suspense>
   );

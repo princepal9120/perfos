@@ -121,8 +121,8 @@ function EmptyAnomalyState() {
           <path d="m9 12 2 2 4-4" />
         </svg>
       </div>
-      <h4 className="mt-3 text-sm font-semibold text-zinc-100">Tracking integrity clean</h4>
-      <p className="mt-1 max-w-sm text-xs text-zinc-400">
+      <h4 className="mt-3 text-sm font-semibold text-foreground">Tracking integrity clean</h4>
+      <p className="mt-1 max-w-sm text-xs text-muted-foreground">
         No active anomalies detected across channels. Platform attribution reconciles within expected bounds.
       </p>
     </div>
@@ -131,11 +131,11 @@ function EmptyAnomalyState() {
 
 export function AnomalyList({ items, loading, onDismiss, className }: AnomalyListProps) {
   return (
-    <Card className={cn("border-white/8 bg-[#111114]", className)}>
+    <Card className={cn("border-border bg-card", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <CardTitle className="font-display text-base text-zinc-100">
+            <CardTitle className="font-display text-base text-foreground">
               Attribution & spend anomalies
             </CardTitle>
             {items.length > 0 && (
@@ -144,7 +144,7 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
               </Badge>
             )}
           </div>
-          <CardDescription className="pt-1 text-xs text-zinc-400">
+          <CardDescription className="pt-1 text-xs text-muted-foreground">
             Automated alerts for attribution spikes, tracking drop-offs, and platform over-reporting.
           </CardDescription>
         </div>
@@ -169,19 +169,19 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
                         {formatPlatform(item.platform)}
                       </Badge>
                       {getSeverityBadge(item.severity)}
-                      <span className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+                      <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
                         {item.metric.replace(/_/g, " ")}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[11px] tabular-nums text-zinc-500">
+                      <span className="text-[11px] tabular-nums text-muted-foreground">
                         {formatTimestamp(item.detected_at)}
                       </span>
                       {onDismiss && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-6 px-2 text-xs text-zinc-500 hover:text-zinc-300"
+                          className="h-6 px-2 text-xs text-muted-foreground hover:text-zinc-300"
                           onClick={() => onDismiss(itemId)}
                         >
                           Dismiss

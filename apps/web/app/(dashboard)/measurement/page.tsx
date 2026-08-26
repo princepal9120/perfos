@@ -383,10 +383,10 @@ export default function MeasurementPage() {
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-xl font-semibold tracking-tight text-zinc-100">
+          <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
             Unified measurement
           </h2>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Cross-channel iROAS calibration, creative fatigue tracking, attribution anomalies, and budget reallocation.
           </p>
         </div>
@@ -446,7 +446,7 @@ export default function MeasurementPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center justify-between border-b border-white/8 pb-1">
+      <div className="flex items-center justify-between border-b border-border pb-1">
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -454,8 +454,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "iroas"
-                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
             )}
           >
             <span>iROAS calibration</span>
@@ -470,8 +470,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "creatives"
-                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
             )}
           >
             <span>Creatives</span>
@@ -486,8 +486,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "anomalies"
-                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
             )}
           >
             <span>Anomalies</span>
@@ -507,8 +507,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "optimizer"
-                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
             )}
           >
             <span>Optimizer</span>
@@ -533,13 +533,13 @@ export default function MeasurementPage() {
             />
 
             {/* Incrementality Experiments Card */}
-            <Card className="border-white/8 bg-[#111114]">
+            <Card className="border-border bg-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <div>
-                  <CardTitle className="font-display text-base text-zinc-100">
+                  <CardTitle className="font-display text-base text-foreground">
                     Incrementality experiments
                   </CardTitle>
-                  <CardDescription className="pt-1 text-xs text-zinc-400">
+                  <CardDescription className="pt-1 text-xs text-muted-foreground">
                     Geo holdouts and matched-market tests to isolate true marginal lift.
                   </CardDescription>
                 </div>
@@ -555,7 +555,7 @@ export default function MeasurementPage() {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b border-white/8 bg-white/1">
+                    <TableRow className="border-b border-border bg-white/1">
                       <TableHead>Channel</TableHead>
                       <TableHead>Method</TableHead>
                       <TableHead>Status</TableHead>
@@ -586,7 +586,7 @@ export default function MeasurementPage() {
                       ))
                     ) : testsData.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="py-8 text-center text-xs text-zinc-500">
+                        <TableCell colSpan={5} className="py-8 text-center text-xs text-muted-foreground">
                           No active incrementality experiments. Click &ldquo;Launch test&rdquo; to start a geo holdout.
                         </TableCell>
                       </TableRow>
@@ -596,7 +596,7 @@ export default function MeasurementPage() {
                           key={t.id}
                           className="border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/3"
                         >
-                          <TableCell className="font-medium text-zinc-100">
+                          <TableCell className="font-medium text-foreground">
                             {formatPlatform(t.platform)}
                           </TableCell>
                           <TableCell>
@@ -617,7 +617,7 @@ export default function MeasurementPage() {
                               {t.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-xs text-zinc-400">
+                          <TableCell className="text-xs text-muted-foreground">
                             {t.markets_treated?.join(", ") ?? "Matched markets"}
                           </TableCell>
                           <TableCell className="text-right font-semibold tabular-nums">
@@ -631,7 +631,7 @@ export default function MeasurementPage() {
                                 {t.lift_pct.toFixed(1)}%
                               </span>
                             ) : (
-                              <span className="text-zinc-500">In progress</span>
+                              <span className="text-muted-foreground">In progress</span>
                             )}
                           </TableCell>
                         </TableRow>

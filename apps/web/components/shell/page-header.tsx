@@ -8,13 +8,13 @@ export interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions }: PageHeaderProps) {
   return (
-    <header className="flex items-start justify-between gap-6 border-b border-white/8 pb-6">
+    <header className="flex items-start justify-between gap-6 border-b border-border pb-6">
       <div className="min-w-0">
-        <h1 className="font-display text-2xl font-semibold tracking-tight text-zinc-100">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 text-sm leading-6 text-zinc-400">{description}</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
         ) : null}
       </div>
 

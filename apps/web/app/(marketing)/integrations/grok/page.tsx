@@ -8,10 +8,10 @@ export default function GrokIntegrationPage() {
         <Link href="/integrations" className="text-xs text-pink-400 hover:underline">
           ← Back to All Integrations
         </Link>
-        <h1 className="text-4xl font-display font-bold text-white tracking-tight">
+        <h1 className="text-4xl font-display font-bold text-foreground dark:text-white tracking-tight">
           How to connect AdKit with Grok (xAI)
         </h1>
-        <p className="text-zinc-400 text-sm sm:text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Harness real-time trending discourse on X to launch responsive ad creative angles in real time.
         </p>
       </div>
@@ -19,7 +19,7 @@ export default function GrokIntegrationPage() {
       <div className="text-center pt-4">
         <Link
           href="/pricing"
-          className="px-8 py-3.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-semibold shadow-lg transition-all"
+          className="px-8 py-3.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-foreground dark:text-white text-xs font-semibold shadow-lg transition-all"
         >
           Connect Grok Now →
         </Link>

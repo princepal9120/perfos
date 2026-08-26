@@ -181,11 +181,11 @@ export function AuditLogSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/8 bg-[#111114] overflow-hidden",
+        "rounded-xl border border-border bg-card overflow-hidden",
         className
       )}
     >
-      <div className="flex flex-col gap-1 p-5 border-b border-white/8">
+      <div className="flex flex-col gap-1 p-5 border-b border-border">
         <Skeleton className="h-4 w-36" />
         <Skeleton className="h-3 w-64" />
       </div>
@@ -223,11 +223,11 @@ export function AuditLogEmpty({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 bg-white/1 px-6 py-12 text-center",
+        "flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-white/1 px-6 py-12 text-center",
         className
       )}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-white/3 text-zinc-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/3 text-muted-foreground">
         <svg
           width="18"
           height="18"
@@ -243,10 +243,10 @@ export function AuditLogEmpty({
           <circle cx="12" cy="12" r="9" />
         </svg>
       </div>
-      <h4 className="mt-3 text-sm font-medium text-zinc-100">
+      <h4 className="mt-3 text-sm font-medium text-foreground">
         No audit entries found
       </h4>
-      <p className="mt-1 max-w-sm text-xs leading-relaxed text-zinc-400">
+      <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
         {message ||
           "Actions taken by loop agents and human operators will be recorded here with timestamped decision records."}
       </p>
@@ -254,7 +254,7 @@ export function AuditLogEmpty({
         <button
           type="button"
           onClick={onReset}
-          className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-white/8 bg-white/4 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors duration-150 ease-out hover:border-white/16 hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 active:scale-[0.98]"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-border bg-white/4 px-3 py-1.5 text-xs font-medium text-foreground transition-colors duration-150 ease-out hover:border-white/16 hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 active:scale-[0.98]"
         >
           Clear filters
         </button>
@@ -329,25 +329,25 @@ export function AuditLog({
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/8 bg-[#111114] overflow-hidden",
+        "rounded-xl border border-border bg-card overflow-hidden",
         className
       )}
       {...props}
     >
       {/* Header */}
-      <div className="p-5 border-b border-white/8 space-y-3">
+      <div className="p-5 border-b border-border space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-sm font-semibold tracking-tight text-zinc-100">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">
               {title}
             </h3>
             {description && (
-              <p className="mt-0.5 text-xs text-zinc-400 leading-relaxed">
+              <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
                 {description}
               </p>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono tabular-nums">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono tabular-nums">
             <span>
               {filteredEntries.length} {filteredEntries.length === 1 ? "entry" : "entries"}
             </span>
@@ -370,7 +370,7 @@ export function AuditLog({
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500",
                       isActive
                         ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
-                        : "bg-white/3 text-zinc-400 border border-white/6 hover:bg-white/6 hover:text-zinc-200"
+                        : "bg-white/3 text-muted-foreground border border-border hover:bg-white/6 hover:text-foreground"
                     )}
                   >
                     {f.label}
@@ -385,14 +385,14 @@ export function AuditLog({
                 placeholder="Filter by keyword…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-md border border-white/8 bg-[#18181c] px-3 py-1 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-colors"
+                className="w-full rounded-md border border-border bg-muted px-3 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-colors"
                 aria-label="Filter audit entries"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-500 hover:text-zinc-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-zinc-300"
                   aria-label="Clear search"
                 >
                   ✕
@@ -425,7 +425,7 @@ export function AuditLog({
       ) : (
         <div className="divide-y divide-white/4">
           {/* Table Header (Desktop) */}
-          <div className="hidden sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-center gap-4 px-4 py-2.5 bg-white/2 text-[11px] font-medium tracking-wider text-zinc-500 uppercase">
+          <div className="hidden sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-center gap-4 px-4 py-2.5 bg-white/2 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
             <span>Timestamp</span>
             <span>Actor</span>
             <span>Action</span>
@@ -462,7 +462,7 @@ export function AuditLog({
                 >
                   {/* Timestamp */}
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs text-zinc-500 tabular-nums">
+                    <span className="font-mono text-xs text-muted-foreground tabular-nums">
                       {formattedTime}
                     </span>
                   </div>
@@ -476,14 +476,14 @@ export function AuditLog({
 
                   {/* Action */}
                   <div className="min-w-0">
-                    <span className="text-xs text-zinc-200 font-medium line-clamp-1">
+                    <span className="text-xs text-foreground font-medium line-clamp-1">
                       {entry.action}
                     </span>
                   </div>
 
                   {/* Target */}
                   <div className="min-w-0">
-                    <span className="text-xs text-zinc-400 line-clamp-1">
+                    <span className="text-xs text-muted-foreground line-clamp-1">
                       {entry.target}
                     </span>
                   </div>
@@ -498,10 +498,10 @@ export function AuditLog({
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="px-4 py-3 bg-white/2 border-t border-white/4 text-xs text-zinc-400 space-y-2">
+                  <div className="px-4 py-3 bg-white/2 border-t border-white/4 text-xs text-muted-foreground space-y-2">
                     {entry.detail && (
                       <div className="flex items-start gap-2">
-                        <span className="text-zinc-500 font-medium shrink-0">
+                        <span className="text-muted-foreground font-medium shrink-0">
                           Rationale:
                         </span>
                         <span className="text-zinc-300 leading-relaxed">
@@ -509,23 +509,23 @@ export function AuditLog({
                         </span>
                       </div>
                     )}
-                    <div className="flex flex-wrap items-center gap-4 text-[11px] text-zinc-500 font-mono pt-1">
+                    <div className="flex flex-wrap items-center gap-4 text-[11px] text-muted-foreground font-mono pt-1">
                       {entry.stage && (
                         <span>
-                          Stage: <span className="text-zinc-400">{entry.stage}</span>
+                          Stage: <span className="text-muted-foreground">{entry.stage}</span>
                         </span>
                       )}
                       {entry.platform && (
                         <span>
                           Platform:{" "}
-                          <span className="text-zinc-400 uppercase">
+                          <span className="text-muted-foreground uppercase">
                             {entry.platform}
                           </span>
                         </span>
                       )}
                       {entry.id && (
                         <span>
-                          ID: <span className="text-zinc-400">{entry.id}</span>
+                          ID: <span className="text-muted-foreground">{entry.id}</span>
                         </span>
                       )}
                     </div>

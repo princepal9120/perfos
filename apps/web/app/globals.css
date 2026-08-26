@@ -1,33 +1,79 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+}
+
 @layer base {
   :root {
-    --bg-deep: #0b0c10;
-    --bg-card: #12131a;
-    --bg-card-hover: #171822;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-accent: rgba(168, 85, 247, 0.3);
-    --accent: #a855f7;
+    --background: #ECEDEF;
+    --foreground: #171717;
+    --card: #E4E5E8;
+    --card-foreground: #171717;
+    --border: rgba(0, 0, 0, 0.08);
+    --primary: #d86f82;
+    --primary-foreground: #ffffff;
+    --primary-hover: #c85c6f;
+    --primary-dark: #a8455a;
+    --muted: #DEDFE2;
+    --muted-foreground: #9B9CA3;
+    
+    --bg-deep: var(--background);
+    --bg-card: var(--card);
+    --bg-card-hover: var(--muted);
+    --border-subtle: var(--border);
+    --border-accent: rgba(200, 92, 111, 0.35);
+    --accent: var(--primary);
+    
     --font-display: var(--font-display-face, 'Space Grotesk'), -apple-system, sans-serif;
     --font-body: var(--font-body-face, 'Inter'), -apple-system, sans-serif;
   }
-
-  html {
-    color-scheme: dark;
-    background-color: #0b0c10;
-    color: #f4f4f6;
+  
+  .dark {
+    --background: #08080a;
+    --foreground: #ecedef;
+    --card: #12131a;
+    --card-foreground: #ecedef;
+    --border: rgba(255, 255, 255, 0.08);
+    --primary: #a855f7;
+    --primary-foreground: #ffffff;
+    --primary-hover: #9333ea;
+    --primary-dark: #7e22ce;
+    --muted: #171822;
+    --muted-foreground: #a1a1aa;
+    
+    --bg-deep: var(--background);
+    --bg-card: var(--card);
+    --bg-card-hover: var(--muted);
+    --border-subtle: var(--border);
+    --border-accent: rgba(168, 85, 247, 0.35);
+    --accent: var(--primary);
   }
 
+  html {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
   body {
-    background-color: #0b0c10;
-    color: #f4f4f6;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
     margin: 0;
     padding: 0;
   }
-
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-style: normal;
@@ -36,11 +82,38 @@
   }
 }
 
-/* Custom Utilities for Premium Dark Design */
-.bg-deep { background-color: #0b0c10; }
-.bg-card-dark { background-color: #12131a; }
-.bg-card-dark-hover:hover { background-color: #171822; }
-.border-subtle { border-color: rgba(255, 255, 255, 0.08); }
-.border-accent { border-color: rgba(168, 85, 247, 0.35); }
+/* Custom Utilities for Premium Design */
+.bg-deep { background-color: var(--background); }
+.bg-card-dark { background-color: var(--card); }
+.bg-card-dark-hover:hover { background-color: var(--muted); }
+.border-subtle { border-color: var(--border); }
+.border-accent { border-color: var(--border-accent); }
 .glow-purple { box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.25); }
 .glow-purple-lg { box-shadow: 0 20px 60px -15px rgba(168, 85, 247, 0.35); }
+
+/* Daisy.now Warm Glow and Rose styling */
+.glow-daisy {
+  box-shadow: 0 0 50px -10px var(--border-accent);
+}
+
+.glow-daisy-lg {
+  box-shadow: 0 20px 70px -15px var(--border-accent);
+}
+
+.btn-daisy {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 50%, var(--primary-dark) 100%);
+  box-shadow: 0 4px 20px var(--border-accent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border: 1px solid var(--border-accent);
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.btn-daisy:hover {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 50%, var(--primary-dark) 100%);
+  box-shadow: 0 6px 28px var(--border-accent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-daisy:active {
+  transform: translateY(1px);
+}

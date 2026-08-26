@@ -11,7 +11,7 @@ export function Narrative({ narrative }: { narrative: string | null }) {
         {narrative ? (
           <p className="text-xs leading-relaxed text-zinc-300">{narrative}</p>
         ) : (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-muted-foreground">
             Narrative will appear once today&apos;s data is reconciled.
           </p>
         )}

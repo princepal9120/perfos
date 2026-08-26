@@ -134,10 +134,10 @@ export default function AccountsPage() {
     <div className="mx-auto w-full max-w-[1280px] px-6 py-8">
       {/* header */}
       <div className="mb-8">
-        <h1 className="font-display text-xl font-semibold tracking-tight text-zinc-100">
+        <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
           Accounts
         </h1>
-        <p className="mt-1 max-w-prose text-sm leading-relaxed text-zinc-400">
+        <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
           Connect an ad platform to pull campaign spend and claimed conversions.
           PerfOS reconciles those claims against actual revenue before any budget
           moves.
@@ -155,7 +155,7 @@ export default function AccountsPage() {
 
       {/* connector grid */}
       <section aria-label="Available platforms">
-        <h2 className="mb-3 text-sm font-medium tracking-tight text-zinc-400">
+        <h2 className="mb-3 text-sm font-medium tracking-tight text-muted-foreground">
           Platforms
         </h2>
         {loading ? (
@@ -192,7 +192,7 @@ export default function AccountsPage() {
                       <div className="flex items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-bg-elevated font-display text-sm font-semibold text-zinc-200"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-bg-elevated font-display text-sm font-semibold text-foreground"
                         >
                           {c.monogram}
                         </span>
@@ -210,8 +210,8 @@ export default function AccountsPage() {
                   </CardHeader>
                   <CardFooter className="mt-auto">
                     {connected ? (
-                      <p className="w-full text-xs text-zinc-500">
-                        <span className="font-medium tabular-nums text-zinc-400">
+                      <p className="w-full text-xs text-muted-foreground">
+                        <span className="font-medium tabular-nums text-muted-foreground">
                           {count}
                         </span>{" "}
                         {count === 1 ? "account" : "accounts"} syncing
@@ -237,11 +237,11 @@ export default function AccountsPage() {
       {/* connected accounts */}
       <section aria-label="Connected accounts" className="mt-10">
         <div className="mb-3 flex items-baseline gap-2">
-          <h2 className="text-sm font-medium tracking-tight text-zinc-100">
+          <h2 className="text-sm font-medium tracking-tight text-foreground">
             Connected accounts
           </h2>
           {!loading && (
-            <span className="text-xs tabular-nums text-zinc-500">{accounts.length}</span>
+            <span className="text-xs tabular-nums text-muted-foreground">{accounts.length}</span>
           )}
         </div>
 
@@ -267,7 +267,7 @@ export default function AccountsPage() {
                 d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008V17.25Z"
               />
             </svg>
-            <p className="mt-3 text-sm text-zinc-400">
+            <p className="mt-3 text-sm text-muted-foreground">
               No accounts yet. Connect a platform above to pull its campaigns into
               PerfOS.
             </p>
@@ -302,19 +302,19 @@ export default function AccountsPage() {
                   const meta = CONNECTORS.find((c) => c.id === account.platform);
                   return (
                     <TableRow key={account.id}>
-                      <TableCell className="whitespace-nowrap px-4 py-3 text-zinc-200">
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-foreground">
                         {meta?.name ?? account.platform}
                       </TableCell>
-                      <TableCell className="px-4 py-3 font-medium text-zinc-100">
+                      <TableCell className="px-4 py-3 font-medium text-foreground">
                         {account.name}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap px-4 py-3 font-mono text-xs tabular-nums text-zinc-500">
+                      <TableCell className="whitespace-nowrap px-4 py-3 font-mono text-xs tabular-nums text-muted-foreground">
                         {account.platform_account_id ?? "—"}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <StatusBadge status={account.status} />
                       </TableCell>
-                      <TableCell className="whitespace-nowrap px-4 py-3 text-sm tabular-nums text-zinc-500">
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-sm tabular-nums text-muted-foreground">
                         {formatDate(account.connected_at)}
                       </TableCell>
                     </TableRow>

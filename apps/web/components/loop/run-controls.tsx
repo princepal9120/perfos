@@ -87,7 +87,7 @@ export function RunControls({ onComplete, className }: RunControlsProps) {
         <Button
           onClick={() => setConfirmOpen(true)}
           disabled={!!run}
-          className="bg-accent text-white hover:bg-accent-hover active:bg-accent-hover"
+          className="bg-accent text-foreground dark:text-white hover:bg-accent-hover active:bg-accent-hover"
         >
           {run?.mode === "live" ? <Spinner /> : null}
           {run?.mode === "live" ? "Running loop…" : "Run loop"}
@@ -100,7 +100,7 @@ export function RunControls({ onComplete, className }: RunControlsProps) {
         </p>
       )}
       {!error && lastRun && (
-        <p className="max-w-sm text-xs tabular-nums text-zinc-500">
+        <p className="max-w-sm text-xs tabular-nums text-muted-foreground">
           Last run: {lastRun.mode === "dry_run" ? "dry-run" : "live"} finished
           in {lastRun.seconds.toFixed(1)}s
         </p>
@@ -170,12 +170,12 @@ function ConfirmRunDialog({
         aria-modal="true"
         aria-labelledby="run-loop-confirm-title"
         aria-describedby="run-loop-confirm-desc"
-        className="relative w-full max-w-md rounded-xl border border-white/8 bg-[#18181c] p-6 shadow-lg shadow-black/40"
+        className="relative w-full max-w-md rounded-xl border border-border bg-muted p-6 shadow-lg shadow-black/40"
       >
-        <h2 id="run-loop-confirm-title" className="text-base font-semibold tracking-tight text-zinc-100">
+        <h2 id="run-loop-confirm-title" className="text-base font-semibold tracking-tight text-foreground">
           Run the loop on live accounts?
         </h2>
-        <p id="run-loop-confirm-desc" className="mt-2 text-sm leading-relaxed text-zinc-400">
+        <p id="run-loop-confirm-desc" className="mt-2 text-sm leading-relaxed text-muted-foreground">
           This runs find &rarr; score &rarr; create &rarr; launch &rarr; track
           &rarr; double down against your connected ad platforms. Launch stays
           paused at the safety gate until you approve each action.
@@ -187,7 +187,7 @@ function ConfirmRunDialog({
           <Button
             onClick={onConfirm}
             disabled={busy}
-            className="bg-accent text-white hover:bg-accent-hover active:bg-accent-hover"
+            className="bg-accent text-foreground dark:text-white hover:bg-accent-hover active:bg-accent-hover"
           >
             {busy ? <Spinner /> : null}
             {busy ? "Starting…" : "Run now"}

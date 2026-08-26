@@ -176,7 +176,7 @@ export function AdPreview({
   return (
     <Card
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden border border-white/8 bg-[#111114] shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/16 hover:bg-[#141418] focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40",
+        "group relative flex flex-col justify-between overflow-hidden border border-border bg-card shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/16 hover:bg-card focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40",
         className
       )}
     >
@@ -185,11 +185,11 @@ export function AdPreview({
         <CardHeader className="p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-              <Badge variant="outline" className="text-zinc-200 border-white/10 bg-white/3">
+              <Badge variant="outline" className="text-foreground border-border bg-white/3">
                 {platformLabel}
               </Badge>
               {runtime !== null && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium tabular-nums text-zinc-400">
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium tabular-nums text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
                   {runtime}d active
                 </span>
@@ -210,7 +210,7 @@ export function AdPreview({
                   "inline-flex h-7 w-7 items-center justify-center rounded-md border text-xs transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
                   isBookmarked
                     ? "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                    : "border-white/10 bg-white/3 text-zinc-400 hover:border-white/20 hover:text-zinc-100"
+                    : "border-border bg-white/3 text-muted-foreground hover:border-white/20 hover:text-foreground"
                 )}
               >
                 <svg
@@ -229,11 +229,11 @@ export function AdPreview({
           </div>
 
           <div className="mt-2.5 flex items-baseline justify-between gap-2">
-            <h4 className="truncate font-display text-sm font-semibold tracking-tight text-zinc-100">
+            <h4 className="truncate font-display text-sm font-semibold tracking-tight text-foreground">
               {advertiserName}
             </h4>
             {ad.countries && ad.countries.length > 0 && (
-              <span className="shrink-0 text-[11px] font-mono text-zinc-500 uppercase">
+              <span className="shrink-0 text-[11px] font-mono text-muted-foreground uppercase">
                 {ad.countries.slice(0, 3).join(", ")}
               </span>
             )}
@@ -241,7 +241,7 @@ export function AdPreview({
         </CardHeader>
 
         {/* Media / Creative Stage */}
-        <div className="relative mx-4 overflow-hidden rounded-lg border border-white/6 bg-[#0c0c0f]">
+        <div className="relative mx-4 overflow-hidden rounded-lg border border-border bg-background">
           {ad.thumbnailUrl ? (
             <div className="relative aspect-video w-full overflow-hidden bg-zinc-900">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -253,7 +253,7 @@ export function AdPreview({
             </div>
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center p-4 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-zinc-300 shadow-inner">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/4 text-zinc-300 shadow-inner">
                 {mediaType === "video" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -280,7 +280,7 @@ export function AdPreview({
                   </svg>
                 )}
               </div>
-              <span className="mt-2 text-[11px] font-medium capitalize text-zinc-400">
+              <span className="mt-2 text-[11px] font-medium capitalize text-muted-foreground">
                 {mediaType} creative DNA
               </span>
             </div>
@@ -290,7 +290,7 @@ export function AdPreview({
           {(ad.hook || ad.angle) && (
             <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1.5">
               {ad.hook && (
-                <span className="inline-flex items-center rounded border border-white/10 bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-zinc-200 backdrop-blur-md">
+                <span className="inline-flex items-center rounded border border-border bg-black/70 px-1.5 py-0.5 text-[10px] font-medium text-foreground backdrop-blur-md">
                   Hook: {ad.hook}
                 </span>
               )}
@@ -306,7 +306,7 @@ export function AdPreview({
         {/* Copy & Content */}
         <CardContent className="p-4 pt-3.5 space-y-2.5">
           {headlineText && (
-            <h5 className="font-display text-xs font-semibold leading-snug text-zinc-100">
+            <h5 className="font-display text-xs font-semibold leading-snug text-foreground">
               {headlineText}
             </h5>
           )}
@@ -332,8 +332,8 @@ export function AdPreview({
           </div>
 
           <div className="flex items-center justify-between pt-1 border-t border-white/4">
-            <span className="text-[11px] text-zinc-500">CTA button</span>
-            <span className="inline-flex items-center rounded border border-white/8 bg-white/2 px-2 py-0.5 text-[11px] font-medium text-zinc-300">
+            <span className="text-[11px] text-muted-foreground">CTA button</span>
+            <span className="inline-flex items-center rounded border border-border bg-white/2 px-2 py-0.5 text-[11px] font-medium text-zinc-300">
               {ctaLabel}
             </span>
           </div>
@@ -341,10 +341,10 @@ export function AdPreview({
       </div>
 
       {/* Spend & Action Footer */}
-      <CardFooter className="flex flex-col gap-3 border-t border-white/8 bg-white/1 p-4 pt-3">
+      <CardFooter className="flex flex-col gap-3 border-t border-border bg-white/1 p-4 pt-3">
         <div className="flex w-full items-center justify-between text-xs">
-          <span className="text-zinc-400">Est. ad spend</span>
-          <span className="font-medium text-zinc-200 tabular-nums">{spendDisplay}</span>
+          <span className="text-muted-foreground">Est. ad spend</span>
+          <span className="font-medium text-foreground tabular-nums">{spendDisplay}</span>
         </div>
 
         <div className="grid w-full grid-cols-2 gap-2">
@@ -360,7 +360,7 @@ export function AdPreview({
             variant="default"
             size="sm"
             onClick={() => onClone?.(ad)}
-            className="w-full text-xs bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700"
+            className="w-full text-xs bg-blue-600 text-foreground dark:text-white hover:bg-blue-500 active:bg-blue-700"
           >
             Clone in Studio
           </Button>
@@ -373,7 +373,7 @@ export function AdPreview({
 /** Skeleton layout matching AdPreview */
 export function AdPreviewSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn("flex flex-col justify-between border border-white/8 bg-[#111114] p-4", className)}>
+    <Card className={cn("flex flex-col justify-between border border-border bg-card p-4", className)}>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-20 rounded-full" />
@@ -384,7 +384,7 @@ export function AdPreviewSkeleton({ className }: { className?: string }) {
         <Skeleton className="h-3 w-4/5" />
         <SkeletonText lines={2} />
       </div>
-      <div className="mt-4 space-y-2 border-t border-white/8 pt-3">
+      <div className="mt-4 space-y-2 border-t border-border pt-3">
         <div className="flex justify-between">
           <Skeleton className="h-3 w-20" />
           <Skeleton className="h-3 w-24" />
@@ -407,8 +407,8 @@ export function AdPreviewEmpty({
   className?: string;
 }) {
   return (
-    <Card className={cn("flex flex-col items-center justify-center border border-dashed border-white/8 bg-[#111114] p-8 text-center", className)}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/2 text-zinc-400">
+    <Card className={cn("flex flex-col items-center justify-center border border-dashed border-border bg-card p-8 text-center", className)}>
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/2 text-muted-foreground">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -423,10 +423,10 @@ export function AdPreviewEmpty({
           <path d="M9 21V9" />
         </svg>
       </div>
-      <h4 className="mt-3 font-display text-sm font-semibold tracking-tight text-zinc-100">
+      <h4 className="mt-3 font-display text-sm font-semibold tracking-tight text-foreground">
         No winning ad selected
       </h4>
-      <p className="mt-1 max-w-xs text-xs leading-relaxed text-zinc-400">
+      <p className="mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
         Select an ad from discovery or the swipe file table to preview its creative DNA, longevity, and spend.
       </p>
       {onSelectAction && (

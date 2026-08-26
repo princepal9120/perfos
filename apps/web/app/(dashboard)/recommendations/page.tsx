@@ -313,7 +313,7 @@ const platformBadgeConfig: Record<string, { label: string; color: string }> = {
   tiktok: { label: "TikTok", color: "text-pink-400 border-pink-500/20 bg-pink-500/10" },
   shopify: { label: "Shopify", color: "text-green-400 border-green-500/20 bg-green-500/10" },
   linkedin: { label: "LinkedIn", color: "text-sky-400 border-sky-500/20 bg-sky-500/10" },
-  multi: { label: "Multi-channel", color: "text-purple-400 border-purple-500/20 bg-purple-500/10" },
+  multi: { label: "Multi-channel", color: "text-primary border-purple-500/20 bg-purple-500/10" },
 };
 
 // ---------------------------------------------------------------------------
@@ -333,16 +333,16 @@ function JsonBlock({
   return (
     <details
       open={defaultOpen}
-      className="group rounded-lg border border-white/8 bg-[#0c0c0f] transition-colors duration-150 hover:border-white/16"
+      className="group rounded-lg border border-border bg-background transition-colors duration-150 hover:border-white/16"
     >
-      <summary className="flex cursor-pointer select-none items-center justify-between px-3.5 py-2 text-xs font-medium text-zinc-400 transition-colors duration-150 group-open:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-lg">
+      <summary className="flex cursor-pointer select-none items-center justify-between px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors duration-150 group-open:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-lg">
         <span>{title}</span>
-        <span className="text-[10px] text-zinc-500 transition-transform duration-150 group-open:rotate-180">
+        <span className="text-[10px] text-muted-foreground transition-transform duration-150 group-open:rotate-180">
           ▼
         </span>
       </summary>
-      <div className="border-t border-white/8 p-3">
-        <pre className="max-h-52 overflow-x-auto font-mono text-[11px] leading-relaxed text-zinc-400">
+      <div className="border-t border-border p-3">
+        <pre className="max-h-52 overflow-x-auto font-mono text-[11px] leading-relaxed text-muted-foreground">
           {JSON.stringify(data, null, 2)}
         </pre>
       </div>
@@ -382,12 +382,12 @@ function RecCard({
       : null;
 
   return (
-    <Card className="flex flex-col border border-white/8 bg-[#111114] transition-all duration-200 hover:border-white/16 shadow-sm">
+    <Card className="flex flex-col border border-border bg-card transition-all duration-200 hover:border-white/16 shadow-sm">
       <CardHeader className="gap-2.5 pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Left chips */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-xs font-semibold text-zinc-200">
+            <span className="font-mono text-xs font-semibold text-foreground">
               {humanizeType(rec.type)}
             </span>
 
@@ -413,13 +413,13 @@ function RecCard({
 
           {/* Right confidence & timestamp */}
           <div className="flex items-center gap-2">
-            <span className="text-xs tabular-nums font-mono text-zinc-400">
-              <span className="text-zinc-500">confidence</span> {formatConfidence(rec.confidence)}
+            <span className="text-xs tabular-nums font-mono text-muted-foreground">
+              <span className="text-muted-foreground">confidence</span> {formatConfidence(rec.confidence)}
             </span>
             <span className="text-zinc-600">·</span>
             <time
               dateTime={rec.created_at}
-              className="text-xs tabular-nums text-zinc-500"
+              className="text-xs tabular-nums text-muted-foreground"
               title={new Date(rec.created_at).toLocaleString()}
             >
               {formatTimeAgo(rec.created_at)}
@@ -466,13 +466,13 @@ function RecCard({
               <p className="text-[11px] font-medium uppercase tracking-wider text-blue-400/90">
                 Expected impact
               </p>
-              <p className="mt-0.5 text-xs font-medium leading-relaxed text-zinc-200">
+              <p className="mt-0.5 text-xs font-medium leading-relaxed text-foreground">
                 {rec.expected_impact}
               </p>
             </div>
             {rec.projected_monthly_value && (
               <div className="shrink-0 text-right">
-                <p className="text-[10px] text-zinc-500">Est. value</p>
+                <p className="text-[10px] text-muted-foreground">Est. value</p>
                 <p className="font-mono text-xs font-semibold tabular-nums text-emerald-400">
                   {rec.projected_monthly_value}
                 </p>
@@ -489,7 +489,7 @@ function RecCard({
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-white/8 bg-[#0c0c0f]/50 px-5 py-3">
+      <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-background/50 px-5 py-3">
         {/* Actions based on state */}
         <div className="flex items-center gap-2">
           {isPending ? (
@@ -499,7 +499,7 @@ function RecCard({
                 variant="default"
                 disabled={busy}
                 onClick={() => onApprove(rec.id)}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-sm active:scale-[0.98]"
+                className="bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white font-medium shadow-sm active:scale-[0.98]"
               >
                 {busy ? (
                   <>
@@ -548,7 +548,7 @@ function RecCard({
                 variant="outline"
                 disabled={busy}
                 onClick={() => onReject(rec.id)}
-                className="text-zinc-300 hover:text-white border-white/10 hover:border-white/20 active:scale-[0.98]"
+                className="text-zinc-300 hover:text-foreground dark:text-white border-border hover:border-white/20 active:scale-[0.98]"
               >
                 Reject
               </Button>
@@ -575,7 +575,7 @@ function RecCard({
                 <button
                   type="button"
                   onClick={() => onReopen(rec.id)}
-                  className="text-[11px] text-zinc-500 underline hover:text-zinc-300 transition-colors ml-1"
+                  className="text-[11px] text-muted-foreground underline hover:text-zinc-300 transition-colors ml-1"
                 >
                   Revert
                 </button>
@@ -583,7 +583,7 @@ function RecCard({
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-xs text-zinc-500">
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <svg
                   width="13"
                   height="13"
@@ -604,7 +604,7 @@ function RecCard({
                 <button
                   type="button"
                   onClick={() => onReopen(rec.id)}
-                  className="text-[11px] text-zinc-400 underline hover:text-zinc-200 transition-colors ml-1"
+                  className="text-[11px] text-muted-foreground underline hover:text-foreground transition-colors ml-1"
                 >
                   Reopen
                 </button>
@@ -614,7 +614,7 @@ function RecCard({
         </div>
 
         {/* Footer meta tag */}
-        <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
+        <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
           <span>#REC-{rec.id}</span>
           <span>·</span>
           <span className="text-zinc-600">
@@ -632,7 +632,7 @@ function RecCard({
 
 function RecSkeleton() {
   return (
-    <Card className="border border-white/8 bg-[#111114]">
+    <Card className="border border-border bg-card">
       <CardHeader className="gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -650,7 +650,7 @@ function RecSkeleton() {
         <Skeleton className="h-8 w-full rounded-lg bg-white/4" />
         <Skeleton className="h-8 w-full rounded-lg bg-white/4" />
       </CardContent>
-      <CardFooter className="flex items-center justify-between border-t border-white/8 py-3">
+      <CardFooter className="flex items-center justify-between border-t border-border py-3">
         <div className="flex gap-2">
           <Skeleton className="h-8 w-20 bg-white/6" />
           <Skeleton className="h-8 w-16 bg-white/6" />
@@ -673,7 +673,7 @@ function EmptyRecommendations({
   hasFilters: boolean;
 }) {
   return (
-    <Card className="border-dashed border-white/12 bg-[#111114]/50 py-12 text-center">
+    <Card className="border-dashed border-white/12 bg-card/50 py-12 text-center">
       <CardContent className="flex flex-col items-center justify-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
           <svg
@@ -690,10 +690,10 @@ function EmptyRecommendations({
           </svg>
         </div>
         <div className="max-w-md space-y-1">
-          <p className="text-sm font-semibold text-zinc-100">
+          <p className="text-sm font-semibold text-foreground">
             {hasFilters ? "No matching recommendations" : "No recommendations in queue"}
           </p>
-          <p className="text-xs leading-relaxed text-zinc-400">
+          <p className="text-xs leading-relaxed text-muted-foreground">
             {hasFilters
               ? "No recommendations match your current status or search filter. Try clearing your filters to see all queued actions."
               : "Run the reconcile and attribution analysis pipeline to generate actionable budget shifts, creative rotations, and bid cap adjustments."}
@@ -709,7 +709,7 @@ function EmptyRecommendations({
             size="sm"
             onClick={onGenerate}
             disabled={generating}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-sm"
+            className="bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white font-medium shadow-sm"
           >
             {generating ? "Generating analysis…" : "Generate recommendations"}
           </Button>
@@ -892,10 +892,10 @@ export default function RecommendationsPage() {
       {/* Header section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-zinc-100">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Recommendations
           </h1>
-          <p className="mt-1 text-xs leading-relaxed text-zinc-400 max-w-2xl">
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground max-w-2xl">
             Policy-gated action queue proposed by the reconcile and attribution models. Low-risk
             approvals execute automatically with rollback guardrails.
           </p>
@@ -916,7 +916,7 @@ export default function RecommendationsPage() {
             variant="ghost"
             onClick={() => void load()}
             disabled={loading}
-            className="text-xs text-zinc-400 hover:text-zinc-200"
+            className="text-xs text-muted-foreground hover:text-foreground"
           >
             Refresh
           </Button>
@@ -924,7 +924,7 @@ export default function RecommendationsPage() {
             size="sm"
             onClick={() => void handleGenerate()}
             disabled={generating}
-            className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium"
+            className="text-xs bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white font-medium"
           >
             {generating ? "Analyzing…" : "Run analysis"}
           </Button>
@@ -933,32 +933,32 @@ export default function RecommendationsPage() {
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card className="border border-white/8 bg-[#111114] p-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+        <Card className="border border-border bg-card p-3.5">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Pending decision
           </p>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-bold tabular-nums text-zinc-100">
+            <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
               {pendingCount}
             </span>
-            <span className="text-[11px] text-zinc-500">of {totalCount} total</span>
+            <span className="text-[11px] text-muted-foreground">of {totalCount} total</span>
           </div>
         </Card>
 
-        <Card className="border border-white/8 bg-[#111114] p-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+        <Card className="border border-border bg-card p-3.5">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Approved changes
           </p>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-mono text-2xl font-bold tabular-nums text-emerald-400">
               {approvedCount}
             </span>
-            <span className="text-[11px] text-zinc-500">active/queued</span>
+            <span className="text-[11px] text-muted-foreground">active/queued</span>
           </div>
         </Card>
 
-        <Card className="border border-white/8 bg-[#111114] p-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+        <Card className="border border-border bg-card p-3.5">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Projected monthly value
           </p>
           <div className="mt-1 flex items-baseline gap-2">
@@ -969,21 +969,21 @@ export default function RecommendationsPage() {
           </div>
         </Card>
 
-        <Card className="border border-white/8 bg-[#111114] p-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+        <Card className="border border-border bg-card p-3.5">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Avg confidence
           </p>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-bold tabular-nums text-zinc-100">
+            <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
               92.8%
             </span>
-            <span className="text-[11px] text-zinc-500">high accuracy</span>
+            <span className="text-[11px] text-muted-foreground">high accuracy</span>
           </div>
         </Card>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-y border-white/8 py-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-y border-border py-3">
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1">
           <button
@@ -992,11 +992,11 @@ export default function RecommendationsPage() {
             className={cn(
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "all"
-                ? "bg-white/8 text-zinc-100"
-                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+                ? "bg-white/8 text-foreground"
+                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
             )}
           >
-            All <span className="tabular-nums text-zinc-500">({totalCount})</span>
+            All <span className="tabular-nums text-muted-foreground">({totalCount})</span>
           </button>
           <button
             type="button"
@@ -1005,10 +1005,10 @@ export default function RecommendationsPage() {
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "pending"
                 ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
             )}
           >
-            Pending <span className="tabular-nums text-zinc-500">({pendingCount})</span>
+            Pending <span className="tabular-nums text-muted-foreground">({pendingCount})</span>
           </button>
           <button
             type="button"
@@ -1017,10 +1017,10 @@ export default function RecommendationsPage() {
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "approved"
                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
             )}
           >
-            Approved <span className="tabular-nums text-zinc-500">({approvedCount})</span>
+            Approved <span className="tabular-nums text-muted-foreground">({approvedCount})</span>
           </button>
           <button
             type="button"
@@ -1029,10 +1029,10 @@ export default function RecommendationsPage() {
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "rejected"
                 ? "bg-white/8 text-zinc-300"
-                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
             )}
           >
-            Rejected <span className="tabular-nums text-zinc-500">({rejectedCount})</span>
+            Rejected <span className="tabular-nums text-muted-foreground">({rejectedCount})</span>
           </button>
         </div>
 
@@ -1042,7 +1042,7 @@ export default function RecommendationsPage() {
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value as "all" | "low" | "medium" | "high")}
-            className="rounded-lg border border-white/8 bg-[#111114] px-2.5 py-1 text-xs text-zinc-300 focus:border-blue-500/50 focus:outline-none"
+            className="rounded-lg border border-border bg-card px-2.5 py-1 text-xs text-zinc-300 focus:border-blue-500/50 focus:outline-none"
           >
             <option value="all">All risk levels</option>
             <option value="low">Low risk only</option>
@@ -1057,13 +1057,13 @@ export default function RecommendationsPage() {
               placeholder="Filter actions…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-40 rounded-lg border border-white/8 bg-[#111114] px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:border-blue-500/50 focus:outline-none sm:w-48"
+              className="w-40 rounded-lg border border-border bg-card px-2.5 py-1 text-xs text-foreground placeholder-zinc-500 focus:border-blue-500/50 focus:outline-none sm:w-48"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-500 hover:text-zinc-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-zinc-300"
               >
                 ×
               </button>

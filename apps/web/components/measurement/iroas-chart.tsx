@@ -87,7 +87,7 @@ function ChartSkeleton() {
 function EmptyChartState({ onRefresh }: { onRefresh?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-zinc-400">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white/3 text-muted-foreground">
         <svg
           width="20"
           height="20"
@@ -103,8 +103,8 @@ function EmptyChartState({ onRefresh }: { onRefresh?: () => void }) {
           <path d="m19 9-5 5-4-4-3 3" />
         </svg>
       </div>
-      <h4 className="mt-3 text-sm font-semibold text-zinc-100">No calibration data</h4>
-      <p className="mt-1 max-w-sm text-xs leading-relaxed text-zinc-400">
+      <h4 className="mt-3 text-sm font-semibold text-foreground">No calibration data</h4>
+      <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
         Run incrementality tests or connect conversion webhooks to calculate calibrated incremental ROAS.
       </p>
       {onRefresh && (
@@ -151,13 +151,13 @@ export function IroasChart({
       : 0;
 
   return (
-    <Card className={cn("border-white/8 bg-[#111114]", className)}>
+    <Card className={cn("border-border bg-card", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
-          <CardTitle className="font-display text-base text-zinc-100">
+          <CardTitle className="font-display text-base text-foreground">
             {title}
           </CardTitle>
-          <CardDescription className="pt-1 text-xs text-zinc-400">
+          <CardDescription className="pt-1 text-xs text-muted-foreground">
             {description}
           </CardDescription>
         </div>
@@ -176,9 +176,9 @@ export function IroasChart({
           <>
             {/* Quick KPI Overview */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-white/6 bg-white/2 p-3">
-                <span className="text-[11px] font-medium text-zinc-400">Top performer</span>
-                <p className="mt-1 text-sm font-semibold text-zinc-100">
+              <div className="rounded-lg border border-border bg-white/2 p-3">
+                <span className="text-[11px] font-medium text-muted-foreground">Top performer</span>
+                <p className="mt-1 text-sm font-semibold text-foreground">
                   {topChannel ? formatPlatform(topChannel.platform) : "—"}
                 </p>
                 {topChannel && (
@@ -187,19 +187,19 @@ export function IroasChart({
                   </span>
                 )}
               </div>
-              <div className="rounded-lg border border-white/6 bg-white/2 p-3">
-                <span className="text-[11px] font-medium text-zinc-400">Average iROAS</span>
-                <p className="mt-1 text-sm font-semibold tabular-nums text-zinc-100">
+              <div className="rounded-lg border border-border bg-white/2 p-3">
+                <span className="text-[11px] font-medium text-muted-foreground">Average iROAS</span>
+                <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">
                   {avgIroas.toFixed(2)}x
                 </p>
-                <span className="text-[11px] text-zinc-400">Across {sorted.length} channels</span>
+                <span className="text-[11px] text-muted-foreground">Across {sorted.length} channels</span>
               </div>
-              <div className="col-span-2 rounded-lg border border-white/6 bg-white/2 p-3 sm:col-span-1">
-                <span className="text-[11px] font-medium text-zinc-400">Active channels</span>
-                <p className="mt-1 text-sm font-semibold tabular-nums text-zinc-100">
+              <div className="col-span-2 rounded-lg border border-border bg-white/2 p-3 sm:col-span-1">
+                <span className="text-[11px] font-medium text-muted-foreground">Active channels</span>
+                <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">
                   {sorted.length}
                 </p>
-                <span className="text-[11px] text-zinc-400">Calibrated via holdouts</span>
+                <span className="text-[11px] text-muted-foreground">Calibrated via holdouts</span>
               </div>
             </div>
 
@@ -228,11 +228,11 @@ export function IroasChart({
                 return (
                   <div
                     key={item.platform}
-                    className="group rounded-lg border border-white/4 bg-white/1.5 p-3.5 transition-colors duration-150 ease-out hover:border-white/8 hover:bg-white/3"
+                    className="group rounded-lg border border-white/4 bg-white/1.5 p-3.5 transition-colors duration-150 ease-out hover:border-border hover:bg-white/3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-zinc-100 transition-colors group-hover:text-white">
+                        <span className="text-sm font-medium text-foreground transition-colors group-hover:text-foreground dark:text-white">
                           {formatPlatform(item.platform)}
                         </span>
                         {calibrationPct !== null && (
@@ -252,14 +252,14 @@ export function IroasChart({
                       </div>
                       <div className="flex items-center gap-3 text-xs">
                         {reportedVal !== null && (
-                          <span className="text-zinc-400">
+                          <span className="text-muted-foreground">
                             Reported:{" "}
                             <span className="tabular-nums text-zinc-300">
                               {reportedVal.toFixed(2)}x
                             </span>
                           </span>
                         )}
-                        <span className="font-semibold text-zinc-100">
+                        <span className="font-semibold text-foreground">
                           iROAS:{" "}
                           <span className="tabular-nums text-blue-400">
                             {iroasVal.toFixed(2)}x
@@ -272,7 +272,7 @@ export function IroasChart({
                       {/* Reported ROAS ghost bar */}
                       {reportedPct !== null && (
                         <div className="flex items-center gap-2">
-                          <span className="w-16 shrink-0 text-[10px] text-zinc-400">
+                          <span className="w-16 shrink-0 text-[10px] text-muted-foreground">
                             Reported
                           </span>
                           <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/4">
@@ -286,7 +286,7 @@ export function IroasChart({
 
                       {/* Calibrated iROAS horizontal bar (primary accent blue-500) */}
                       <div className="flex items-center gap-2">
-                        <span className="w-16 shrink-0 text-[10px] font-medium text-zinc-400">
+                        <span className="w-16 shrink-0 text-[10px] font-medium text-muted-foreground">
                           iROAS
                         </span>
                         <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/6">
@@ -302,7 +302,7 @@ export function IroasChart({
               })}
 
               {/* Chart Scale Reference */}
-              <div className="flex items-center justify-between pt-2 text-[11px] text-zinc-400">
+              <div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground">
                 <span className="tabular-nums">0.00x</span>
                 <span className="tabular-nums">{(maxIroas / 2).toFixed(2)}x</span>
                 <span className="tabular-nums">{maxIroas.toFixed(2)}x max</span>

@@ -50,25 +50,25 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
       />
 
       {/* Dialog */}
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#121319] p-6 shadow-2xl shadow-purple-950/30 sm:p-8">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-purple-950/30 sm:p-8">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-white/8 pb-5">
+        <div className="flex items-start justify-between border-b border-border pb-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-red-500 to-orange-500 text-white shadow-md shadow-orange-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-red-500 to-orange-500 text-foreground dark:text-white shadow-md shadow-orange-500/20">
               <span className="text-xl">🤖</span>
             </div>
             <div>
-              <h2 className="font-display text-lg font-semibold tracking-tight text-white">
+              <h2 className="font-display text-lg font-semibold tracking-tight text-foreground dark:text-white">
                 AI Agents Setup
               </h2>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-muted-foreground">
                 Connect MCP-compatible AI agents to automate ad discovery, creative tests & ROAS optimization.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground dark:text-white"
             aria-label="Close dialog"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,7 +78,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
         </div>
 
         {/* Step Indicator */}
-        <div className="my-5 flex items-center justify-between gap-2 border-b border-white/6 pb-4">
+        <div className="my-5 flex items-center justify-between gap-2 border-b border-border pb-4">
           {[
             { num: 1, title: "Select Clients" },
             { num: 2, title: "Access & MCP" },
@@ -90,20 +90,20 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
               className={cn(
                 "flex cursor-pointer items-center gap-2 text-xs font-medium transition-colors",
                 step === s.num
-                  ? "text-purple-400"
+                  ? "text-primary"
                   : step > s.num
                   ? "text-emerald-400"
-                  : "text-zinc-500"
+                  : "text-muted-foreground"
               )}
             >
               <span
                 className={cn(
                   "flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold",
                   step === s.num
-                    ? "bg-purple-500/20 text-purple-300 ring-1 ring-purple-500"
+                    ? "bg-purple-500/20 text-primary ring-1 ring-purple-500"
                     : step > s.num
                     ? "bg-emerald-500/20 text-emerald-400"
-                    : "bg-zinc-800 text-zinc-400"
+                    : "bg-zinc-800 text-muted-foreground"
                 )}
               >
                 {step > s.num ? "✓" : s.num}
@@ -135,13 +135,13 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                       "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all duration-150",
                       isSelected
                         ? "border-purple-500/50 bg-purple-950/20 shadow-sm shadow-purple-950/40"
-                        : "border-white/8 bg-[#171822] hover:border-white/20 hover:bg-[#1b1c28]"
+                        : "border-border bg-muted hover:border-white/20 hover:bg-muted"
                     )}
                   >
                     <span className="text-xl">{agent.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-semibold text-white">{agent.name}</h4>
+                        <h4 className="text-xs font-semibold text-foreground dark:text-white">{agent.name}</h4>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -149,14 +149,14 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                           className="h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-900 text-purple-600 focus:ring-0"
                         />
                       </div>
-                      <p className="mt-1 text-[11px] text-zinc-400">{agent.desc}</p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">{agent.desc}</p>
                     </div>
                   </div>
                 );
               })}
             </div>
             <div className="mt-6 flex justify-end">
-              <Button onClick={() => setStep(2)} className="bg-purple-600 hover:bg-purple-500 text-white text-xs">
+              <Button onClick={() => setStep(2)} className="bg-primary hover:bg-primary text-white dark:text-white text-xs">
                 Continue to Access Policy →
               </Button>
             </div>
@@ -182,7 +182,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                     "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all",
                     accessMode === mode.id
                       ? "border-purple-500/50 bg-purple-950/20"
-                      : "border-white/8 bg-[#171822] hover:border-white/20"
+                      : "border-border bg-muted hover:border-white/20"
                   )}
                 >
                   <input
@@ -193,17 +193,17 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                     className="mt-0.5 text-purple-600 focus:ring-0"
                   />
                   <div>
-                    <h4 className="text-xs font-semibold text-white">{mode.title}</h4>
-                    <p className="text-[11px] text-zinc-400">{mode.desc}</p>
+                    <h4 className="text-xs font-semibold text-foreground dark:text-white">{mode.title}</h4>
+                    <p className="text-[11px] text-muted-foreground">{mode.desc}</p>
                   </div>
                 </label>
               ))}
             </div>
 
-            <div className="mt-4 rounded-xl border border-white/8 bg-[#171822] p-3.5">
+            <div className="mt-4 rounded-xl border border-border bg-muted p-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-zinc-400">One-Click MCP Connection URL</span>
-                <Badge variant="outline" className="border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-300">
+                <span className="text-[11px] font-medium text-muted-foreground">One-Click MCP Connection URL</span>
+                <Badge variant="outline" className="border-primary/30 bg-purple-500/10 text-[10px] text-primary">
                   30-day Session Active
                 </Badge>
               </div>
@@ -226,7 +226,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
               <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
                 ← Back
               </Button>
-              <Button onClick={() => setStep(3)} className="bg-purple-600 hover:bg-purple-500 text-white text-xs">
+              <Button onClick={() => setStep(3)} className="bg-primary hover:bg-primary text-white dark:text-white text-xs">
                 Next: Verify Connection →
               </Button>
             </div>
@@ -240,10 +240,10 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
               {verified ? "🚀" : "🛰️"}
             </div>
             <div>
-              <h3 className="font-display text-base font-semibold text-white">
+              <h3 className="font-display text-base font-semibold text-foreground dark:text-white">
                 {verified ? "AI Agents Successfully Linked!" : "Test MCP Handshake"}
               </h3>
-              <p className="mx-auto mt-1 max-w-sm text-xs text-zinc-400">
+              <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
                 {verified
                   ? "Your agents are authorized to query winning ads, generate new creative variations, and submit drafts."
                   : "Ping the local MCP server to confirm tool availability and token handshake."}
@@ -265,14 +265,14 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                 <Button
                   onClick={handleVerify}
                   disabled={isVerifying}
-                  className="bg-purple-600 hover:bg-purple-500 text-white text-xs"
+                  className="bg-primary hover:bg-primary text-white dark:text-white text-xs"
                 >
                   {isVerifying ? "Verifying..." : "Run Test Ping"}
                 </Button>
               ) : (
                 <Button
                   onClick={onClose}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-foreground dark:text-white text-xs"
                 >
                   Complete Setup
                 </Button>

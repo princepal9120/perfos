@@ -407,11 +407,11 @@ export function WinnersTable({
                   <div className="flex items-center gap-2.5">
                     <div
                       aria-hidden="true"
-                      className="flex h-6 w-6 shrink-0 select-none items-center justify-center rounded-full border border-white/8 bg-white/5 text-[10px] font-semibold text-zinc-300 uppercase"
+                      className="flex h-6 w-6 shrink-0 select-none items-center justify-center rounded-full border border-border bg-white/5 text-[10px] font-semibold text-zinc-300 uppercase"
                     >
                       {row.advertiser.charAt(0)}
                     </div>
-                    <span className="truncate font-medium text-zinc-100">
+                    <span className="truncate font-medium text-foreground">
                       {row.advertiser}
                     </span>
                   </div>
@@ -421,7 +421,7 @@ export function WinnersTable({
                 <TableCell className="max-w-[240px] px-4 py-3.5 align-middle sm:max-w-[320px] md:max-w-[400px]">
                   <p
                     title={row.hook}
-                    className="truncate text-xs leading-relaxed text-zinc-300 transition-colors hover:text-zinc-100"
+                    className="truncate text-xs leading-relaxed text-zinc-300 transition-colors hover:text-foreground"
                   >
                     “{row.hook}”
                   </p>
@@ -433,12 +433,12 @@ export function WinnersTable({
                     <span
                       className={cn(
                         "text-sm font-semibold tabular-nums",
-                        row.score >= 90 ? "text-blue-400" : "text-zinc-100"
+                        row.score >= 90 ? "text-blue-400" : "text-foreground"
                       )}
                     >
                       {Math.round(row.score)}
                     </span>
-                    <span className="text-[10px] text-zinc-500">/100</span>
+                    <span className="text-[10px] text-muted-foreground">/100</span>
                   </div>
                 </TableCell>
 

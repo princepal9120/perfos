@@ -204,13 +204,13 @@ export function CreativeTable({
   });
 
   return (
-    <Card className={cn("border-white/8 bg-[#111114]", className)}>
+    <Card className={cn("border-border bg-card", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
-          <CardTitle className="font-display text-base text-zinc-100">
+          <CardTitle className="font-display text-base text-foreground">
             {title}
           </CardTitle>
-          <CardDescription className="pt-1 text-xs text-zinc-400">
+          <CardDescription className="pt-1 text-xs text-muted-foreground">
             {description}
           </CardDescription>
         </div>
@@ -226,7 +226,7 @@ export function CreativeTable({
 
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-white/8 bg-white/1">
+            <TableRow className="border-b border-border bg-white/1">
               <TableHead
                 sortable
                 active={key === "name"}
@@ -301,7 +301,7 @@ export function CreativeTable({
               ))
             ) : sorted.length === 0 ? (
               <TableEmpty colSpan={5}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-zinc-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white/3 text-muted-foreground">
                   <svg
                     width="18"
                     height="18"
@@ -318,10 +318,10 @@ export function CreativeTable({
                     <circle cx="9" cy="9" r="2" />
                   </svg>
                 </div>
-                <p className="mt-3 text-sm font-medium text-zinc-100">
+                <p className="mt-3 text-sm font-medium text-foreground">
                   No creatives found
                 </p>
-                <p className="mt-1 max-w-xs text-xs text-zinc-400">
+                <p className="mt-1 max-w-xs text-xs text-muted-foreground">
                   Creative metrics sync automatically once ad channels are linked and active.
                 </p>
               </TableEmpty>
@@ -335,9 +335,9 @@ export function CreativeTable({
                     onCreativeClick && "cursor-pointer"
                   )}
                 >
-                  <TableCell className="font-medium text-zinc-100">
+                  <TableCell className="font-medium text-foreground">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/8 bg-white/3 text-zinc-400">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-white/3 text-muted-foreground">
                         <svg
                           width="14"
                           height="14"
@@ -353,10 +353,10 @@ export function CreativeTable({
                         </svg>
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="truncate max-w-[240px] text-xs font-medium text-zinc-200">
+                        <span className="truncate max-w-[240px] text-xs font-medium text-foreground">
                           {row.name}
                         </span>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 tabular-nums">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground tabular-nums">
                           {row.creative_id && (
                             <span className="font-mono">{row.creative_id}</span>
                           )}
@@ -375,7 +375,7 @@ export function CreativeTable({
                       {formatPlatform(row.platform)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-medium tabular-nums text-zinc-200">
+                  <TableCell className="text-right font-medium tabular-nums text-foreground">
                     {formatUsd(row.spend)}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
@@ -386,7 +386,7 @@ export function CreativeTable({
                           ? "text-emerald-400"
                           : row.roas >= 1.8
                           ? "text-blue-400"
-                          : "text-zinc-400"
+                          : "text-muted-foreground"
                       )}
                     >
                       {row.roas > 0 ? `${row.roas.toFixed(2)}x` : "—"}

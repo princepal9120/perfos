@@ -8,10 +8,10 @@ export default function PerplexityIntegrationPage() {
         <Link href="/integrations" className="text-xs text-teal-400 hover:underline">
           ← Back to All Integrations
         </Link>
-        <h1 className="text-4xl font-display font-bold text-white tracking-tight">
+        <h1 className="text-4xl font-display font-bold text-foreground dark:text-white tracking-tight">
           How to connect AdKit with Perplexity AI
         </h1>
-        <p className="text-zinc-400 text-sm sm:text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Live web market research and competitor ad analysis synthesized straight into your AdKit swipe files.
         </p>
       </div>
@@ -19,7 +19,7 @@ export default function PerplexityIntegrationPage() {
       <div className="text-center pt-4">
         <Link
           href="/pricing"
-          className="px-8 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-lg transition-all"
+          className="px-8 py-3.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-foreground dark:text-white text-xs font-semibold shadow-lg transition-all"
         >
           Connect Perplexity Now →
         </Link>

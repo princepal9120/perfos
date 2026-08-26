@@ -83,7 +83,7 @@ export function PersonaPicker({ value, onChange, className }: PersonaPickerProps
                 <span
                   className={cn(
                     "text-sm font-medium transition-colors duration-150",
-                    selected ? "text-text-primary" : "text-zinc-100"
+                    selected ? "text-text-primary" : "text-foreground"
                   )}
                 >
                   {persona.label}

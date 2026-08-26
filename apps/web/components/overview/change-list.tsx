@@ -85,7 +85,7 @@ export function ChangeList({ changes, loading = false }: { changes: ChangeItem[]
               </span>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <p className="text-xs font-medium leading-5 text-zinc-200">{change.title}</p>
+                  <p className="text-xs font-medium leading-5 text-foreground">{change.title}</p>
                   {change.platform && (
                     <Badge variant="neutral" shape="square" className="uppercase tracking-wider">
                       {change.platform}
