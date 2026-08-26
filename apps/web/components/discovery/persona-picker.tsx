@@ -67,7 +67,7 @@ export function PersonaPicker({ value, onChange, className }: PersonaPickerProps
                 "group relative flex cursor-pointer select-none flex-col rounded-lg border p-4 transition-[background-color,border-color,box-shadow] duration-150 ease-out active:scale-[0.98]",
                 selected
                   ? "border-accent bg-accent-muted shadow-[0_0_0_1px_rgba(59,130,246,0.35)]"
-                  : "border-border-subtle bg-bg-surface hover:border-border-hover hover:bg-white/[0.04]",
+                  : "border-border-subtle bg-bg-surface hover:border-border-hover hover:bg-white/4",
                 "focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500/50"
               )}
             >

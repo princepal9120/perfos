@@ -181,16 +181,16 @@ export function AuditLogSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/[0.08] bg-[#111114] overflow-hidden",
+        "rounded-xl border border-white/8 bg-[#111114] overflow-hidden",
         className
       )}
     >
-      <div className="flex flex-col gap-1 p-5 border-b border-white/[0.08]">
+      <div className="flex flex-col gap-1 p-5 border-b border-white/8">
         <Skeleton className="h-4 w-36" />
         <Skeleton className="h-3 w-64" />
       </div>
 
-      <div className="divide-y divide-white/[0.04]">
+      <div className="divide-y divide-white/4">
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
@@ -223,11 +223,11 @@ export function AuditLogEmpty({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border border-dashed border-white/[0.08] bg-white/[0.01] px-6 py-12 text-center",
+        "flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 bg-white/1 px-6 py-12 text-center",
         className
       )}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-zinc-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-white/3 text-zinc-400">
         <svg
           width="18"
           height="18"
@@ -254,7 +254,7 @@ export function AuditLogEmpty({
         <button
           type="button"
           onClick={onReset}
-          className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors duration-150 ease-out hover:border-white/[0.16] hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 active:scale-[0.98]"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-white/8 bg-white/4 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-colors duration-150 ease-out hover:border-white/16 hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 active:scale-[0.98]"
         >
           Clear filters
         </button>
@@ -329,13 +329,13 @@ export function AuditLog({
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/[0.08] bg-[#111114] overflow-hidden",
+        "rounded-xl border border-white/8 bg-[#111114] overflow-hidden",
         className
       )}
       {...props}
     >
       {/* Header */}
-      <div className="p-5 border-b border-white/[0.08] space-y-3">
+      <div className="p-5 border-b border-white/8 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 className="text-sm font-semibold tracking-tight text-zinc-100">
@@ -370,7 +370,7 @@ export function AuditLog({
                       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500",
                       isActive
                         ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
-                        : "bg-white/[0.03] text-zinc-400 border border-white/[0.06] hover:bg-white/[0.06] hover:text-zinc-200"
+                        : "bg-white/3 text-zinc-400 border border-white/6 hover:bg-white/6 hover:text-zinc-200"
                     )}
                   >
                     {f.label}
@@ -385,7 +385,7 @@ export function AuditLog({
                 placeholder="Filter by keyword…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-md border border-white/[0.08] bg-[#18181c] px-3 py-1 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-colors"
+                className="w-full rounded-md border border-white/8 bg-[#18181c] px-3 py-1 text-xs text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-colors"
                 aria-label="Filter audit entries"
               />
               {search && (
@@ -423,9 +423,9 @@ export function AuditLog({
           />
         </div>
       ) : (
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-white/4">
           {/* Table Header (Desktop) */}
-          <div className="hidden sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-center gap-4 px-4 py-2.5 bg-white/[0.02] text-[11px] font-medium tracking-wider text-zinc-500 uppercase">
+          <div className="hidden sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-center gap-4 px-4 py-2.5 bg-white/2 text-[11px] font-medium tracking-wider text-zinc-500 uppercase">
             <span>Timestamp</span>
             <span>Actor</span>
             <span>Action</span>
@@ -454,9 +454,9 @@ export function AuditLog({
                   }}
                   className={cn(
                     "group flex flex-col sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-start sm:items-center gap-2 sm:gap-4 px-4 py-3 cursor-pointer",
-                    "hover:bg-white/[0.04] transition-colors duration-150 ease-out",
+                    "hover:bg-white/4 transition-colors duration-150 ease-out",
                     "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50",
-                    isExpanded && "bg-white/[0.02]"
+                    isExpanded && "bg-white/2"
                   )}
                   aria-expanded={isExpanded}
                 >
@@ -498,7 +498,7 @@ export function AuditLog({
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="px-4 py-3 bg-white/[0.02] border-t border-white/[0.04] text-xs text-zinc-400 space-y-2">
+                  <div className="px-4 py-3 bg-white/2 border-t border-white/4 text-xs text-zinc-400 space-y-2">
                     {entry.detail && (
                       <div className="flex items-start gap-2">
                         <span className="text-zinc-500 font-medium shrink-0">

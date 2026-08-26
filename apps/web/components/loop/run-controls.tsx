@@ -170,7 +170,7 @@ function ConfirmRunDialog({
         aria-modal="true"
         aria-labelledby="run-loop-confirm-title"
         aria-describedby="run-loop-confirm-desc"
-        className="relative w-full max-w-md rounded-xl border border-white/[0.08] bg-[#18181c] p-6 shadow-lg shadow-black/40"
+        className="relative w-full max-w-md rounded-xl border border-white/8 bg-[#18181c] p-6 shadow-lg shadow-black/40"
       >
         <h2 id="run-loop-confirm-title" className="text-base font-semibold tracking-tight text-zinc-100">
           Run the loop on live accounts?

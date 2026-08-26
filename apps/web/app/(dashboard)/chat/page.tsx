@@ -103,7 +103,7 @@ function ChatInner() {
             >
               <p className="whitespace-pre-wrap">{m.content}</p>
               {m.actions && m.actions.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/[0.08] pt-2.5">
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-white/8 pt-2.5">
                   {m.actions.map((a, j) => (
                     <Link
                       key={j}

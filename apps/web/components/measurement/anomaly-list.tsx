@@ -87,7 +87,7 @@ function AnomalySkeleton() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="flex flex-col gap-2 rounded-lg border border-white/[0.04] bg-white/[0.015] p-4"
+          className="flex flex-col gap-2 rounded-lg border border-white/4 bg-white/1.5 p-4"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ function EmptyAnomalyState() {
 
 export function AnomalyList({ items, loading, onDismiss, className }: AnomalyListProps) {
   return (
-    <Card className={cn("border-white/[0.08] bg-[#111114]", className)}>
+    <Card className={cn("border-white/8 bg-[#111114]", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
         ) : items.length === 0 ? (
           <EmptyAnomalyState />
         ) : (
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-white/4">
             {items.map((item, index) => {
               const itemId = item.id ?? `${item.platform}-${item.metric}-${index}`;
               return (

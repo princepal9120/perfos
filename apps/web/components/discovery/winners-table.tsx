@@ -222,7 +222,7 @@ function TableSkeletonRows({ count = 5 }: { count?: number }) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <TableRow key={i} className="border-b border-white/[0.04]">
+        <TableRow key={i} className="border-b border-white/4">
           <TableCell className="px-4 py-3.5">
             <Skeleton className="h-5 w-16 rounded-full" />
           </TableCell>
@@ -288,7 +288,7 @@ export function WinnersTable({
     >
       <Table>
         <TableHeader>
-          <TableRow className="border-b border-border-subtle bg-white/[0.02]">
+          <TableRow className="border-b border-border-subtle bg-white/2">
             <TableHead
               sortable
               active={key === "platform"}
@@ -391,7 +391,7 @@ export function WinnersTable({
                 key={row.id}
                 onClick={onSelectAd ? () => onSelectAd(row.raw) : undefined}
                 className={cn(
-                  "border-b border-white/[0.04] transition-colors duration-150 ease-out hover:bg-white/[0.04]",
+                  "border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/4",
                   onSelectAd && "cursor-pointer"
                 )}
               >
@@ -407,7 +407,7 @@ export function WinnersTable({
                   <div className="flex items-center gap-2.5">
                     <div
                       aria-hidden="true"
-                      className="flex h-6 w-6 shrink-0 select-none items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.05] text-[10px] font-semibold text-zinc-300 uppercase"
+                      className="flex h-6 w-6 shrink-0 select-none items-center justify-center rounded-full border border-white/8 bg-white/5 text-[10px] font-semibold text-zinc-300 uppercase"
                     >
                       {row.advertiser.charAt(0)}
                     </div>

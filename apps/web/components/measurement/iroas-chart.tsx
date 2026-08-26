@@ -65,14 +65,14 @@ function ChartSkeleton() {
     <div className="space-y-4 py-1" aria-hidden="true">
       <div className="grid grid-cols-2 gap-4 pb-2 sm:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="space-y-1.5 rounded-lg border border-white/[0.04] bg-white/[0.015] p-3">
+          <div key={i} className="space-y-1.5 rounded-lg border border-white/4 bg-white/1.5 p-3">
             <Skeleton className="h-3 w-16" />
             <Skeleton className="h-5 w-20" />
           </div>
         ))}
       </div>
       {[0, 1, 2, 3, 4].map((i) => (
-        <div key={i} className="space-y-2 rounded-lg border border-white/[0.04] bg-white/[0.015] p-3.5">
+        <div key={i} className="space-y-2 rounded-lg border border-white/4 bg-white/1.5 p-3.5">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-4 w-20" />
@@ -87,7 +87,7 @@ function ChartSkeleton() {
 function EmptyChartState({ onRefresh }: { onRefresh?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-zinc-400">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-zinc-400">
         <svg
           width="20"
           height="20"
@@ -151,7 +151,7 @@ export function IroasChart({
       : 0;
 
   return (
-    <Card className={cn("border-white/[0.08] bg-[#111114]", className)}>
+    <Card className={cn("border-white/8 bg-[#111114]", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <CardTitle className="font-display text-base text-zinc-100">
@@ -176,7 +176,7 @@ export function IroasChart({
           <>
             {/* Quick KPI Overview */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+              <div className="rounded-lg border border-white/6 bg-white/2 p-3">
                 <span className="text-[11px] font-medium text-zinc-400">Top performer</span>
                 <p className="mt-1 text-sm font-semibold text-zinc-100">
                   {topChannel ? formatPlatform(topChannel.platform) : "—"}
@@ -187,14 +187,14 @@ export function IroasChart({
                   </span>
                 )}
               </div>
-              <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+              <div className="rounded-lg border border-white/6 bg-white/2 p-3">
                 <span className="text-[11px] font-medium text-zinc-400">Average iROAS</span>
                 <p className="mt-1 text-sm font-semibold tabular-nums text-zinc-100">
                   {avgIroas.toFixed(2)}x
                 </p>
                 <span className="text-[11px] text-zinc-400">Across {sorted.length} channels</span>
               </div>
-              <div className="col-span-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 sm:col-span-1">
+              <div className="col-span-2 rounded-lg border border-white/6 bg-white/2 p-3 sm:col-span-1">
                 <span className="text-[11px] font-medium text-zinc-400">Active channels</span>
                 <p className="mt-1 text-sm font-semibold tabular-nums text-zinc-100">
                   {sorted.length}
@@ -228,7 +228,7 @@ export function IroasChart({
                 return (
                   <div
                     key={item.platform}
-                    className="group rounded-lg border border-white/[0.04] bg-white/[0.015] p-3.5 transition-colors duration-150 ease-out hover:border-white/[0.08] hover:bg-white/[0.03]"
+                    className="group rounded-lg border border-white/4 bg-white/1.5 p-3.5 transition-colors duration-150 ease-out hover:border-white/8 hover:bg-white/3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
                       <div className="flex items-center gap-2">
@@ -275,7 +275,7 @@ export function IroasChart({
                           <span className="w-16 shrink-0 text-[10px] text-zinc-400">
                             Reported
                           </span>
-                          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.04]">
+                          <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/4">
                             <div
                               className="h-full rounded-full bg-zinc-600 transition-all duration-300 ease-out"
                               style={{ width: `${reportedPct}%` }}
@@ -289,7 +289,7 @@ export function IroasChart({
                         <span className="w-16 shrink-0 text-[10px] font-medium text-zinc-400">
                           iROAS
                         </span>
-                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/6">
                           <div
                             className="h-full rounded-full bg-blue-500 transition-all duration-300 ease-out hover:bg-blue-400"
                             style={{ width: `${iroasPct}%` }}

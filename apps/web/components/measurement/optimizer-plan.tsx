@@ -183,7 +183,7 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
                 return (
                   <div
                     key={row.platform}
-                    className="-mx-2 space-y-1.5 rounded-sm px-2 py-3 transition-colors duration-normal ease-out hover:bg-white/[0.03]"
+                    className="-mx-2 space-y-1.5 rounded-sm px-2 py-3 transition-colors duration-normal ease-out hover:bg-white/3"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <span className="text-sm font-medium text-text-primary">

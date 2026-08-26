@@ -165,7 +165,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 const inputClasses =
-  "w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 transition-colors duration-150 ease-out hover:border-white/[0.16] focus:border-blue-500/40 focus:bg-white/[0.05] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30";
+  "w-full resize-none rounded-lg border border-white/8 bg-white/3 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 transition-colors duration-150 ease-out hover:border-white/16 focus:border-blue-500/40 focus:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30";
 
 function SegmentedControl<T extends string>({
   options,
@@ -189,8 +189,8 @@ function SegmentedControl<T extends string>({
           className={cn(
             "rounded-md border px-2.5 py-1 text-xs font-medium transition-[background-color,border-color,color] duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
             value === o.value
-              ? "border-blue-500/30 bg-blue-500/[0.12] text-blue-300"
-              : "border-white/[0.08] bg-transparent text-zinc-400 hover:border-white/[0.16] hover:bg-white/[0.04] hover:text-zinc-200"
+              ? "border-blue-500/30 bg-blue-500/12 text-blue-300"
+              : "border-white/8 bg-transparent text-zinc-400 hover:border-white/16 hover:bg-white/4 hover:text-zinc-200"
           )}
         >
           {o.label}
@@ -219,7 +219,7 @@ function VariantCard({
 }) {
   const script = `${variant.hook}\n\n${variant.body}\n\nCTA: ${variant.cta}`;
   return (
-    <Card className="group flex flex-col transition-colors duration-200 ease-out hover:border-white/[0.16]">
+    <Card className="group flex flex-col transition-colors duration-200 ease-out hover:border-white/16">
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
           {variant.label}
@@ -234,7 +234,7 @@ function VariantCard({
         <p className="mt-auto border-l-2 border-blue-500/30 pl-2.5 text-xs text-zinc-300">
           {variant.cta}
         </p>
-        <dl className="grid grid-cols-3 gap-2 border-t border-white/[0.06] pt-3">
+        <dl className="grid grid-cols-3 gap-2 border-t border-white/6 pt-3">
           <div>
             <dt className="text-[10px] uppercase tracking-wider text-zinc-600">hold 3s</dt>
             <dd className="text-sm font-semibold tabular-nums text-zinc-200">
@@ -288,7 +288,7 @@ function VariantGridSkeleton({ count = 4 }: { count?: number }) {
             <Skeleton className="h-4 w-11/12" />
             <Skeleton className="h-4 w-3/5" />
             <Skeleton className="h-8 w-full border-l-2 border-transparent" />
-            <div className="grid grid-cols-3 gap-2 border-t border-white/[0.06] pt-3">
+            <div className="grid grid-cols-3 gap-2 border-t border-white/6 pt-3">
               {[0, 1, 2].map((j) => (
                 <div key={j} className="space-y-1.5">
                   <Skeleton className="h-2 w-10" />
@@ -351,7 +351,7 @@ export default function CreativePage() {
             <dt className="text-[11px] uppercase tracking-wider text-zinc-500">in review</dt>
             <dd className="font-semibold tabular-nums text-zinc-200">6 scripts</dd>
           </div>
-          <div className="h-8 w-px bg-white/[0.08]" aria-hidden="true" />
+          <div className="h-8 w-px bg-white/8" aria-hidden="true" />
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-zinc-500">avg hold 3s</dt>
             <dd className="flex items-baseline gap-1.5 font-semibold tabular-nums text-zinc-200">
@@ -359,7 +359,7 @@ export default function CreativePage() {
               <Badge variant="up" shape="square">+2.1</Badge>
             </dd>
           </div>
-          <div className="hidden h-8 w-px bg-white/[0.08] sm:block" aria-hidden="true" />
+          <div className="hidden h-8 w-px bg-white/8 sm:block" aria-hidden="true" />
           <div className="hidden sm:block">
             <dt className="text-[11px] uppercase tracking-wider text-zinc-500">launched this week</dt>
             <dd className="font-semibold tabular-nums text-zinc-200">12 creatives</dd>
@@ -441,7 +441,7 @@ export default function CreativePage() {
         <section aria-label="Generated variants" className="min-w-0">
           {phase === "empty" ? (
             <Card className="flex min-h-[420px] flex-col items-center justify-center px-8 py-16 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-zinc-500">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-zinc-500">
                 <LayersIcon className="h-5 w-5" />
               </span>
               <h3 className="mt-4 font-display text-lg font-semibold tracking-tight text-zinc-100">

@@ -333,7 +333,7 @@ function JsonBlock({
   return (
     <details
       open={defaultOpen}
-      className="group rounded-lg border border-white/[0.08] bg-[#0c0c0f] transition-colors duration-150 hover:border-white/[0.16]"
+      className="group rounded-lg border border-white/8 bg-[#0c0c0f] transition-colors duration-150 hover:border-white/16"
     >
       <summary className="flex cursor-pointer select-none items-center justify-between px-3.5 py-2 text-xs font-medium text-zinc-400 transition-colors duration-150 group-open:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-lg">
         <span>{title}</span>
@@ -341,7 +341,7 @@ function JsonBlock({
           ▼
         </span>
       </summary>
-      <div className="border-t border-white/[0.08] p-3">
+      <div className="border-t border-white/8 p-3">
         <pre className="max-h-52 overflow-x-auto font-mono text-[11px] leading-relaxed text-zinc-400">
           {JSON.stringify(data, null, 2)}
         </pre>
@@ -382,7 +382,7 @@ function RecCard({
       : null;
 
   return (
-    <Card className="flex flex-col border border-white/[0.08] bg-[#111114] transition-all duration-200 hover:border-white/[0.16] shadow-sm">
+    <Card className="flex flex-col border border-white/8 bg-[#111114] transition-all duration-200 hover:border-white/16 shadow-sm">
       <CardHeader className="gap-2.5 pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Left chips */}
@@ -489,7 +489,7 @@ function RecCard({
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] bg-[#0c0c0f]/50 px-5 py-3">
+      <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-white/8 bg-[#0c0c0f]/50 px-5 py-3">
         {/* Actions based on state */}
         <div className="flex items-center gap-2">
           {isPending ? (
@@ -632,30 +632,30 @@ function RecCard({
 
 function RecSkeleton() {
   return (
-    <Card className="border border-white/[0.08] bg-[#111114]">
+    <Card className="border border-white/8 bg-[#111114]">
       <CardHeader className="gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-28 bg-white/[0.06]" />
-            <Skeleton className="h-4 w-16 bg-white/[0.06]" />
-            <Skeleton className="h-4 w-14 bg-white/[0.06]" />
+            <Skeleton className="h-4 w-28 bg-white/6" />
+            <Skeleton className="h-4 w-16 bg-white/6" />
+            <Skeleton className="h-4 w-14 bg-white/6" />
           </div>
-          <Skeleton className="h-3 w-20 bg-white/[0.06]" />
+          <Skeleton className="h-3 w-20 bg-white/6" />
         </div>
-        <Skeleton className="h-3 w-full bg-white/[0.06]" />
-        <Skeleton className="h-3 w-4/5 bg-white/[0.06]" />
+        <Skeleton className="h-3 w-full bg-white/6" />
+        <Skeleton className="h-3 w-4/5 bg-white/6" />
       </CardHeader>
       <CardContent className="space-y-3">
-        <Skeleton className="h-14 w-full rounded-lg bg-white/[0.04]" />
-        <Skeleton className="h-8 w-full rounded-lg bg-white/[0.04]" />
-        <Skeleton className="h-8 w-full rounded-lg bg-white/[0.04]" />
+        <Skeleton className="h-14 w-full rounded-lg bg-white/4" />
+        <Skeleton className="h-8 w-full rounded-lg bg-white/4" />
+        <Skeleton className="h-8 w-full rounded-lg bg-white/4" />
       </CardContent>
-      <CardFooter className="flex items-center justify-between border-t border-white/[0.08] py-3">
+      <CardFooter className="flex items-center justify-between border-t border-white/8 py-3">
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-20 bg-white/[0.06]" />
-          <Skeleton className="h-8 w-16 bg-white/[0.06]" />
+          <Skeleton className="h-8 w-20 bg-white/6" />
+          <Skeleton className="h-8 w-16 bg-white/6" />
         </div>
-        <Skeleton className="h-3 w-24 bg-white/[0.06]" />
+        <Skeleton className="h-3 w-24 bg-white/6" />
       </CardFooter>
     </Card>
   );
@@ -673,7 +673,7 @@ function EmptyRecommendations({
   hasFilters: boolean;
 }) {
   return (
-    <Card className="border-dashed border-white/[0.12] bg-[#111114]/50 py-12 text-center">
+    <Card className="border-dashed border-white/12 bg-[#111114]/50 py-12 text-center">
       <CardContent className="flex flex-col items-center justify-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
           <svg
@@ -933,7 +933,7 @@ export default function RecommendationsPage() {
 
       {/* Metric Summary Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Card className="border border-white/[0.08] bg-[#111114] p-3.5">
+        <Card className="border border-white/8 bg-[#111114] p-3.5">
           <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
             Pending decision
           </p>
@@ -945,7 +945,7 @@ export default function RecommendationsPage() {
           </div>
         </Card>
 
-        <Card className="border border-white/[0.08] bg-[#111114] p-3.5">
+        <Card className="border border-white/8 bg-[#111114] p-3.5">
           <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
             Approved changes
           </p>
@@ -957,7 +957,7 @@ export default function RecommendationsPage() {
           </div>
         </Card>
 
-        <Card className="border border-white/[0.08] bg-[#111114] p-3.5">
+        <Card className="border border-white/8 bg-[#111114] p-3.5">
           <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
             Projected monthly value
           </p>
@@ -969,7 +969,7 @@ export default function RecommendationsPage() {
           </div>
         </Card>
 
-        <Card className="border border-white/[0.08] bg-[#111114] p-3.5">
+        <Card className="border border-white/8 bg-[#111114] p-3.5">
           <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
             Avg confidence
           </p>
@@ -983,7 +983,7 @@ export default function RecommendationsPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-y border-white/[0.08] py-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-y border-white/8 py-3">
         {/* Status Tabs */}
         <div className="flex flex-wrap items-center gap-1">
           <button
@@ -992,8 +992,8 @@ export default function RecommendationsPage() {
             className={cn(
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "all"
-                ? "bg-white/[0.08] text-zinc-100"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                ? "bg-white/8 text-zinc-100"
+                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
             )}
           >
             All <span className="tabular-nums text-zinc-500">({totalCount})</span>
@@ -1005,7 +1005,7 @@ export default function RecommendationsPage() {
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "pending"
                 ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
             )}
           >
             Pending <span className="tabular-nums text-zinc-500">({pendingCount})</span>
@@ -1017,7 +1017,7 @@ export default function RecommendationsPage() {
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "approved"
                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
             )}
           >
             Approved <span className="tabular-nums text-zinc-500">({approvedCount})</span>
@@ -1028,8 +1028,8 @@ export default function RecommendationsPage() {
             className={cn(
               "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
               statusFilter === "rejected"
-                ? "bg-white/[0.08] text-zinc-300"
-                : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                ? "bg-white/8 text-zinc-300"
+                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
             )}
           >
             Rejected <span className="tabular-nums text-zinc-500">({rejectedCount})</span>
@@ -1042,7 +1042,7 @@ export default function RecommendationsPage() {
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value as "all" | "low" | "medium" | "high")}
-            className="rounded-lg border border-white/[0.08] bg-[#111114] px-2.5 py-1 text-xs text-zinc-300 focus:border-blue-500/50 focus:outline-none"
+            className="rounded-lg border border-white/8 bg-[#111114] px-2.5 py-1 text-xs text-zinc-300 focus:border-blue-500/50 focus:outline-none"
           >
             <option value="all">All risk levels</option>
             <option value="low">Low risk only</option>
@@ -1057,7 +1057,7 @@ export default function RecommendationsPage() {
               placeholder="Filter actions…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-40 rounded-lg border border-white/[0.08] bg-[#111114] px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:border-blue-500/50 focus:outline-none sm:w-48"
+              className="w-40 rounded-lg border border-white/8 bg-[#111114] px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:border-blue-500/50 focus:outline-none sm:w-48"
             />
             {searchQuery && (
               <button

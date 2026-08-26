@@ -25,7 +25,7 @@ export function RecommendationPreview({
           View all
         </Link>
       </CardHeader>
-      <CardContent className="divide-y divide-white/[0.06]">
+      <CardContent className="divide-y divide-white/6">
         {recommendations.length === 0 ? (
           <p className="text-xs text-zinc-500">No recommendations yet.</p>
         ) : (

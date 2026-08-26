@@ -5,7 +5,7 @@ function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/[0.08] bg-[#111114]",
+        "rounded-xl border border-white/8 bg-[#111114]",
         className
       )}
       {...props}
@@ -36,7 +36,7 @@ function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 
 function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex items-center border-t border-white/[0.08] p-5", className)} {...props} />
+    <div className={cn("flex items-center border-t border-white/8 p-5", className)} {...props} />
   );
 }
 

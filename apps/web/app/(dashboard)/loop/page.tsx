@@ -216,11 +216,11 @@ function StageFlow({
                 <div
                   className={cn(
                     "group relative flex flex-1 flex-col justify-between rounded-lg border bg-[#111114] p-3.5 transition-all duration-150 ease-out",
-                    "hover:border-white/[0.16] hover:bg-[#18181c]",
+                    "hover:border-white/16 hover:bg-[#18181c]",
                     stage.status === "running" && "border-blue-500/40 shadow-sm shadow-blue-500/10",
                     stage.status === "paused" && "border-amber-500/30",
-                    stage.status === "ok" && "border-white/[0.08]",
-                    stage.status === "idle" && "border-white/[0.06] opacity-80",
+                    stage.status === "ok" && "border-white/8",
+                    stage.status === "idle" && "border-white/6 opacity-80",
                     stage.status === "error" && "border-red-500/40"
                   )}
                 >
@@ -260,7 +260,7 @@ function StageFlow({
                     </p>
                   </div>
 
-                  <div className="mt-3 flex items-baseline justify-between border-t border-white/[0.04] pt-2">
+                  <div className="mt-3 flex items-baseline justify-between border-t border-white/4 pt-2">
                     <span className="text-[10px] uppercase tracking-wider text-zinc-500">
                       Yield
                     </span>
@@ -345,7 +345,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
               placeholder="Filter actions or targets…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-8 rounded-md border border-white/[0.08] bg-[#0c0c0f] px-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="h-8 rounded-md border border-white/8 bg-[#0c0c0f] px-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
             {query && (
               <button
@@ -358,7 +358,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
             )}
           </div>
 
-          <div className="inline-flex rounded-md border border-white/[0.08] bg-[#0c0c0f] p-0.5 text-xs">
+          <div className="inline-flex rounded-md border border-white/8 bg-[#0c0c0f] p-0.5 text-xs">
             {(
               [
                 { id: "all", label: "All" },
@@ -388,7 +388,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
         <div className="relative w-full overflow-x-auto">
           <table className="w-full caption-bottom text-left text-xs">
             <thead>
-              <tr className="border-y border-white/[0.08] bg-white/[0.02]">
+              <tr className="border-y border-white/8 bg-white/2">
                 <th className="px-4 py-2.5 font-medium text-zinc-400">
                   Timestamp
                 </th>
@@ -407,7 +407,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-white/4">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-zinc-500">
@@ -418,7 +418,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
                 filtered.map((entry) => (
                   <tr
                     key={entry.id}
-                    className="transition-colors duration-150 ease-out hover:bg-white/[0.04]"
+                    className="transition-colors duration-150 ease-out hover:bg-white/4"
                   >
                     <td className="whitespace-nowrap px-4 py-3 font-mono text-[11px] tabular-nums text-zinc-500">
                       {entry.timestamp}
@@ -524,8 +524,8 @@ function LastRunViewer({
 
       <CardContent>
         {!result ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/[0.08] bg-white/[0.02] px-6 py-12 text-center">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-white/[0.08] bg-[#18181c] text-zinc-400">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/8 bg-white/2 px-6 py-12 text-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-white/8 bg-[#18181c] text-zinc-400">
               <svg
                 width="16"
                 height="16"
@@ -563,7 +563,7 @@ function LastRunViewer({
           </div>
         ) : (
           <div className="relative">
-            <pre className="max-h-96 overflow-auto rounded-lg border border-white/[0.08] bg-[#09090b] p-4 font-mono text-xs leading-relaxed text-zinc-300 scrollbar-thin">
+            <pre className="max-h-96 overflow-auto rounded-lg border border-white/8 bg-[#09090b] p-4 font-mono text-xs leading-relaxed text-zinc-300 scrollbar-thin">
               {JSON.stringify(result, null, 2)}
             </pre>
           </div>
@@ -726,7 +726,7 @@ export default function LoopPage() {
       </div>
 
       {/* Safety Gate Banner */}
-      <div className="flex items-center justify-between rounded-lg border border-white/[0.08] bg-[#111114] px-4 py-3">
+      <div className="flex items-center justify-between rounded-lg border border-white/8 bg-[#111114] px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-400">
             <svg

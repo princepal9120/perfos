@@ -22,7 +22,7 @@ function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>)
       <style dangerouslySetInnerHTML={{ __html: SHIMMER_CSS }} />
       <div
         aria-hidden="true"
-        className="ui-shimmer-band pointer-events-none absolute inset-0 animate-[ui-shimmer_1.8s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent"
+        className="ui-shimmer-band pointer-events-none absolute inset-0 animate-[ui-shimmer_1.8s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/[0.07] to-transparent"
       />
     </div>
   );

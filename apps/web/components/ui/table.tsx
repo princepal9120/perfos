@@ -45,8 +45,8 @@ function TableRow({
   return (
     <tr
       className={cn(
-        "border-b border-white/[0.04] transition-colors duration-150 ease-out",
-        "hover:bg-white/[0.03]",
+        "border-b border-white/4 transition-colors duration-150 ease-out",
+        "hover:bg-white/3",
         className
       )}
       {...props}

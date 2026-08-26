@@ -1,351 +1,799 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
-import LandingChat from "./landing-chat";
+import { useState } from "react";
+import { MarketingNavbar } from "@/components/marketing/navbar";
+import { MarketingFooter } from "@/components/marketing/footer";
 
-export const metadata: Metadata = {
-  title: "PerfOS — AI Performance Marketing OS",
-  description:
-    "Reconcile platform revenue. Flag over-counting. Approve AI actions. One console for Google, Meta, Shopify, and your agents.",
-};
-
-// ponytail: every stat below comes from the seeded demo dataset; none invented.
-const FEATURES = [
+const WORKFLOW_PROMPTS = [
   {
-    title: "Reconcile truth",
-    body: "Platforms claim credit. Shopify knows what sold. PerfOS reconciles platform-reported conversions against actual revenue and flags every dollar of over-counting.",
-    stat: "33.3%",
-    statLabel: "over-count caught in demo data",
+    id: "spy",
+    title: "Spy Competitors",
+    userPrompt: "What's the ad Notion has been running the longest?",
+    agentAction: "adkit_spy_competitor(domain: 'notion.so')",
+    agentOutput: "Their Post-it style ad has been live for 142 consecutive days. It points to their top landing page (/product) with 126 active ads running to it. Would you like me to deconstruct the hook and save the creative to your swipe file?"
   },
   {
-    title: "Daily briefing",
-    body: "One honest summary each morning: spend, revenue, blended ROAS, what changed, and why. Computed from your numbers, not the platforms.",
-    stat: "3.9x",
-    statLabel: "true blended ROAS, not claimed",
+    id: "kill-scale",
+    title: "Which ads to kill or scale?",
+    userPrompt: "Analyze my Meta ad account for the last 14 days. Which ads should I kill and which should I scale?",
+    agentAction: "adkit_meta_analyze_performance(timeframe: '14d')",
+    agentOutput: "Found 2 ads with CPA 45% above target: 'Feature Breakdown V2' (Spent $1,420, ROAS 0.9x) → Recommending Pause. Found 1 breakout winner: 'Founder Story Reel' (Spent $850, ROAS 4.2x) → Staged 20% budget increase for your approval."
   },
   {
-    title: "Safe AI actions",
-    body: "Recommendations arrive as structured actions checked by a hard policy engine. Nothing touches your ad accounts without your approval, and every action logs a rollback plan.",
-    stat: ">25%",
-    statLabel: "budget swings blocked by policy",
+    id: "clone",
+    title: "Clone a Notion ad in my brand",
+    userPrompt: "Clone Notion's top evergreen ad and remix it with our Dark Violet brand kit for PerfOS.",
+    agentAction: "adkit_clone_and_remix(ad_id: 'notion_142d', brand_kit: 'perfos_tokens')",
+    agentOutput: "Deconstructed hook: 'Consolidate 12 tools into 1'. Synthesized 3 on-brand variations: 'Stop running ads like it's 2018. Connect Claude to Meta, Google & TikTok.' Creatives staged in AdKit dashboard for review."
   },
+  {
+    id: "resize",
+    title: "Clone ad & resize for placements",
+    userPrompt: "Take our winning desktop ad and resize it for Instagram Stories, TikTok 9:16, and LinkedIn Carousel.",
+    agentAction: "adkit_batch_resize_and_adapt(creative_id: 'win_902')",
+    agentOutput: "Generated 3 format variants: 9:16 vertical video with auto-safe zone captions, 1:1 Feed square, and 4:5 mobile portrait. All asset dimensions validated against network API specs."
+  },
+  {
+    id: "draft",
+    title: "Draft a new feature campaign",
+    userPrompt: "We just launched our new Ads CLI. Draft a launch campaign for Meta & Twitter targeting developers.",
+    agentAction: "adkit_draft_campaign(topic: 'Ads CLI Launch', target: 'devs')",
+    agentOutput: "Drafted Campaign 'Ads CLI Launch' with $50/day test budget. Created 2 ad sets: Developer Tools Interest + Lookalike 1%. Staged 4 terminal-themed hooks. Ready for your 1-click approval."
+  }
 ];
 
-const STEPS = [
+const AUDIENCE_CARDS = [
   {
-    num: "01",
-    title: "Connect your channels",
-    desc: "Link Google, Meta and Shopify in 2 minutes. No code. OAuth or API key.",
+    icon: "👨‍💻",
+    title: "Founders & Solopreneurs",
+    desc: "You're growing a product and don't have the budget for a 5-figure agency. You want to run high-converting ads yourself without spending your entire week clicking through terrible ad manager UIs."
   },
   {
-    num: "02",
-    title: "Set your policy",
-    desc: "Define budget limits, approval rules and risk thresholds. PerfOS enforces them automatically.",
+    icon: "🎯",
+    title: "Agencies & Media Buyers",
+    desc: "You run multiple client ad accounts. Every hour lost duplicating campaigns, resizing assets, and reporting numbers is margin you'll never get back. Command your AI agent to handle the grunt work."
   },
   {
-    num: "03",
-    title: "Approve and execute",
-    desc: "Review recommendations one by one or auto-approve safe changes. Every action is audited.",
+    icon: "📈",
+    title: "Growth Marketers",
+    desc: "You know what winning ads look like. You just want to test 5x more angles every week. Let AdKit find competitor evergreens, generate hooks, and draft campaign variants in minutes."
   },
+  {
+    icon: "🎨",
+    title: "Brand Managers",
+    desc: "Maintain strict brand guidelines and token fidelity across all creative variations while giving your team the velocity of autonomous AI production."
+  }
 ];
 
-const FAQ = [
+const FIT_CHECK_YES = [
+  "You're sick of wasting 2+ hours a week clicking around in Meta's UI to duplicate, edit, and publish the same stuff.",
+  "You've wanted to run ads for a while but the bloated interfaces put you off.",
+  "You already use AI agents (Claude, Cursor, ChatGPT) for work and want ads to work the exact same way.",
+  "You run ads for multiple brands or clients and want to recover your lost operational margins.",
+  "You want an assistant that drafts, researches, and flags what to kill while you keep the final 1-click approval."
+];
+
+const FIT_CHECK_NO = [
+  "You expect AI to magically fix a broken product or offer without good strategy.",
+  "You don't want to review drafts before they go live on your connected ad accounts.",
+  "You enjoy spending 10 hours a week manually navigating Meta Ads Manager dropdowns."
+];
+
+const FAQS = [
+  {
+    q: "What can my AI agent actually do with AdKit?",
+    a: "Your AI agent gains typed tools to search 500k+ competitor ads, deconstruct winning hooks, generate on-brand static and video variations, inspect live performance metrics, and draft campaigns across Meta, Google, TikTok, LinkedIn, Reddit, X, and Microsoft Ads."
+  },
+  {
+    q: "Do changes go live immediately, or is there an approval step?",
+    a: "Every change your agent makes is a draft by default. Campaigns, ad sets, and creatives sit safely in your AdKit dashboard until you click 'Approve'. Nothing touches your live accounts without your explicit sign-off."
+  },
+  {
+    q: "Will using an MCP get my ad account flagged or banned?",
+    a: "No. Unlike unofficial scraping scripts, AdKit is an approved Meta and Google Tech Partner. All operations use the official platform APIs with built-in rate-limiting and policy safeguards."
+  },
   {
     q: "How long does setup take?",
-    a: "Connect your first channel in under 2 minutes. Full setup with policy configuration takes about 15 minutes.",
+    a: "Less than 3 minutes. Connect your ad accounts in the web console, copy one JSON line into your Claude Desktop / Cursor MCP settings, and you're ready to command your agent."
   },
   {
-    q: "Is my data secure?",
-    a: "Yes. We use AES-256 encryption for credentials, SOC 2 Type II compliance, and never store raw ad credentials. Enterprise customers can deploy on-prem.",
+    q: "Can I use AdKit without an AI agent?",
+    a: "Yes! AdKit includes a full web dashboard where you can browse the Ad Library, use the AI Creative Generator & Cloner, and inspect account metrics directly."
   },
   {
-    q: "How is this different from ChatGPT or Claude?",
-    a: "ChatGPT is a general-purpose LLM. PerfOS connects to your actual ad accounts, reconciles real revenue data, enforces hard policy rules, and logs every action. It is a system, not a chatbot.",
-  },
-  {
-    q: "Can I cancel anytime?",
-    a: "Yes. No lock-in. No contracts. Downgrade or cancel from settings in seconds.",
-  },
+    q: "Which AI agents and IDEs are compatible?",
+    a: "AdKit works natively with Claude Code, Claude Desktop, Cursor IDE, ChatGPT (OpenAI GPTs), Grok (xAI), Codex, OpenClaw, Perplexity, and Hermes Agent."
+  }
 ];
 
-function Logo() {
+export default function HomePage() {
+  const [activeWorkflow, setActiveWorkflow] = useState(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [copiedCmd, setCopiedCmd] = useState(false);
+  const [annualBilling, setAnnualBilling] = useState(true);
+
+  const currentWorkflow = WORKFLOW_PROMPTS[activeWorkflow];
+
+  const handleCopyCmd = () => {
+    navigator.clipboard.writeText("npx -y @adkit/mcp-server");
+    setCopiedCmd(true);
+    setTimeout(() => setCopiedCmd(false), 2000);
+  };
+
   return (
-    <span className="flex items-center gap-2.5">
-      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900 border border-white/15 font-display text-xs font-semibold text-white">
-        P
-      </span>
-      <span className="font-display text-sm font-semibold tracking-tight text-zinc-100">
-        PerfOS
-      </span>
-    </span>
-  );
-}
+    <div className="min-h-screen bg-[#0b0c10] text-zinc-100 selection:bg-purple-500/20 selection:text-purple-200">
+      <MarketingNavbar />
 
-export default function LandingPage() {
-  return (
-    <div className="relative flex min-h-screen flex-col bg-[#09090b] text-zinc-100 selection:bg-blue-500/30">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-white/[0.08] bg-[#09090b]/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
-          <Logo />
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
-            <Link
-              href="#reconcile"
-              className="text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-            >
-              Reconcile
-            </Link>
-            <Link
-              href="#how"
-              className="text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-            >
-              How it works
-            </Link>
-          </nav>
-          <Link
-            href="/overview"
-            className="rounded-md border border-white/[0.12] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:border-white/25 hover:bg-white/[0.08] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-          >
-            Open console
-          </Link>
-        </div>
-      </header>
+      <main className="pt-24 pb-20">
+        {/* HERO SECTION */}
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20 text-center">
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-linear-to-tr from-purple-600/20 via-violet-500/15 to-indigo-500/10 blur-[100px] pointer-events-none rounded-full" />
 
-      <main className="flex-1 overflow-x-clip">
-        {/* Hero — left-anchored; agent box sits beside the pitch instead of below it */}
-        <section className="mx-auto grid w-full max-w-6xl gap-10 px-6 pb-20 pt-20 sm:pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14">
-          <div className="min-w-0">
-            <p className="-ml-px mb-5 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-zinc-900/80 px-3 py-1 text-xs text-zinc-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-              Interactive demo mode active
-            </p>
-
-            <h1 className="[overflow-wrap:anywhere] min-w-0 text-balance break-words font-display text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-6xl">
-              Stop platforms inflating your ROAS.
-            </h1>
-
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-              PerfOS reconciles Google, Meta, and Shopify revenue in one deterministic
-              system. It flags over-counting, generates policy-gated recommendations,
-              and executes only what you approve.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/overview"
-                className="btn-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-              >
-                Start free trial
-              </Link>
-              <Link
-                href="#reconcile"
-                className="btn-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
-              >
-                See how it works
-              </Link>
-            </div>
-
-            <p className="mt-4 text-xs text-zinc-500">
-              No credit card required · Setup in 5 minutes · Cancel anytime
-            </p>
+          {/* Social Proof Quote Pill */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/4 border border-white/8 shadow-inner mb-6 hover:border-purple-500/30 transition-colors">
+            <span className="flex h-2 w-2 rounded-full bg-purple-400 animate-ping" />
+            <span className="text-xs font-medium text-zinc-300">
+              “Basically Ahrefs but for advertising”
+            </span>
+            <span className="text-xs text-purple-400 font-semibold flex items-center">
+              Explore AdKit 2.0 →
+            </span>
           </div>
 
-          <div className="min-w-0 lg:pl-4">
-            <LandingChat />
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-bold tracking-tight text-white max-w-4xl mx-auto leading-[1.08]">
+            The ads toolbox for you & your{" "}
+            <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">
+              AI agents
+            </span>
+          </h1>
+
+          <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+            Research competitors, launch campaigns, and track performance in minutes instead of hours — all from your preferred AI agent, or from the dashboard.
+          </p>
+
+          {/* Action CTAs */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/pricing"
+              className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-white bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg shadow-purple-600/30 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              Start 7-day Trial →
+            </Link>
+
+            <Link
+              href="/features/ads-mcp"
+              className="w-full sm:w-auto px-6 py-3.5 text-sm font-semibold text-zinc-300 bg-white/4 hover:bg-white/8 rounded-xl border border-white/10 hover:text-white transition-all flex items-center justify-center gap-2"
+            >
+              <span className="text-purple-400 font-mono">⌘</span> Explore Ads MCP
+            </Link>
           </div>
 
-          <div className="border-t border-white/[0.06] pt-8 lg:col-span-2 lg:flex lg:items-baseline lg:justify-between">
-            <p className="text-xs uppercase tracking-widest text-zinc-500">
-              Integrated with source-of-truth platforms
+          <p className="mt-3 text-xs text-zinc-400">
+            7-day free trial · Cancel in one click · Bring your own AI keys
+          </p>
+
+          {/* Trust Partner Strip */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-zinc-400 font-mono uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400">✓</span> Meta Approved Tech Partner
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400">✓</span> Google & TikTok Certified
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-400">✓</span> Anthropic & OpenAI MCP Native
+            </span>
+          </div>
+
+          {/* Social Proof Testimonial Callout */}
+          <div className="mt-10 max-w-3xl mx-auto p-4 rounded-xl bg-white/2 border border-white/6 text-left">
+            <p className="text-xs sm:text-sm text-zinc-300 italic">
+              &quot;My agent analyzed my account using AdKit, found what to optimize, and drafted all the changes on its own. I only had to click &apos;Approve&apos;. The first 30 minutes already saved me 8 hours of work.&quot;
             </p>
-            <div className="mt-4 flex flex-wrap gap-8 text-xs font-medium text-zinc-400 lg:mt-0">
-              {["Google Ads", "Meta Ads", "Shopify", "Stripe", "Slack"].map((name) => (
-                <span key={name} className="tracking-wide">
-                  {name}
-                </span>
-              ))}
+            <div className="mt-2 flex items-center gap-2 text-xs text-zinc-400">
+              <span className="font-semibold text-white">Gabe Salinas</span>
+              <span>·</span>
+              <span>Founder & Media Buyer</span>
             </div>
           </div>
         </section>
 
-        {/* Problem — stat ledger rows instead of another card grid */}
-        <section id="reconcile" className="section-padding border-t border-white/[0.06] bg-[#0c0c0f]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="max-w-2xl">
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Your platforms are over-crediting themselves.
+        {/* SECTION 1: YOUR FULL AD WORKFLOW IN ONE PLACE (4 TABS) */}
+        <section className="py-20 border-t border-white/6 bg-[#0c0d12]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                What you can do with AdKit
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                Your full ad workflow, in one place
               </h2>
-              <p className="mt-2 text-sm text-zinc-400">
-                Here is what happens when attribution is self-reported instead of reconciled.
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Research */}
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/8 hover:border-purple-500/30 transition-all group flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-lg">
+                    🔍
+                  </div>
+                  <h3 className="text-lg font-display font-semibold text-white">Research</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Browse 500k+ ads or import your competitors. Filter by longevity to uncover true evergreen winners live for 90+ days.
+                  </p>
+                </div>
+                <Link href="/features/ad-library" className="text-xs text-purple-400 hover:text-purple-300 font-semibold">
+                  Find what&apos;s working →
+                </Link>
+              </div>
+
+              {/* Create */}
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/8 hover:border-indigo-500/30 transition-all group flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg">
+                    🎨
+                  </div>
+                  <h3 className="text-lg font-display font-semibold text-white">Create</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Turn your brand kit and competitor winners into 30+ static and video hooks in seconds. 1-click resize for every placement.
+                  </p>
+                </div>
+                <Link href="/features/ai-ads-generator" className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold">
+                  AI Ads Generator →
+                </Link>
+              </div>
+
+              {/* Launch */}
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/8 hover:border-pink-500/30 transition-all group flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-lg">
+                    ⚡
+                  </div>
+                  <h3 className="text-lg font-display font-semibold text-white">Launch</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Let your agent draft campaigns, sets, and budgets directly from chat. Review in your dashboard and approve in 1 click.
+                  </p>
+                </div>
+                <Link href="/features/ads-mcp" className="text-xs text-pink-400 hover:text-pink-300 font-semibold">
+                  Launch with your agent →
+                </Link>
+              </div>
+
+              {/* Analyze */}
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/8 hover:border-emerald-500/30 transition-all group flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
+                    📈
+                  </div>
+                  <h3 className="text-lg font-display font-semibold text-white">Analyze</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    Cut through platform over-reporting. Identify fatigued creatives and scale winning ad sets with real incremental ROAS.
+                  </p>
+                </div>
+                <Link href="/command-center" className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold">
+                  Track real ROAS →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 2: THE PROBLEM (RUNNING ADS FEELS LIKE 2018...) */}
+        <section className="py-20 border-t border-white/6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-rose-400 font-semibold">
+                The Problem
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                Running ads feels like you&apos;re back in 2018...
+              </h2>
+              <p className="text-zinc-400 text-sm sm:text-base">
+                You don&apos;t have hours to waste clicking through ad managers. Let your agent do the boring work so you can focus on strategy.
               </p>
             </div>
 
-            <dl className="mt-12 divide-y divide-white/[0.06] border-y border-white/[0.06]">
-              {[
-                {
-                  metric: "5.5x vs 3.9x",
-                  label: "Claimed vs actual ROAS",
-                  sub: "The platform claims 5.5x. Your true blended ROAS is 3.9x. That gap is $26K unverified revenue on $20K spend in the demo dataset.",
-                },
-                {
-                  metric: "33.3%",
-                  label: "Over-count flagged",
-                  sub: "Share of platform-reported conversions that do not reconcile against Shopify order data.",
-                },
-                {
-                  metric: "6 hrs → 0",
-                  label: "Weekly spreadsheet time",
-                  sub: "The manual cross-check of Shopify order logs against ad dashboards happens automatically each morning.",
-                },
-              ].map((item) => (
-                <div key={item.label} className="grid gap-2 py-6 md:grid-cols-[16rem_1fr]">
-                  <dt className="order-2 font-display text-xl font-semibold tracking-tight text-white md:order-1">
-                    <span className="tabular-nums">{item.metric}</span>
-                    <span className="block text-sm font-normal text-zinc-500">{item.label}</span>
-                  </dt>
-                  <dd className="order-1 max-w-prose text-sm leading-relaxed text-zinc-400 md:order-2">
-                    {item.sub}
-                  </dd>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* Without AdKit */}
+              <div className="p-8 rounded-2xl bg-rose-950/10 border border-rose-500/20 space-y-5">
+                <div className="flex items-center gap-2 text-rose-400 font-mono text-xs uppercase font-semibold">
+                  <span>😩</span> Without AdKit
+                </div>
+                <ul className="space-y-3.5 text-xs sm:text-sm text-zinc-300">
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-rose-400 mt-0.5">✕</span>
+                    <span>Scroll ad libraries and feeds hoping to find inspiration.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-rose-400 mt-0.5">✕</span>
+                    <span>Screenshot competitors into ChatGPT to guess why their ads work.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-rose-400 mt-0.5">✕</span>
+                    <span>Open Photoshop/Canva to make 8 subtle size variations manually.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-rose-400 mt-0.5">✕</span>
+                    <span>Click through 15 dropdowns in Meta Ads Manager just to duplicate a campaign.</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* With AdKit */}
+              <div className="p-8 rounded-2xl bg-purple-950/15 border border-purple-500/30 space-y-5 shadow-xl shadow-purple-950/20">
+                <div className="flex items-center gap-2 text-purple-300 font-mono text-xs uppercase font-semibold">
+                  <span>😎</span> With AdKit
+                </div>
+                <ul className="space-y-3.5 text-xs sm:text-sm text-zinc-200">
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span>Ask your agent: &quot;What are Notion&apos;s longest-running ads?&quot;</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span>&quot;Clone their top 3 ads into my brand and write 5 hook variations.&quot;</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span>&quot;Resize all 5 for Stories, Feed, and TikTok in 1 click.&quot;</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span>&quot;Draft a test campaign on Meta with $50/day budget.&quot; Click Approve. Done.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3: WORKFLOW EXAMPLES (INTERACTIVE PROMPTS SIMULATOR) */}
+        <section className="py-20 border-t border-white/6 bg-[#0c0d12]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Workflow Examples
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                What running ads with AdKit looks like
+              </h2>
+              <p className="text-zinc-400 text-sm">
+                Pick a prompt below. See exactly what your AI agent does about it in real-time.
+              </p>
+            </div>
+
+            {/* Prompt Selector Pills */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8 max-w-4xl mx-auto">
+              {WORKFLOW_PROMPTS.map((wf, idx) => (
+                <button
+                  key={wf.id}
+                  onClick={() => setActiveWorkflow(idx)}
+                  className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
+                    activeWorkflow === idx
+                      ? "bg-purple-600 text-white shadow-lg shadow-purple-600/30 border border-purple-400/40"
+                      : "bg-white/4 text-zinc-400 hover:text-white border border-white/6"
+                  }`}
+                >
+                  {wf.title}
+                </button>
+              ))}
+            </div>
+
+            {/* Simulated Chat Interface */}
+            <div className="max-w-4xl mx-auto rounded-2xl border border-white/10 bg-[#111218] p-5 sm:p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-white/6 pb-3 text-xs text-zinc-400 font-mono">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Agent Connected: Claude Code / Cursor MCP</span>
+                </div>
+                <button
+                  onClick={handleCopyCmd}
+                  className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 text-[11px]"
+                >
+                  {copiedCmd ? "✓ Copied MCP Config" : "Copy MCP Server"}
+                </button>
+              </div>
+
+              {/* User Prompt */}
+              <div className="p-4 rounded-xl bg-black/40 border border-white/6 space-y-1">
+                <span className="text-[10px] font-mono uppercase text-purple-400 font-bold block">You (Marketer / Founder)</span>
+                <p className="text-sm font-medium text-zinc-100">&quot;{currentWorkflow.userPrompt}&quot;</p>
+              </div>
+
+              {/* Agent Action & Output */}
+              <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/20 space-y-3 text-xs">
+                <div className="flex items-center gap-2 text-purple-300 font-mono font-semibold">
+                  <span className="animate-spin">⚙</span> Calling Tool: <code className="text-zinc-200 bg-black/40 px-1.5 py-0.5 rounded">{currentWorkflow.agentAction}</code>
+                </div>
+                <div className="p-3.5 rounded-lg bg-black/60 border border-white/6 text-zinc-300 leading-relaxed font-sans text-xs sm:text-sm">
+                  {currentWorkflow.agentOutput}
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t border-white/4 text-[11px]">
+                  <span className="text-emerald-400 font-semibold">✓ Draft staged in AdKit dashboard</span>
+                  <Link href="/command-center" className="text-purple-400 hover:text-purple-300 underline font-medium">
+                    Review & Click Approve →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 4: WHO IS THIS FOR? (4 AUDIENCE CARDS) */}
+        <section className="py-20 border-t border-white/6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Who is this for?
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                People who&apos;d rather ship than click
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {AUDIENCE_CARDS.map((aud, i) => (
+                <div
+                  key={i}
+                  className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-4 hover:border-purple-500/30 transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <span className="text-3xl block">{aud.icon}</span>
+                    <h3 className="text-base font-display font-bold text-white">
+                      {aud.title}
+                    </h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      {aud.desc}
+                    </p>
+                  </div>
+                  <Link
+                    href="/pricing"
+                    className="text-xs font-semibold text-purple-400 hover:text-purple-300 pt-2 border-t border-white/4 block"
+                  >
+                    Start Free Trial →
+                  </Link>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
-        {/* Features — asymmetric bento: first tile spans full width */}
-        <section className="section-padding border-t border-white/[0.06]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="max-w-2xl">
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Three core engines. One operating system.
-              </h2>
-            </div>
+        {/* SECTION 5: A WORD FROM THE FOUNDER */}
+        <section className="py-20 border-t border-white/6 bg-[#0c0d12]">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="p-8 sm:p-10 rounded-2xl bg-[#111218] border border-white/10 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-linear-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-xl font-bold text-white shadow-lg">
+                  N
+                </div>
+                <div>
+                  <h3 className="text-lg font-display font-bold text-white">A word from the founder</h3>
+                  <p className="text-xs text-zinc-400">Hi there 👋 I&apos;m Nico, the creator of AdKit</p>
+                </div>
+              </div>
 
-            <div className="mt-12 grid gap-4 md:grid-cols-2">
-              {FEATURES.map((feature, i) => (
-                <article
-                  key={feature.title}
-                  className={`surface-card p-6 ${i === 0 ? "md:col-span-2 md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8" : ""}`}
+              <div className="space-y-4 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-white/6 pt-6">
+                <p>
+                  Before building startups, I was a media buyer. I managed over <strong>$1,000,000 in ads</strong>, sold two startups grown entirely with performance marketing, and helped 1,000+ founders learn Meta Ads through my guides.
+                </p>
+                <p>
+                  I love ads, but running them involves a tremendous amount of repetitive, mind-numbing grunt work 😩 Duplicating ad sets, resizing 20 static banners, copying and pasting copy, and navigating laggy ad managers. I hated every second of it.
+                </p>
+                <p>
+                  So I built AdKit to fix that. To let me and other marketers focus on what actually moves the needle: <strong>the strategy, the thinking, and the creativity</strong> — while letting AI agents handle the manual execution.
+                </p>
+                <p className="font-semibold text-white pt-2">
+                  — Nico, Founder of AdKit
+                </p>
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/6">
+                <span className="text-xs text-zinc-400">Try it risk-free with full access for 7 days.</span>
+                <Link
+                  href="/pricing"
+                  className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition-all"
                 >
-                  <div>
-                    <h3 className="font-display text-lg font-semibold tracking-tight text-zinc-100">
-                      {feature.title}
-                    </h3>
-                    <p className={`mt-3 text-sm leading-relaxed text-zinc-400 ${i === 0 ? "max-w-prose" : ""}`}>
-                      {feature.body}
-                    </p>
-                  </div>
-                  <div
-                    className={
-                      i === 0
-                        ? "md:border-l md:border-white/[0.08] md:pl-8 md:text-right"
-                        : "mt-6 border-t border-white/[0.06] pt-4"
-                    }
-                  >
-                    <p className="font-display text-3xl font-bold tabular-nums tracking-tight text-white">
-                      {feature.stat}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-zinc-500">{feature.statLabel}</p>
-                  </div>
-                </article>
-              ))}
+                  Start 7-day Trial →
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* How it works — timeline, not cards */}
-        <section id="how" className="section-padding border-t border-white/[0.06] bg-[#0c0c0f]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="max-w-2xl">
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                How PerfOS works
+        {/* SECTION 6: BUT I HEARD... (OBJECTION BUSTERS) */}
+        <section className="py-20 border-t border-white/6">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Objection Handling
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                &quot;But I heard...&quot;
               </h2>
-              <p className="mt-2 text-sm text-zinc-400">
-                From raw channel connections to verified actions in minutes.
-              </p>
             </div>
 
-            <ol className="relative mt-12 space-y-8 border-l border-white/[0.1] pl-8 md:space-y-0 md:grid md:grid-cols-3 md:gap-8 md:border-l-0 md:border-t md:pl-0 md:pt-8">
-              {STEPS.map((step) => (
-                <li key={step.num} className="relative">
-                  <span
-                    className="absolute -left-[2.19rem] top-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-blue-500/40 bg-[#0c0c0f] md:-top-[2.31rem] md:left-0"
-                    aria-hidden="true"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-3">
+                <span className="text-rose-400 font-mono text-xs font-bold block">
+                  ...letting an AI agent run my ads is risky 😰
+                </span>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  <strong>Not with AdKit.</strong> Every change your agent makes is a draft by default. Campaigns, ad sets, and creatives sit safely in your AdKit dashboard until you click &quot;Approve&quot;. Nothing touches your live accounts without approval.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-3">
+                <span className="text-amber-400 font-mono text-xs font-bold block">
+                  ...MCPs will get my account banned 😱
+                </span>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Other tools use unofficial scraping endpoints. AdKit is an <strong>officially approved Meta and Google Tech Partner</strong>, so every action travels through verified, rate-limited partner APIs.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-3">
+                <span className="text-purple-400 font-mono text-xs font-bold block">
+                  ...setting up an MCP is too technical 😳
+                </span>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  It takes 3 clicks. Connect your ad accounts in the web console, paste one line into your Claude / Cursor config, done. If you can use an AI chat, you can use AdKit.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 7: PRICING PREVIEW */}
+        <section className="py-20 border-t border-white/6 bg-[#0c0d12]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Transparent Plans
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                Simple, Transparent Pricing
+              </h2>
+              <p className="text-zinc-400 text-sm">
+                Save 30%+ with annual billing. Cancel anytime with 1 click.
+              </p>
+
+              {/* Billing Toggle */}
+              <div className="pt-3 inline-flex items-center gap-3 p-1 rounded-xl bg-white/4 border border-white/8">
+                <button
+                  onClick={() => setAnnualBilling(false)}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    !annualBilling ? "bg-purple-600 text-white shadow" : "text-zinc-400"
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setAnnualBilling(true)}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all ${
+                    annualBilling ? "bg-purple-600 text-white shadow" : "text-zinc-400"
+                  }`}
+                >
+                  <span>Yearly</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
+                    Save 30%+
                   </span>
-                  <span className="font-mono text-xs font-semibold text-zinc-500">{step.num}</span>
-                  <h3 className="mt-2 font-display text-base font-semibold text-zinc-100">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 max-w-sm text-sm leading-relaxed text-zinc-400">{step.desc}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+                </button>
+              </div>
+            </div>
 
-        {/* FAQ */}
-        <section id="faq" className="section-padding border-t border-white/[0.06]">
-          <div className="mx-auto max-w-3xl px-6">
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Frequently asked questions
-            </h2>
-
-            <div className="mt-10 space-y-3">
-              {FAQ.map((item) => (
-                <details key={item.q} className="surface-card group p-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-zinc-200 [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <span
-                      className="ml-4 font-mono text-zinc-500 transition-transform duration-150 ease-out group-open:rotate-45"
-                      aria-hidden="true"
-                    >
-                      +
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Single Project */}
+              <div className="p-8 rounded-2xl bg-[#111218] border border-white/10 hover:border-purple-500/30 transition-all space-y-6 flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-display font-bold text-white">Single Project</h3>
+                    <p className="text-xs text-zinc-400 mt-1">Every AdKit tool (ad library, AI studio, and MCP) for one brand.</p>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-display font-bold text-white">
+                      ${annualBilling ? "29" : "49"}
                     </span>
-                  </summary>
-                  <p className="mt-3 max-w-prose text-sm leading-relaxed text-zinc-400">{item.a}</p>
-                </details>
-              ))}
+                    <span className="text-xs text-zinc-400 font-mono">/ month</span>
+                  </div>
+                  <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-white/6 pt-5">
+                    <li className="flex items-center gap-2">✓ Multi-platform Ad Library (500k+ ads)</li>
+                    <li className="flex items-center gap-2">✓ Competitor Longevity & Activity Alerts</li>
+                    <li className="flex items-center gap-2">✓ AI Ads Generator & Creative Cloner</li>
+                    <li className="flex items-center gap-2">✓ Ads MCP Server & Terminal CLI</li>
+                    <li className="flex items-center gap-2">✓ Meta, Google, TikTok, LinkedIn ad accounts</li>
+                  </ul>
+                </div>
+                <Link
+                  href="/pricing"
+                  className="block w-full py-3 text-center text-xs font-semibold text-white bg-white/6 hover:bg-white/12 rounded-xl border border-white/10 transition-colors"
+                >
+                  Start 7-Day Trial
+                </Link>
+              </div>
+
+              {/* Multiple Projects */}
+              <div className="p-8 rounded-2xl bg-linear-to-b from-[#171524] to-[#111218] border-2 border-purple-500/40 relative shadow-2xl shadow-purple-950/30 space-y-6 flex flex-col justify-between">
+                <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-purple-600 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                  Most Popular
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-display font-bold text-white">Multiple Projects</h3>
+                    <p className="text-xs text-zinc-400 mt-1">For agencies, media buyers, and operators with multiple brands.</p>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-display font-bold text-white">
+                      ${annualBilling ? "89" : "149"}
+                    </span>
+                    <span className="text-xs text-zinc-400 font-mono">/ month</span>
+                  </div>
+                  <ul className="space-y-2.5 text-xs text-zinc-200 border-t border-white/6 pt-5">
+                    <li className="flex items-center gap-2">✓ <strong>Unlimited</strong> Brands & Client Workspaces</li>
+                    <li className="flex items-center gap-2">✓ Unlimited Competitor Ad Search & Downloads</li>
+                    <li className="flex items-center gap-2">✓ 1,000 AI Creative Generations / mo</li>
+                    <li className="flex items-center gap-2">✓ Multi-Seat Team Access & Dedicated API Keys</li>
+                    <li className="flex items-center gap-2">✓ Priority Support & Custom MCP Bridge</li>
+                  </ul>
+                </div>
+                <Link
+                  href="/pricing"
+                  className="block w-full py-3 text-center text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-xl shadow-lg shadow-purple-600/30 transition-colors"
+                >
+                  Start Agency Trial →
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Final CTA — split row, not centred stack */}
-        <section className="section-padding border-t border-white/[0.06] bg-[#0c0c0f]">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl">
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Stop guessing which numbers are real.
+        {/* SECTION 8: IS ADKIT THE RIGHT FIT FOR YOU? (HONEST CHECK) */}
+        <section className="py-20 border-t border-white/6">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Honest Check
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                Is AdKit the right fit for you?
               </h2>
-              <p className="mt-3 max-w-prose text-sm leading-relaxed text-zinc-400">
-                Connect your ad channels, set your policy limits, and let PerfOS reconcile
-                revenue across Google, Meta, and Shopify.
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Made for you */}
+              <div className="p-8 rounded-2xl bg-[#111218] border border-emerald-500/20 space-y-4">
+                <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase font-semibold">
+                  <span>🎯</span> AdKit is made for you if...
+                </div>
+                <ul className="space-y-3 text-xs sm:text-sm text-zinc-300">
+                  {FIT_CHECK_YES.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className="text-emerald-400 mt-0.5">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Not for you */}
+              <div className="p-8 rounded-2xl bg-[#111218] border border-rose-500/20 space-y-4">
+                <div className="flex items-center gap-2 text-rose-400 font-mono text-xs uppercase font-semibold">
+                  <span>🚫</span> But it might not be a good fit if...
+                </div>
+                <ul className="space-y-3 text-xs sm:text-sm text-zinc-400">
+                  {FIT_CHECK_NO.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span className="text-rose-400 mt-0.5">✕</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 9: PAYS FOR ITSELF IN THE FIRST WEEK (ROI CALCULATOR) */}
+        <section className="py-20 border-t border-white/6 bg-[#0c0d12]">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                Your ROI
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-white">
+                Pays for itself in the first week
+              </h2>
+              <p className="text-zinc-400 text-sm max-w-xl mx-auto">
+                Every hour not spent clicking in an ad manager is an hour spent on strategy and growth that actually moves revenue.
               </p>
             </div>
-            <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-              <Link href="/overview" className="btn-primary">
-                Start your free trial
-              </Link>
-              <a href="#faq" className="btn-secondary">
-                Read the FAQ
-              </a>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-2">
+                <span className="text-4xl font-display font-bold text-purple-400">3h</span>
+                <h4 className="font-bold text-white text-sm">3 hours saved weekly</h4>
+                <p className="text-xs text-zinc-400">Duplicating, editing, resizing, publishing: all handled from a chat.</p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-2">
+                <span className="text-4xl font-display font-bold text-indigo-400">52</span>
+                <h4 className="font-bold text-white text-sm">52 weeks a year</h4>
+                <p className="text-xs text-zinc-400">Because this isn&apos;t a one-time cleanup. It&apos;s your permanent workflow.</p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#111218] border border-white/10 space-y-2">
+                <span className="text-4xl font-display font-bold text-emerald-400">150+ hrs</span>
+                <h4 className="font-bold text-white text-sm">~1 month recovered / yr</h4>
+                <p className="text-xs text-zinc-400">Recovered time to spend on strategy, creative, and customer research.</p>
+              </div>
             </div>
+          </div>
+        </section>
+
+        {/* SECTION 10: FAQS */}
+        <section className="py-20 border-t border-white/6">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-purple-400 font-semibold">
+                F.A.Q.
+              </span>
+              <h2 className="text-3xl font-display font-bold text-white">
+                Frequently asked questions
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {FAQS.map((faq, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-white/8 bg-[#111218] overflow-hidden transition-colors"
+                >
+                  <button
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-zinc-100 hover:text-purple-300"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="text-purple-400 font-mono text-base">
+                      {openFaq === i ? "−" : "+"}
+                    </span>
+                  </button>
+                  {openFaq === i && (
+                    <div className="px-4 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-white/4 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 11: FINAL CONVERTING CTA */}
+        <section className="py-20 border-t border-white/6 relative overflow-hidden text-center bg-linear-to-b from-transparent to-purple-950/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
+            <h2 className="text-3xl sm:text-5xl font-display font-bold text-white">
+              Stop clicking. Start Advertising.
+            </h2>
+            <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
+              Give your AI agent the ads toolbox it&apos;s missing: research, create, launch, and diagnose from a single chat.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Link
+                href="/pricing"
+                className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-white bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl shadow-xl shadow-purple-600/30 transition-all hover:scale-[1.02]"
+              >
+                Start 7-day Trial →
+              </Link>
+            </div>
+            <p className="text-xs text-zinc-400">
+              7-day free trial · Cancel in one click · Bring your own AI keys
+            </p>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.08] py-8">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
-          <Logo />
-          <div className="flex items-center gap-6 text-xs text-zinc-500">
-            <Link href="#reconcile" className="hover:text-zinc-300">Reconcile</Link>
-            <Link href="#how" className="hover:text-zinc-300">How it works</Link>
-            <Link href="#faq" className="hover:text-zinc-300">FAQ</Link>
-            <Link href="/overview" className="hover:text-zinc-300">Console</Link>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

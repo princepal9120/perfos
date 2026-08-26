@@ -204,7 +204,7 @@ export function CreativeTable({
   });
 
   return (
-    <Card className={cn("border-white/[0.08] bg-[#111114]", className)}>
+    <Card className={cn("border-white/8 bg-[#111114]", className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <CardTitle className="font-display text-base text-zinc-100">
@@ -226,7 +226,7 @@ export function CreativeTable({
 
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-white/[0.08] bg-white/[0.01]">
+            <TableRow className="border-b border-white/8 bg-white/1">
               <TableHead
                 sortable
                 active={key === "name"}
@@ -275,7 +275,7 @@ export function CreativeTable({
           <TableBody>
             {loading ? (
               [0, 1, 2, 3, 4].map((i) => (
-                <TableRow key={i} className="border-b border-white/[0.04]">
+                <TableRow key={i} className="border-b border-white/4">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
@@ -301,7 +301,7 @@ export function CreativeTable({
               ))
             ) : sorted.length === 0 ? (
               <TableEmpty colSpan={5}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-zinc-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/8 bg-white/3 text-zinc-400">
                   <svg
                     width="18"
                     height="18"
@@ -331,13 +331,13 @@ export function CreativeTable({
                   key={row.id}
                   onClick={() => onCreativeClick?.(row.raw)}
                   className={cn(
-                    "border-b border-white/[0.04] transition-colors duration-150 ease-out hover:bg-white/[0.03]",
+                    "border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/3",
                     onCreativeClick && "cursor-pointer"
                   )}
                 >
                   <TableCell className="font-medium text-zinc-100">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-zinc-400">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/8 bg-white/3 text-zinc-400">
                         <svg
                           width="14"
                           height="14"

@@ -446,7 +446,7 @@ export default function MeasurementPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center justify-between border-b border-white/[0.08] pb-1">
+      <div className="flex items-center justify-between border-b border-white/8 pb-1">
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -454,8 +454,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "iroas"
-                ? "border border-white/[0.12] bg-white/[0.08] text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
+                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
             )}
           >
             <span>iROAS calibration</span>
@@ -470,8 +470,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "creatives"
-                ? "border border-white/[0.12] bg-white/[0.08] text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
+                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
             )}
           >
             <span>Creatives</span>
@@ -486,8 +486,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "anomalies"
-                ? "border border-white/[0.12] bg-white/[0.08] text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
+                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
             )}
           >
             <span>Anomalies</span>
@@ -507,8 +507,8 @@ export default function MeasurementPage() {
             className={cn(
               "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
               activeTab === "optimizer"
-                ? "border border-white/[0.12] bg-white/[0.08] text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200"
+                ? "border border-white/12 bg-white/8 text-zinc-100 shadow-sm"
+                : "text-zinc-400 hover:bg-white/3 hover:text-zinc-200"
             )}
           >
             <span>Optimizer</span>
@@ -533,7 +533,7 @@ export default function MeasurementPage() {
             />
 
             {/* Incrementality Experiments Card */}
-            <Card className="border-white/[0.08] bg-[#111114]">
+            <Card className="border-white/8 bg-[#111114]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <div>
                   <CardTitle className="font-display text-base text-zinc-100">
@@ -555,7 +555,7 @@ export default function MeasurementPage() {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b border-white/[0.08] bg-white/[0.01]">
+                    <TableRow className="border-b border-white/8 bg-white/1">
                       <TableHead>Channel</TableHead>
                       <TableHead>Method</TableHead>
                       <TableHead>Status</TableHead>
@@ -566,7 +566,7 @@ export default function MeasurementPage() {
                   <TableBody>
                     {loading ? (
                       [0, 1].map((i) => (
-                        <TableRow key={i} className="border-b border-white/[0.04]">
+                        <TableRow key={i} className="border-b border-white/4">
                           <TableCell>
                             <Skeleton className="h-4 w-20" />
                           </TableCell>
@@ -594,7 +594,7 @@ export default function MeasurementPage() {
                       testsData.map((t) => (
                         <TableRow
                           key={t.id}
-                          className="border-b border-white/[0.04] transition-colors duration-150 ease-out hover:bg-white/[0.03]"
+                          className="border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/3"
                         >
                           <TableCell className="font-medium text-zinc-100">
                             {formatPlatform(t.platform)}

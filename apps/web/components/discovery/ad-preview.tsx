@@ -176,7 +176,7 @@ export function AdPreview({
   return (
     <Card
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden border border-white/[0.08] bg-[#111114] shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/[0.16] hover:bg-[#141418] focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40",
+        "group relative flex flex-col justify-between overflow-hidden border border-white/8 bg-[#111114] shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/16 hover:bg-[#141418] focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40",
         className
       )}
     >
@@ -185,7 +185,7 @@ export function AdPreview({
         <CardHeader className="p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-              <Badge variant="outline" className="text-zinc-200 border-white/10 bg-white/[0.03]">
+              <Badge variant="outline" className="text-zinc-200 border-white/10 bg-white/3">
                 {platformLabel}
               </Badge>
               {runtime !== null && (
@@ -210,7 +210,7 @@ export function AdPreview({
                   "inline-flex h-7 w-7 items-center justify-center rounded-md border text-xs transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
                   isBookmarked
                     ? "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                    : "border-white/10 bg-white/[0.03] text-zinc-400 hover:border-white/20 hover:text-zinc-100"
+                    : "border-white/10 bg-white/3 text-zinc-400 hover:border-white/20 hover:text-zinc-100"
                 )}
               >
                 <svg
@@ -241,7 +241,7 @@ export function AdPreview({
         </CardHeader>
 
         {/* Media / Creative Stage */}
-        <div className="relative mx-4 overflow-hidden rounded-lg border border-white/[0.06] bg-[#0c0c0f]">
+        <div className="relative mx-4 overflow-hidden rounded-lg border border-white/6 bg-[#0c0c0f]">
           {ad.thumbnailUrl ? (
             <div className="relative aspect-video w-full overflow-hidden bg-zinc-900">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -253,7 +253,7 @@ export function AdPreview({
             </div>
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center p-4 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 shadow-inner">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-zinc-300 shadow-inner">
                 {mediaType === "video" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -331,9 +331,9 @@ export function AdPreview({
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-1 border-t border-white/[0.04]">
+          <div className="flex items-center justify-between pt-1 border-t border-white/4">
             <span className="text-[11px] text-zinc-500">CTA button</span>
-            <span className="inline-flex items-center rounded border border-white/[0.08] bg-white/[0.02] px-2 py-0.5 text-[11px] font-medium text-zinc-300">
+            <span className="inline-flex items-center rounded border border-white/8 bg-white/2 px-2 py-0.5 text-[11px] font-medium text-zinc-300">
               {ctaLabel}
             </span>
           </div>
@@ -341,7 +341,7 @@ export function AdPreview({
       </div>
 
       {/* Spend & Action Footer */}
-      <CardFooter className="flex flex-col gap-3 border-t border-white/[0.08] bg-white/[0.01] p-4 pt-3">
+      <CardFooter className="flex flex-col gap-3 border-t border-white/8 bg-white/1 p-4 pt-3">
         <div className="flex w-full items-center justify-between text-xs">
           <span className="text-zinc-400">Est. ad spend</span>
           <span className="font-medium text-zinc-200 tabular-nums">{spendDisplay}</span>
@@ -373,7 +373,7 @@ export function AdPreview({
 /** Skeleton layout matching AdPreview */
 export function AdPreviewSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn("flex flex-col justify-between border border-white/[0.08] bg-[#111114] p-4", className)}>
+    <Card className={cn("flex flex-col justify-between border border-white/8 bg-[#111114] p-4", className)}>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-20 rounded-full" />
@@ -384,7 +384,7 @@ export function AdPreviewSkeleton({ className }: { className?: string }) {
         <Skeleton className="h-3 w-4/5" />
         <SkeletonText lines={2} />
       </div>
-      <div className="mt-4 space-y-2 border-t border-white/[0.08] pt-3">
+      <div className="mt-4 space-y-2 border-t border-white/8 pt-3">
         <div className="flex justify-between">
           <Skeleton className="h-3 w-20" />
           <Skeleton className="h-3 w-24" />
@@ -407,8 +407,8 @@ export function AdPreviewEmpty({
   className?: string;
 }) {
   return (
-    <Card className={cn("flex flex-col items-center justify-center border border-dashed border-white/[0.08] bg-[#111114] p-8 text-center", className)}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-zinc-400">
+    <Card className={cn("flex flex-col items-center justify-center border border-dashed border-white/8 bg-[#111114] p-8 text-center", className)}>
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/2 text-zinc-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

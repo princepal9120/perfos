@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { PersonaPicker, type Persona } from "@/components/discovery/persona-picker";
 import { AdPreview, type WinningAd } from "@/components/discovery/ad-preview";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -474,7 +475,7 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
   ];
 
   return (
-    <Card className="border-white/[0.08] bg-[#0c0c0f]">
+    <Card className="border-white/8 bg-[#0c0c0f]">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold text-zinc-100">
@@ -504,7 +505,7 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
                     {pct}%
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/6">
                   <div
                     className="h-full rounded-full bg-blue-500 transition-all duration-300 ease-out"
                     style={{ width: `${pct}%` }}
@@ -516,7 +517,7 @@ function ScoreBreakdownCard({ winner }: ScoreBreakdownProps) {
           })}
         </div>
 
-        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="rounded-lg border border-white/6 bg-white/2 p-3">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             Ad DNA tags
           </p>
@@ -548,9 +549,9 @@ interface EmptyDiscoveryProps {
 
 function EmptyDiscoveryState({ onRun, loading }: EmptyDiscoveryProps) {
   return (
-    <Card className="border-dashed border-white/[0.12] bg-[#0c0c0f]/60 py-12 text-center">
+    <Card className="border-dashed border-white/12 bg-[#0c0c0f]/60 py-12 text-center">
       <CardContent className="flex flex-col items-center justify-center p-6">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.1] bg-white/[0.04] text-blue-400 shadow-inner">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/4 text-blue-400 shadow-inner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3M11 8v6M8 11h6" />
@@ -580,7 +581,18 @@ function EmptyDiscoveryState({ onRun, loading }: EmptyDiscoveryProps) {
 /* Main Page Component (C12)                                          */
 /* ------------------------------------------------------------------ */
 
-export default function DiscoveryPage() {
+function DiscoveryContent() {
+  const searchParams = useSearchParams();
+  const initialView = searchParams.get("view") || "library";
+  const [activeTab, setActiveTab] = useState<"library" | "competitors" | "saved">("library");
+
+  useEffect(() => {
+    const v = searchParams.get("view");
+    if (v === "competitors" || v === "library" || v === "saved") {
+      setActiveTab(v);
+    }
+  }, [searchParams]);
+
   const [persona, setPersona] = useState<Persona>("saas");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [tierFilter, setTierFilter] = useState<string>("all");
@@ -589,6 +601,9 @@ export default function DiscoveryPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasScanned, setHasScanned] = useState<boolean>(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [savedAds, setSavedAds] = useState<string[]>(["saas-01", "saas-02"]);
+  const [activeBoard, setActiveBoard] = useState<string>("Unsorted");
+  const [boards, setBoards] = useState<string[]>(["Unsorted", "Q3 Scaling Hooks", "High-Converting UGC"]);
 
   // Active items based on persona
   const currentDataset = useMemo(() => {
@@ -722,11 +737,19 @@ export default function DiscoveryPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-zinc-100">
-            Competitor discovery
+          <h1 className="font-display text-xl font-bold tracking-tight text-white">
+            {activeTab === "competitors"
+              ? "Competitor Tracking"
+              : activeTab === "saved"
+              ? "Saved Ads & Boards"
+              : "Ads Library & Swipe File"}
           </h1>
           <p className="mt-0.5 text-sm text-zinc-400">
-            Scan public ad libraries, isolate long-running winner DNA, and clone proven hooks into launch briefs.
+            {activeTab === "competitors"
+              ? "Monitor rival brand spend, scan frequency, and winning ad rotations in real time."
+              : activeTab === "saved"
+              ? "Curated creative boards, swipe files, and one-click studio cloning pipelines."
+              : "Scan public ad libraries, isolate long-running winner DNA, and clone proven hooks into launch briefs."}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -735,7 +758,7 @@ export default function DiscoveryPage() {
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="border-white/[0.08] text-xs text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+              className="border-white/8 text-xs text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
             >
               Clear scan
             </Button>
@@ -743,7 +766,7 @@ export default function DiscoveryPage() {
           <Button
             onClick={runDiscovery}
             disabled={loading}
-            className="bg-blue-600 text-white hover:bg-blue-500"
+            className="bg-purple-600 text-white hover:bg-purple-500 text-xs"
           >
             {loading ? (
               <span className="flex items-center gap-1.5">
@@ -754,24 +777,40 @@ export default function DiscoveryPage() {
                 Scanning libraries...
               </span>
             ) : (
-              <span className="flex items-center gap-1.5">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4">
-                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                  <path d="M3 3v5h5M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                  <path d="M16 21h5v-5" />
-                </svg>
-                Run discovery scan
-              </span>
+              "Scan Ad Libraries"
             )}
           </Button>
         </div>
+      </div>
+
+      {/* Navigation Subtabs (Matching Sidebar: Competitors / Ads Library / Saved Ads) */}
+      <div className="flex items-center gap-1 border-b border-white/8 pb-1">
+        {[
+          { id: "library", label: "Ads Library (Swipe File)", icon: "🔍" },
+          { id: "competitors", label: "Competitor Tracking", icon: "🏢" },
+          { id: "saved", label: "Saved Ads (Boards)", icon: "📌" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={cn(
+              "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all",
+              activeTab === tab.id
+                ? "border-b-2 border-purple-500 bg-purple-950/20 text-purple-300"
+                : "text-zinc-400 hover:bg-white/4 hover:text-zinc-200"
+            )}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* KPI Strip */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="border-white/[0.08] bg-[#0c0c0f] p-5">
+            <Card key={i} className="border-white/8 bg-[#0c0c0f] p-5">
               <Skeleton className="h-3 w-20" />
               <Skeleton className="mt-3 h-8 w-28" />
               <Skeleton className="mt-2 h-3 w-36" />
@@ -784,35 +823,35 @@ export default function DiscoveryPage() {
               value={kpis.spend}
               delta={14.8}
               sub="Est. 30-day market spend velocity"
-              className="border-white/[0.08] bg-[#0c0c0f]"
+              className="border-white/8 bg-[#0c0c0f]"
             />
             <Stat
               label="Surfaced winners"
               value={kpis.winnersCount}
               delta={8.2}
               sub="Scored ≥ 75 with ≥ 14d runtime"
-              className="border-white/[0.08] bg-[#0c0c0f]"
+              className="border-white/8 bg-[#0c0c0f]"
             />
             <Stat
               label="Average winner score"
               value={kpis.avgScore}
               delta={3.5}
               sub="Ad Oracle heuristic composite"
-              className="border-white/[0.08] bg-[#0c0c0f]"
+              className="border-white/8 bg-[#0c0c0f]"
             />
             <Stat
               label="Average ad runtime"
               value={kpis.avgRuntime}
               delta={12.0}
               sub="Observed active duration across platforms"
-              className="border-white/[0.08] bg-[#0c0c0f]"
+              className="border-white/8 bg-[#0c0c0f]"
             />
           </>
         )}
       </div>
 
       {/* Persona Picker Section */}
-      <Card className="border-white/[0.08] bg-[#0c0c0f]">
+      <Card className="border-white/8 bg-[#0c0c0f]">
         <CardContent className="pt-5">
           <PersonaPicker
             value={persona}
@@ -822,7 +861,157 @@ export default function DiscoveryPage() {
       </Card>
 
       {/* Empty State or Main Discovery Workspace */}
-      {!hasScanned ? (
+      {activeTab === "competitors" ? (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-sm font-semibold text-white">Tracked Competitor Brands</h3>
+              <p className="text-xs text-zinc-400">Continuous ad intelligence monitoring and creative velocity alerts.</p>
+            </div>
+            <Button
+              onClick={() => setToastMessage("Added new competitor tracker")}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-500 text-white text-xs"
+            >
+              + Track New Brand
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { name: "Linear", handle: "linear.app", status: "Active (Synced 2h ago)", ads: 24, spend: "$45k/mo", topHook: "Pain Agitation (0-3s)", category: "Dev Tools / SaaS" },
+              { name: "Supabase", handle: "supabase.com", status: "Active (Synced 4h ago)", ads: 18, spend: "$32k/mo", topHook: "POV Storytelling", category: "Database / Infra" },
+              { name: "Retool", handle: "retool.com", status: "Active (Synced 1h ago)", ads: 31, spend: "$65k/mo", topHook: "Cost & Waste Proof", category: "Internal Tools" },
+              { name: "Loom", handle: "loom.com", status: "Active (Synced 3h ago)", ads: 15, spend: "$28k/mo", topHook: "Screen Recording Hook", category: "Async Video" },
+              { name: "Notion", handle: "notion.so", status: "Active (Synced 1h ago)", ads: 42, spend: "$90k/mo", topHook: "Workspace Template Demo", category: "Productivity" },
+              { name: "Figma", handle: "figma.com", status: "Active (Synced 5h ago)", ads: 29, spend: "$75k/mo", topHook: "Realtime Collaboration", category: "Design" },
+            ].map((comp) => (
+              <div key={comp.name} className="rounded-2xl border border-white/8 bg-[#121319] p-5 space-y-3 shadow-lg hover:border-purple-500/30 transition-all">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-950/60 border border-purple-500/30 text-xs font-bold text-purple-300">
+                      {comp.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold text-white">{comp.name}</h4>
+                      <p className="text-[10px] text-zinc-400 font-mono">{comp.handle}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-[9px] text-emerald-400">
+                    {comp.status}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-white/4">
+                  <div>
+                    <span className="text-zinc-500 text-[10px]">Active Ads:</span>
+                    <p className="text-white font-semibold">{comp.ads} variations</p>
+                  </div>
+                  <div>
+                    <span className="text-zinc-500 text-[10px]">Est. Monthly Spend:</span>
+                    <p className="text-purple-300 font-semibold">{comp.spend}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-[#181924] p-2 text-[11px] text-zinc-300 border border-white/5">
+                  <span className="text-zinc-500 text-[10px] block">Top Winning Hook Type:</span>
+                  <span className="text-zinc-200 font-medium">{comp.topHook}</span>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] text-zinc-400">{comp.category}</span>
+                  <button
+                    onClick={() => {
+                      setActiveTab("library");
+                      setSearchQuery(comp.name);
+                    }}
+                    className="text-xs text-purple-400 hover:text-purple-300 font-medium"
+                  >
+                    View All Ads →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : activeTab === "saved" ? (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2">
+              {boards.map((b) => (
+                <button
+                  key={b}
+                  onClick={() => setActiveBoard(b)}
+                  className={cn(
+                    "rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors",
+                    activeBoard === b
+                      ? "bg-purple-600 text-white"
+                      : "bg-[#161722] text-zinc-400 hover:text-white border border-white/8"
+                  )}
+                >
+                  {b}
+                </button>
+              ))}
+              <button
+                onClick={() => {
+                  const name = prompt("Enter board name:");
+                  if (name) {
+                    setBoards([...boards, name]);
+                    setActiveBoard(name);
+                    setToastMessage(`Created board "${name}"`);
+                  }
+                }}
+                className="rounded-xl border border-dashed border-white/20 bg-transparent px-3 py-1.5 text-xs text-zinc-400 hover:text-white"
+              >
+                + New Board
+              </button>
+            </div>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                navigator.clipboard?.writeText("https://perfos.app/board/share_99a82b");
+                setToastMessage("Shareable board link copied to clipboard! 📋");
+              }}
+              className="text-xs border-white/10"
+            >
+              Share Board Link ↗
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currentDataset.slice(0, 4).map((ad) => (
+              <div key={ad.id} className="rounded-2xl border border-white/8 bg-[#121319] p-4 space-y-3 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="border-purple-500/30 bg-purple-500/10 text-purple-300 text-[10px]">
+                    {ad.platform.toUpperCase()} &middot; {ad.format}
+                  </Badge>
+                  <span className="text-[10px] text-zinc-400 font-mono">Score: {ad.score}/100</span>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-white line-clamp-1">{ad.headline}</h4>
+                  <p className="mt-1 text-[11px] text-zinc-400 line-clamp-2">{ad.body}</p>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-white/6 pt-3">
+                  <span className="text-[10px] text-emerald-400 font-medium">Est. Spend: {ad.spendEst}</span>
+                  <div className="flex gap-1.5">
+                    <Button
+                      size="sm"
+                      onClick={() => handleClone(ad)}
+                      className="h-7 px-2.5 text-[11px] bg-purple-600 hover:bg-purple-500 text-white"
+                    >
+                      Clone to Studio
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : !hasScanned ? (
         <EmptyDiscoveryState onRun={runDiscovery} loading={loading} />
       ) : (
         <div className="space-y-6">
@@ -843,7 +1032,7 @@ export default function DiscoveryPage() {
           )}
 
           {/* Winners Table (C08) */}
-          <Card className="border-white/[0.08] bg-[#0c0c0f]">
+          <Card className="border-white/8 bg-[#0c0c0f]">
             <CardHeader className="pb-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -863,7 +1052,7 @@ export default function DiscoveryPage() {
                       placeholder="Search advertiser or hook..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-8 w-44 rounded-md border border-white/[0.08] bg-white/[0.04] px-2.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-56"
+                      className="h-8 w-44 rounded-md border border-white/8 bg-white/4 px-2.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-56"
                     />
                     {searchQuery && (
                       <button
@@ -878,7 +1067,7 @@ export default function DiscoveryPage() {
                   <select
                     value={platformFilter}
                     onChange={(e) => setPlatformFilter(e.target.value)}
-                    className="h-8 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="h-8 rounded-md border border-white/8 bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
                     <option value="all" className="bg-[#111114]">All platforms</option>
                     <option value="meta" className="bg-[#111114]">Meta</option>
@@ -891,7 +1080,7 @@ export default function DiscoveryPage() {
                   <select
                     value={tierFilter}
                     onChange={(e) => setTierFilter(e.target.value)}
-                    className="h-8 rounded-md border border-white/[0.08] bg-white/[0.04] px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="h-8 rounded-md border border-white/8 bg-white/4 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
                     <option value="all" className="bg-[#111114]">All tiers</option>
                     <option value="high_conf" className="bg-[#111114]">High confidence</option>
@@ -905,7 +1094,7 @@ export default function DiscoveryPage() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-white/[0.08] hover:bg-transparent">
+                  <TableRow className="border-b border-white/8 hover:bg-transparent">
                     <TableHead
                       sortable
                       active={sortKey === "platform"}
@@ -973,8 +1162,8 @@ export default function DiscoveryPage() {
                           className={cn(
                             "cursor-pointer transition-colors duration-150 ease-out",
                             isSelected
-                              ? "bg-blue-500/[0.08] hover:bg-blue-500/[0.12]"
-                              : "hover:bg-white/[0.03]"
+                              ? "bg-blue-500/8 hover:bg-blue-500/12"
+                              : "hover:bg-white/3"
                           )}
                         >
                           <TableCell>
@@ -1029,7 +1218,7 @@ export default function DiscoveryPage() {
                                 "h-7 text-xs",
                                 isSelected
                                   ? "bg-blue-600 text-white hover:bg-blue-500"
-                                  : "border-white/[0.08] text-zinc-300 hover:bg-white/[0.04]"
+                                  : "border-white/8 text-zinc-300 hover:bg-white/4"
                               )}
                             >
                               {isSelected ? "Inspecting" : "Inspect"}
@@ -1046,5 +1235,13 @@ export default function DiscoveryPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DiscoveryPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-xs text-zinc-400">Loading Discovery...</div>}>
+      <DiscoveryContent />
+    </Suspense>
   );
 }

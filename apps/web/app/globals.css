@@ -1,173 +1,46 @@
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Hallmark · macrostructure: Stat-Led · tone: utilitarian · anchor hue: 250 (Cobalt) */
-
-@import "../../../tokens.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
-  * {
-    border-color: var(--color-border);
+  :root {
+    --bg-deep: #0b0c10;
+    --bg-card: #12131a;
+    --bg-card-hover: #171822;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(168, 85, 247, 0.3);
+    --accent: #a855f7;
+    --font-display: var(--font-display-face, 'Space Grotesk'), -apple-system, sans-serif;
+    --font-body: var(--font-body-face, 'Inter'), -apple-system, sans-serif;
   }
 
   html {
     color-scheme: dark;
-    scroll-behavior: smooth;
-    overflow-x: clip;
+    background-color: #0b0c10;
+    color: #f4f4f6;
   }
 
   body {
-    background-color: var(--color-paper);
-    color: var(--color-ink);
+    background-color: #0b0c10;
+    color: #f4f4f6;
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
-  }
-
-  ::selection {
-    background: var(--color-accent-subtle);
-    color: var(--color-ink);
+    margin: 0;
+    padding: 0;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-style: normal; /* Hallmark gate 38a: No italic headers */
+    font-style: normal;
     letter-spacing: -0.02em;
+    margin: 0;
   }
 }
 
-@layer components {
-  .surface-card {
-    background-color: var(--color-paper-2);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    transition: border-color var(--dur-normal) var(--ease-out),
-                box-shadow var(--dur-normal) var(--ease-out),
-                transform var(--dur-normal) var(--ease-out);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .surface-card:hover {
-      border-color: var(--color-border-hover);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  .btn-primary {
-    background-color: var(--color-ink);
-    color: var(--color-paper);
-    font-weight: 500;
-    border-radius: var(--radius-md);
-    padding: 0.625rem 1.25rem;
-    font-size: var(--text-sm);
-    line-height: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    transition: background-color var(--dur-fast) var(--ease-out),
-                transform var(--dur-fast) var(--ease-out),
-                opacity var(--dur-fast) var(--ease-out);
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .btn-primary:disabled,
-  .btn-primary[aria-disabled="true"] {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .btn-secondary:disabled,
-  .btn-secondary[aria-disabled="true"] {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .btn-primary:hover {
-      background-color: #e4e4e7;
-    }
-  }
-
-  .btn-primary:active {
-    transform: scale(0.98);
-    background-color: #d4d4d8;
-  }
-
-  .btn-secondary {
-    background-color: var(--color-paper-3);
-    color: var(--color-ink);
-    border: 1px solid var(--color-border);
-    font-weight: 500;
-    border-radius: var(--radius-md);
-    padding: 0.625rem 1.25rem;
-    font-size: var(--text-sm);
-    line-height: 1.25rem;
-    transition: background-color var(--dur-normal) var(--ease-out),
-                border-color var(--dur-normal) var(--ease-out),
-                transform var(--dur-fast) var(--ease-out);
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .btn-secondary:hover {
-      background-color: var(--color-paper-elevated);
-      border-color: var(--color-border-hover);
-    }
-  }
-
-  .btn-secondary:active {
-    transform: scale(0.98);
-    background-color: var(--color-paper-2);
-  }
-
-  .section-padding {
-    padding-top: var(--space-16);
-    padding-bottom: var(--space-16);
-  }
-}
-
-/* Scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-border-hover);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-  }
-
-  a,
-  button,
-  .btn-primary,
-  .btn-secondary,
-  .surface-card,
-  input,
-  summary {
-    transition-duration: 120ms !important;
-    transform: none !important;
-  }
-}
+/* Custom Utilities for Premium Dark Design */
+.bg-deep { background-color: #0b0c10; }
+.bg-card-dark { background-color: #12131a; }
+.bg-card-dark-hover:hover { background-color: #171822; }
+.border-subtle { border-color: rgba(255, 255, 255, 0.08); }
+.border-accent { border-color: rgba(168, 85, 247, 0.35); }
+.glow-purple { box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.25); }
+.glow-purple-lg { box-shadow: 0 20px 60px -15px rgba(168, 85, 247, 0.35); }

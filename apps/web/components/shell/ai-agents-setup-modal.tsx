@@ -52,9 +52,9 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
       {/* Dialog */}
       <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-[#121319] p-6 shadow-2xl shadow-purple-950/30 sm:p-8">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-white/[0.08] pb-5">
+        <div className="flex items-start justify-between border-b border-white/8 pb-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-red-500 to-orange-500 text-white shadow-md shadow-orange-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-red-500 to-orange-500 text-white shadow-md shadow-orange-500/20">
               <span className="text-xl">🤖</span>
             </div>
             <div>
@@ -78,7 +78,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
         </div>
 
         {/* Step Indicator */}
-        <div className="my-5 flex items-center justify-between gap-2 border-b border-white/[0.06] pb-4">
+        <div className="my-5 flex items-center justify-between gap-2 border-b border-white/6 pb-4">
           {[
             { num: 1, title: "Select Clients" },
             { num: 2, title: "Access & MCP" },
@@ -135,7 +135,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                       "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all duration-150",
                       isSelected
                         ? "border-purple-500/50 bg-purple-950/20 shadow-sm shadow-purple-950/40"
-                        : "border-white/[0.08] bg-[#171822] hover:border-white/20 hover:bg-[#1b1c28]"
+                        : "border-white/8 bg-[#171822] hover:border-white/20 hover:bg-[#1b1c28]"
                     )}
                   >
                     <span className="text-xl">{agent.icon}</span>
@@ -182,7 +182,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
                     "flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all",
                     accessMode === mode.id
                       ? "border-purple-500/50 bg-purple-950/20"
-                      : "border-white/[0.08] bg-[#171822] hover:border-white/20"
+                      : "border-white/8 bg-[#171822] hover:border-white/20"
                   )}
                 >
                   <input
@@ -200,7 +200,7 @@ export function AIAgentsSetupModal({ isOpen, onClose }: AIAgentsSetupModalProps)
               ))}
             </div>
 
-            <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#171822] p-3.5">
+            <div className="mt-4 rounded-xl border border-white/8 bg-[#171822] p-3.5">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-zinc-400">One-Click MCP Connection URL</span>
                 <Badge variant="outline" className="border-purple-500/30 bg-purple-500/10 text-[10px] text-purple-300">

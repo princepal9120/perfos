@@ -32,7 +32,7 @@ function ChangeListSkeleton() {
 function ChangeListEmpty() {
   return (
     <CardContent>
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border-subtle bg-white/[0.02] px-6 py-10 text-center">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border-subtle bg-white/2 px-6 py-10 text-center">
         <span className="flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle bg-bg-elevated text-text-muted">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M8 6h13M8 12h13M8 18h13" />
@@ -45,7 +45,7 @@ function ChangeListEmpty() {
         </p>
         <Link
           href="/loop"
-          className="mt-4 inline-flex items-center gap-1 rounded-md border border-border-subtle bg-bg-elevated px-3 py-1.5 text-xs font-medium text-text-primary transition-colors duration-normal ease-out hover:border-border-hover hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]"
+          className="mt-4 inline-flex items-center gap-1 rounded-md border border-border-subtle bg-bg-elevated px-3 py-1.5 text-xs font-medium text-text-primary transition-colors duration-normal ease-out hover:border-border-hover hover:bg-white/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]"
         >
           Open the loop
         </Link>
@@ -74,11 +74,11 @@ export function ChangeList({ changes, loading = false }: { changes: ChangeItem[]
       {changes.length === 0 ? (
         <ChangeListEmpty />
       ) : (
-        <CardContent className="-mx-1 divide-y divide-white/[0.06]">
+        <CardContent className="-mx-1 divide-y divide-white/6">
           {changes.map((change) => (
             <div
               key={change.index}
-              className="group flex gap-3.5 rounded-lg px-1 py-3 first:pt-0 last:pb-0 transition-colors duration-normal ease-out hover:bg-white/[0.03]"
+              className="group flex gap-3.5 rounded-lg px-1 py-3 first:pt-0 last:pb-0 transition-colors duration-normal ease-out hover:bg-white/3"
             >
               <span className="mt-px w-5 shrink-0 font-mono text-[11px] font-semibold tabular-nums leading-5 text-text-muted transition-colors duration-normal ease-out group-hover:text-accent">
                 {String(change.index + 1).padStart(2, "0")}

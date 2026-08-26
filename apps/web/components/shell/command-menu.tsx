@@ -24,7 +24,7 @@ const routes: CommandRoute[] = [
   { href: "/command-center", label: "Command center" },
   { href: "/chat", label: "Chat" },
   { href: "/settings", label: "Settings" },
-  { href: "/integrations", label: "Integrations" },
+  { href: "/connected-apps", label: "Integrations" },
 ];
 
 function SearchIcon() {
