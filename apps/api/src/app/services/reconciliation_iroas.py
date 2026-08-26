@@ -45,7 +45,15 @@ CHANNELS = list(IROAS_CALIBRATION.keys())
 
 
 def compute_iroas(workspace_id: int, session: Session) -> list[dict]:
-    """Return per-channel {platform, reported_roas, iroas, calibration}."""
+    """Return per-channel {platform, reported_roas, iroas, calibration}.
+
+    Every calibrated channel is represented. Channels with no/zero Spend rows in
+    this workspace fall back to their deterministic FALLBACK_REPORTED_ROAS (so a
+    dashboard never shows a gap), while zero-cost spend that DOES exist yields a
+    reported ROAS of 0.0 (never a fabricated fallback). A calibrated channel
+    missing a fallback entry raises ValueError (calibration without a fallback is
+    a config error, not a silent gap).
+    """
     spend_rows = (
         session.query(
             Campaign.platform.label("platform"),
@@ -74,6 +82,26 @@ def compute_iroas(workspace_id: int, session: Session) -> list[dict]:
                 "platform": platform,
                 "reported_roas": round(reported_roas, 2),
                 "iroas": round(reported_roas * calibration, 2),
+                "calibration": calibration,
+            }
+        )
+
+    # Deterministic fallback for every calibrated channel that had no spend.
+    for platform in CHANNELS:
+        if platform in reported:
+            continue
+        if platform not in FALLBACK_REPORTED_ROAS:
+            # Calibrated but no fallback -> config error, surface clearly.
+            raise ValueError(
+                f"iroas: channel {platform!r} is calibrated but has no fallback ROAS entry"
+            )
+        fallback = FALLBACK_REPORTED_ROAS[platform]
+        calibration = IROAS_CALIBRATION.get(platform, DEFAULT_CALIBRATION)
+        out.append(
+            {
+                "platform": platform,
+                "reported_roas": round(fallback, 2),
+                "iroas": round(fallback * calibration, 2),
                 "calibration": calibration,
             }
         )

@@ -80,3 +80,44 @@ Backend runs on Cloudflare Containers or any Docker host.
 ## CI/CD
 
 See `.github/workflows/ci.yml` for backend tests, frontend build, and deploy.
+
+## perfos-loop (agent build)
+
+The ad lifecycle was missing its first half: finding what already works before
+spending on new creative. This build adds three additive packages under
+`apps/api/src/app/`, produced by a 50-agent orchestrated pass over the repo
+(each agent owned one bounded module; everything is additive, mock-safe by
+default, and makes no external LLM calls without keys).
+
+### Discovery (`discovery.find` + `discovery.score`)
+- **find** — OSS adapters over public ad libraries (MetaAdsCollector /
+  meta-ads-scraper, Google Ads Transparency, plus LinkedIn/X surfaces) that
+  normalize competitor ads into canonical `SpyAd` rows with a local store
+  (`discovery.find.store`).
+- **score** — deterministic winner engine: hook/angle detection with evidence
+  spans, longevity scoring as a winner proxy, winner tiers
+  (high_conf / winner / emerging / loser), persona fit, winner-DNA diff vs your
+  own ads, and the 0–100 adoracle score. Pure Python, no external calls.
+
+### Create (`create`)
+Creative generation adapters that keep PerfOS policy vocabulary end-to-end:
+- **commercial_creator** — adapter to cxbxmxcx/commercial-creator: intake →
+  brief → script → storyboard → Seedance video. Staging is always free
+  (estimate only); spending requires an explicit named approver inside budget
+  cap. MOCK_MODE serves everything deterministically with zero network/spend.
+- **cutagent**, **money_printer_turbo**, **adkit_mcp_client** — clip/asset
+  assembly and MCP tool clients behind the same mock-first contract.
+
+### Loop (`loop`)
+End-to-end orchestrator: find → score → create → launch → track → double-down.
+- **safety_gate** — every external write passes through draft-first, paused,
+  human-approval gating reusing the existing PerfOS policy engine.
+- **stages/track** — ROAS tracking folds spy spend into attribution
+  (`reconcile_spy`).
+- **stages/double_down** — pure decisions per asset: roas ≥ 2.0 → scale,
+  roas < 1.0 → kill, otherwise hold. Execution still goes through safety_gate.
+- **scheduler** — interval driver for the cycle; dry-run by default, real work
+  only with `dry_run=False` and an injected tick.
+
+Nothing executes against a live ad account or spends money without explicit
+approval — consistent with the Safety loop above.

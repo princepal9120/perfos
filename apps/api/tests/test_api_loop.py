@@ -18,6 +18,7 @@ from datetime import date
 import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import settings
 from app.core.db import Base, SessionLocal, engine, init_db
 from app.mock.dataset import TARGETS, WORKSPACE_NAME, get_mock_data
 
@@ -129,7 +130,7 @@ def api():
     """TestClient on app.main:app hitting the seeded perfos_test.db."""
     from app.main import app
 
-    headers = {"X-Workspace-Id": str(_rebuild_if_needed())}
+    headers = {"X-Workspace-Id": str(_rebuild_if_needed()), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY}
     with TestClient(app) as client:
         yield client, headers
 

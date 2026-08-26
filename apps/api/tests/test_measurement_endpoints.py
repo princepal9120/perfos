@@ -1,9 +1,11 @@
 """Tests for unified measurement endpoints: /iroas, /creatives, /anomalies,
 /optimizer/reallocate and the incrementality lifecycle."""
 
+from app.core.config import settings
+
 
 def test_iroas_calibration(client, seeded_db):
-    resp = client.get("/api/iroas", headers={"X-Workspace-Id": str(seeded_db["workspace_id"])})
+    resp = client.get("/api/iroas", headers={"X-Workspace-Id": str(seeded_db["workspace_id"]), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY})
     assert resp.status_code == 200
     rows = {r["platform"]: r for r in resp.json()}
 
@@ -68,7 +70,7 @@ def test_creatives_and_anomalies(client, seeded_db, db_session):
     )
     db_session.commit()
 
-    resp = client.get("/api/creatives", headers={"X-Workspace-Id": str(ws_id)})
+    resp = client.get("/api/creatives", headers={"X-Workspace-Id": str(ws_id), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY})
     assert resp.status_code == 200
     creatives = resp.json()
     by_id = {c["creative_id"]: c for c in creatives}
@@ -85,7 +87,7 @@ def test_creatives_and_anomalies(client, seeded_db, db_session):
 def test_optimizer_plan_preserves_total(client, seeded_db):
     resp = client.post(
         "/api/optimizer/reallocate",
-        headers={"X-Workspace-Id": str(seeded_db["workspace_id"])},
+        headers={"X-Workspace-Id": str(seeded_db["workspace_id"]), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY},
     )
     assert resp.status_code == 200
     body = resp.json()
@@ -102,7 +104,7 @@ def test_optimizer_plan_preserves_total(client, seeded_db):
 
 
 def test_incrementality_lifecycle(client, seeded_db):
-    headers = {"X-Workspace-Id": str(seeded_db["workspace_id"])}
+    headers = {"X-Workspace-Id": str(seeded_db["workspace_id"]), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY}
 
     created = client.post(
         "/api/incrementality",
@@ -139,7 +141,7 @@ def test_incrementality_lifecycle(client, seeded_db):
 
 
 def test_incrementality_run_without_numbers_stays_none(client, seeded_db):
-    headers = {"X-Workspace-Id": str(seeded_db["workspace_id"])}
+    headers = {"X-Workspace-Id": str(seeded_db["workspace_id"]), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY}
     created = client.post(
         "/api/incrementality",
         headers=headers,
