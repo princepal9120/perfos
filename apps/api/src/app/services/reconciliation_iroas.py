@@ -67,18 +67,8 @@ def compute_iroas(workspace_id: int, session: Session) -> list[dict]:
     }
 
     out: list[dict] = []
-    for platform in CHANNELS:
+    for platform, reported_roas in reported.items():
         calibration = IROAS_CALIBRATION.get(platform, DEFAULT_CALIBRATION)
-        if platform in reported:
-            # Real spend rows exist: zero spend must yield iroas = 0, not fallback.
-            reported_roas = reported[platform]
-        else:
-            fallback = FALLBACK_REPORTED_ROAS.get(platform)
-            if fallback is None:
-                raise ValueError(
-                    f"No spend data and no fallback ROAS configured for platform '{platform}'"
-                )
-            reported_roas = fallback
         out.append(
             {
                 "platform": platform,

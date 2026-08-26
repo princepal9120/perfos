@@ -1,20 +1,19 @@
-import base64
-import hashlib
-import hmac
-import json
-import os
-import time
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal, TypeAlias
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy import text
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import run_analysis
 from app.agents.policy import evaluate as evaluate_policy
 from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
+from app.core.deps import get_current_workspace
+from app.core.security import create_token as sign_token
+from app.core.security import decrypt_secret, encrypt_secret, verify_workspace
 from app.models import (
     AdAccount,
     Approval,
@@ -55,65 +54,18 @@ PLATFORMS = Literal[
     "x_ads",
 ]
 AGENT_PROVIDERS = Literal["chatgpt", "claude", "opencode", "openai", "anthropic"]
-TOKEN_SECRET = os.environ.get("PERFOS_TOKEN_SECRET", "perfos-dev-secret")
-TOKEN_TTL_SECONDS = 86400
 
 
 def _now() -> datetime:
     return datetime.now(UTC)
 
 
-def _sign(raw: bytes) -> str:
-    return hmac.new(TOKEN_SECRET.encode(), raw, hashlib.sha256).hexdigest()
-
-
-def issue_token(workspace_id: int) -> str:
-    payload = base64.urlsafe_b64encode(
-        json.dumps(
-            {"workspace_id": workspace_id, "exp": int(time.time()) + TOKEN_TTL_SECONDS}
-        ).encode()
-    ).decode()
-    return f"{payload}.{_sign(payload.encode())}"
-
-
-def verify_token(token: str) -> int | None:
-    try:
-        payload, sig = token.rsplit(".", 1)
-        if not hmac.compare_digest(sig, _sign(payload.encode())):
-            return None
-        data = json.loads(base64.urlsafe_b64decode(payload))
-        if data.get("exp", 0) < time.time():
-            return None
-        return int(data["workspace_id"])
-    except Exception:
-        return None
-
-
-async def workspace_from_header(
-    x_workspace_id: Annotated[str | None, Header(alias="X-Workspace-Id")] = None,
-) -> int:
-    if not x_workspace_id:
-        raise HTTPException(status_code=400, detail="Missing X-Workspace-Id header")
-    try:
-        return int(x_workspace_id)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail="X-Workspace-Id must be an integer") from exc
-
-
-async def optional_workspace_id(
-    x_workspace_id: Annotated[str | None, Header(alias="X-Workspace-Id")] = None,
-) -> int | None:
-    if not x_workspace_id:
-        return None
-    try:
-        return int(x_workspace_id)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail="X-Workspace-Id must be an integer") from exc
+def _actor(workspace_id: int) -> str:
+    return f"workspace:{workspace_id}"
 
 
 DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
-WorkspaceId: TypeAlias = Annotated[int, Depends(workspace_from_header)]
-OptionalWorkspaceId: TypeAlias = Annotated[int | None, Depends(optional_workspace_id)]
+WorkspaceId: TypeAlias = Annotated[int, Depends(get_current_workspace)]
 
 
 class _ORMModel(BaseModel):
@@ -254,6 +206,19 @@ class AgentOut(_ORMModel):
     last_run_at: datetime | None = None
 
 
+def _redact_config(config: Any) -> Any:
+    if not isinstance(config, dict):
+        return config
+    out = {}
+    for key, value in config.items():
+        lowered = key.lower()
+        if any(part in lowered for part in ("key", "token", "secret", "password")):
+            out[key] = "***"
+        else:
+            out[key] = value
+    return out
+
+
 class DispatchRequest(BaseModel):
     payload: dict = {}
 
@@ -307,11 +272,33 @@ class IntegrationOut(_ORMModel):
     category: str
     provider: str
     endpoint: str | None = None
-    api_key_encrypted: str | None = None
+    api_key_set: bool = False
+    last4: str | None = None
     enabled: bool
     status: str
     config_json: dict[str, Any] | None = None
     last_checked_at: datetime | None = None
+
+
+def _integration_out(row: ExternalIntegration) -> IntegrationOut:
+    plain = decrypt_secret(row.api_key_encrypted)
+    last4 = None
+    if plain:
+        last4 = plain[-4:] if len(plain) >= 4 else "****"
+    return IntegrationOut(
+        id=row.id,
+        workspace_id=row.workspace_id,
+        name=row.name,
+        category=row.category,
+        provider=row.provider,
+        endpoint=row.endpoint,
+        api_key_set=bool(row.api_key_encrypted),
+        last4=last4,
+        enabled=row.enabled,
+        status=row.status,
+        config_json=row.config_json,
+        last_checked_at=row.last_checked_at,
+    )
 
 
 def _audit(
@@ -333,34 +320,40 @@ def _audit(
 
 
 @router.get("/health")
-def health() -> dict:
+def health(db: DbDep) -> dict:
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="database unavailable") from exc
     return {"status": "ok"}
 
 
 @router.post("/auth/token", response_model=TokenOut)
 def create_token(body: TokenRequest, db: DbDep) -> TokenOut:
-    if not body.api_key and not body.password:
-        raise HTTPException(status_code=401, detail="api_key or password required")
+    if not body.api_key:
+        raise HTTPException(status_code=401, detail="api_key required")
     query = db.query(Workspace)
     workspace = None
     if body.workspace_id is not None:
         workspace = query.filter(Workspace.id == body.workspace_id).first()
     elif body.workspace is not None:
         workspace = query.filter(Workspace.name == body.workspace).first()
-    else:
-        workspace = query.first()
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
+    if not verify_workspace(body.api_key, str(workspace.id)):
+        raise HTTPException(status_code=401, detail="invalid api_key")
     return TokenOut(
-        access_token=issue_token(workspace.id),
+        access_token=sign_token(str(workspace.id)),
         token_type="bearer",
         workspace_id=workspace.id,
     )
 
 
 @router.get("/workspaces", response_model=list[WorkspaceOut])
-def list_workspaces(db: DbDep) -> list[Workspace]:
-    return db.query(Workspace).order_by(Workspace.id).all()
+def list_workspaces(db: DbDep, workspace_id: WorkspaceId) -> list[Workspace]:
+    return (
+        db.query(Workspace).filter(Workspace.id == workspace_id).order_by(Workspace.id).all()
+    )
 
 
 @router.get("/accounts", response_model=list[AccountOut])
@@ -388,16 +381,8 @@ def connect_account(body: AccountCreate, db: DbDep, workspace_id: WorkspaceId) -
 
 
 @router.get("/reconcile", response_model=ReconcileOut)
-def get_reconcile(
-    db: DbDep,
-    header_workspace_id: OptionalWorkspaceId = None,
-    workspace_id: Annotated[int | None, Query()] = None,
-) -> dict:
-    ws = workspace_id or header_workspace_id
-    if ws is None:
-        raise HTTPException(
-            status_code=400, detail="workspace_id required via query or X-Workspace-Id"
-        )
+def get_reconcile(db: DbDep, workspace_id: WorkspaceId) -> dict:
+    ws = workspace_id
     spend_rows = (
         db.query(Spend, AdAccount.platform)
         .outerjoin(AdAccount, Spend.ad_account_id == AdAccount.id)

@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -15,12 +15,23 @@ class Base(DeclarativeBase):
 def _engine_kwargs() -> dict:
     kwargs: dict = {"future": True}
     if settings.DATABASE_URL.startswith("sqlite"):
-        # FastAPI serves requests across threads; allow the shared sqlite connection.
-        kwargs["connect_args"] = {"check_same_thread": False}
+        kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
     return kwargs
 
 
 engine = create_engine(settings.DATABASE_URL, **_engine_kwargs())
+
+
+@event.listens_for(engine, "connect")
+def _sqlite_pragmas(dbapi_conn, _connection_record) -> None:
+    if not settings.DATABASE_URL.startswith("sqlite"):
+        return
+    cur = dbapi_conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL")
+    cur.execute("PRAGMA synchronous=NORMAL")
+    cur.execute("PRAGMA busy_timeout=30000")
+    cur.execute("PRAGMA foreign_keys=ON")
+    cur.close()
 
 SessionLocal = sessionmaker(
     bind=engine,

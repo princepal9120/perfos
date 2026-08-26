@@ -17,7 +17,9 @@ from app.services.reconciliation_iroas import compute_iroas
 SHIFT_SHARE = 0.25
 
 
-def recommend_reallocation(workspace_id: int, session: Session) -> dict:
+def recommend_reallocation(
+    workspace_id: int, session: Session, max_change_pct: float | None = None
+) -> dict:
     iroas_rows = compute_iroas(workspace_id, session)
     spend_rows = (
         session.query(
@@ -62,26 +64,32 @@ def recommend_reallocation(workspace_id: int, session: Session) -> dict:
         for row in funded:
             recommended[row["platform"]] = current[row["platform"]]
     else:
-        pool = round(total_spend * SHIFT_SHARE, 2)
+        cap = (max_change_pct if max_change_pct is not None else SHIFT_SHARE * 100) / 100.0
+        cap = min(max(cap, 0.0), 1.0)
+        pool = round(total_spend * cap, 2)
         donor_total = sum(current[row["platform"]] for row in donors)
         receiver_weight = sum(max(row["iroas"], 1e-9) for row in receivers)
 
-        allocated = 0.0
+        actual_pool = 0.0
         for row in donors:
             platform = row["platform"]
             cur = current[platform]
-            cut = round(pool * (cur / donor_total), 2) if donor_total > 0 else 0.0
+            raw = pool * (cur / donor_total) if donor_total > 0 else 0.0
+            cut = min(raw, cur * cap, cur)
+            cut = round(max(cut, 0.0), 2)
             recommended[platform] = round(cur - cut, 2)
+            actual_pool += cut
 
+        allocated = 0.0
         last_platform = receivers[-1]["platform"]
         for row in receivers:
             platform = row["platform"]
             if platform == last_platform:
-                gain = round(pool - allocated, 2)
+                gain = round(actual_pool - allocated, 2)
             else:
-                gain = round(pool * max(row["iroas"], 1e-9) / receiver_weight, 2)
+                gain = round(actual_pool * max(row["iroas"], 1e-9) / receiver_weight, 2)
                 allocated += gain
-            recommended[platform] = round(current[platform] + gain, 2)
+            recommended[platform] = round(max(current[platform] + gain, 0.0), 2)
 
     plan = []
     for row in iroas_rows:
