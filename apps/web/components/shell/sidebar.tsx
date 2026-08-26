@@ -60,7 +60,7 @@ const sections: NavSection[] = [
         ),
       },
       {
-        href: "/create",
+        href: "/creative",
         label: "Create",
         icon: (
           <Icon>
