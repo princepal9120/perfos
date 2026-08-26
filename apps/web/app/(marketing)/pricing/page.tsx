@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Stat-Led Pricing */
 "use client";
 
 import { useState } from "react";
@@ -15,73 +16,95 @@ const CURRENCIES = [
   { code: "JPY", symbol: "¥", rate: 152, label: "¥ JPY" },
 ];
 
-const TOP_UP_PACKS = [
-  { credits: "10,000 credits", priceUsd: 10, perCredit: "$0.001/credit", popular: false },
-  { credits: "50,000 credits", priceUsd: 40, perCredit: "$0.0008/credit", popular: true },
-  { credits: "200,000 credits", priceUsd: 120, perCredit: "$0.0006/credit", popular: false },
+const COMPARISON_ROWS = [
+  { feature: "Projects (Brands / Clients)", single: "1 Project", multi: "Unlimited Projects", highlight: true },
+  { feature: "Connected Ad Accounts", single: "1 per network", multi: "Unlimited Accounts", highlight: true },
+  { feature: "Ad Library & Spy Database", single: "500k+ Ads (Full Access)", multi: "500k+ Ads (Full Access)", highlight: false },
+  { feature: "Longevity & Inactivity Detection", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "AI Ads Generator & Studio", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "AI Creative Cloner & Remix", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "1-Click Multi-Format Resizer", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "Model Context Protocol (MCP)", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "Ads Terminal CLI Tool", single: "✓ Included", multi: "✓ Included", highlight: false },
+  { feature: "Supported Networks", single: "Meta, Google, TikTok, LinkedIn, Reddit, X, MS", multi: "Meta, Google, TikTok, LinkedIn, Reddit, X, MS", highlight: false },
+  { feature: "Team Members & Seats", single: "Unlimited Seats", multi: "Unlimited Seats", highlight: true },
+  { feature: "Draft Approval Safety Gate", single: "✓ 100% Draft by Default", multi: "✓ 100% Draft by Default", highlight: false },
+  { feature: "Customer Support", single: "Standard Email Support", multi: "Priority Dedicated Support", highlight: false },
 ];
 
 const PRICING_FAQS = [
   {
-    q: "How does the 3-Month Promo offer work?",
-    a: "Our launch promo gives you 3 full months of access with 5,000 AI generation credits monthly for just $5 total (regularly $20/mo). After 3 months, it renews at standard monthly pricing unless cancelled."
+    q: "What counts as a 'project'?",
+    a: "A project is one brand or client workspace. It holds its own connected ad accounts, brand kit design tokens, competitor swipe files, and drafted campaigns."
   },
   {
-    q: "What is the Lifetime Deal?",
-    a: "Pay $120 once, and you get lifetime access to PerfOS AdKit with 100,000 lifetime credits that never expire, plus all future core feature updates."
+    q: "Is the MCP and CLI included on both plans?",
+    a: "Yes! Both plans include full access to the Ads MCP server and Terminal CLI for Claude Code, Cursor IDE, ChatGPT, and Codex."
   },
   {
-    q: "Do top-up credits expire?",
-    a: "No! All credit pack top-ups are lifetime credits and will remain in your account until used."
+    q: "What happens after the 7-day free trial?",
+    a: "You get full, unrestricted access to all features during your 7-day trial. If you do not cancel before the trial ends, your card will be charged for your chosen plan."
   },
   {
-    q: "Can I use the Ads MCP & CLI on the Free tier?",
-    a: "Yes, the Free tier includes unlimited manual workspace access and full tool inspection. AI generation and autonomous execution require credits."
+    q: "Can I cancel anytime?",
+    a: "Yes, you can cancel in one click from your billing settings at any time. There are no contracts, commitments, or cancellation fees."
   },
   {
-    q: "Can I cancel my monthly subscription anytime?",
-    a: "Yes, you can cancel in one click from your billing dashboard with zero penalty or locked contracts."
+    q: "Can I switch plans later?",
+    a: "Yes, you can upgrade or downgrade between Single Project and Multiple Projects whenever you want. Upgrades take effect immediately and we adjust the price difference automatically."
+  },
+  {
+    q: "How much do I save by paying yearly?",
+    a: "Paying yearly saves you 30% or more compared to month-to-month billing. The discounted annual rates are shown automatically when you toggle Yearly above."
+  },
+  {
+    q: "Do you charge per seat or per ad account?",
+    a: "Neither. AdKit charges flat by project. Every plan includes unlimited team members with zero per-seat or per-account surcharges."
+  },
+  {
+    q: "Does AdKit work for agencies managing multiple clients?",
+    a: "Yes! The Multiple Projects plan is purpose-built for agencies: one workspace per client, unlimited accounts, and unlimited seats under one flat monthly price."
   }
 ];
 
 export default function PricingPage() {
   const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
+  const [annualBilling, setAnnualBilling] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const formatPrice = (usd: number) => {
     if (usd === 0) return "0";
     const converted = Math.round(usd * selectedCurrency.rate);
-    return `${selectedCurrency.symbol}${converted.toLocaleString()}`;
+    return selectedCurrency.symbol + converted.toLocaleString();
   };
 
+  const singlePrice = annualBilling ? 29 : 49;
+  const multiPrice = annualBilling ? 49 : 97;
+
   return (
-    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 min-h-screen bg-[#08080a] text-[#f4f4f6]">
+    <div className="min-h-screen bg-[#08080a] text-[#f4f4f6] py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
       {/* Header & Currency Switcher Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/10">
         <div>
-          <span className="px-3.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-[#a8455a] bg-[#d86f82]/10 border border-[#d86f82]/20 rounded-full">
-            Transparent Pricing
+          <span className="px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-[#d86f82] bg-[#d86f82]/10 border border-[#d86f82]/20 rounded-full">
+            100% Transparent Plans
           </span>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mt-2 tracking-tight">
-            Plans &amp; Lifetime Offers
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mt-3 tracking-tight">
+            One plan, every ad tool, no surprise bills
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-            Billed in USD. Prices shown in {selectedCurrency.label} for reference.
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
+            Pick the plan that fits your brands. Both plans include the full AdKit toolbox, unlimited team members, and MCP access for your AI agent.
           </p>
         </div>
 
-        {/* Currency Switcher Pills */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#181920] rounded-xl border border-white/10 overflow-x-auto max-w-full">
+        {/* Currency Switcher */}
+        <div className="flex items-center gap-1.5 p-1.5 bg-[#121318] rounded-xl border border-white/10 overflow-x-auto max-w-full">
           <span className="text-[11px] font-mono text-zinc-400 px-2 font-medium">Currency:</span>
           {CURRENCIES.map((curr) => (
             <button
               key={curr.code}
               onClick={() => setSelectedCurrency(curr)}
-              className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-lg transition-all ${
-                selectedCurrency.code === curr.code
-                  ? "bg-[#121318] text-white shadow-sm border border-white/10"
-                  : "text-zinc-400 hover:text-white"
-              }`}
+              className={"px-2.5 py-1 text-xs font-mono font-semibold rounded-lg transition-colors cursor-pointer " + (selectedCurrency.code === curr.code ? "bg-[#d86f82] text-white border border-[#d86f82]/40" : "text-zinc-400 hover:text-white")}
             >
               {curr.code}
             </button>
@@ -89,222 +112,216 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* 4-Column Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
-        {/* Tier 1: Free ($0) */}
-        <div className="p-7 rounded-2xl bg-[#121318] border border-white/10 hover:border-black/[0.15] hover:shadow-md transition-all flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
-            <div>
-              <span className="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider">Starter</span>
-              <h3 className="text-xl font-display font-bold text-white mt-1">Free</h3>
-            </div>
-
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-display font-bold text-white">{selectedCurrency.symbol}0</span>
-              <span className="text-xs text-zinc-400 font-mono">/ forever</span>
-            </div>
-
-            <p className="text-xs text-zinc-400">
-              Full workspace access for solo evaluation. No credit card required.
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-white/10 pt-5">
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full ad library search</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> 500k+ competitor ads</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Local Ads MCP & CLI inspect</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Own your creative data</li>
-              <li className="text-zinc-400">✕ No AI generation credits</li>
-            </ul>
-          </div>
-
-          <Link
-            href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-zinc-200 bg-[#181920] hover:bg-zinc-200 rounded-xl border border-white/10 transition-colors"
+      {/* Billing Interval Toggle (Monthly vs Yearly) */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 p-1.5 rounded-xl bg-[#121318] border border-white/10">
+          <button
+            onClick={() => setAnnualBilling(false)}
+            className={"px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer " + (!annualBilling ? "bg-[#d86f82] text-white shadow-sm" : "text-zinc-400 hover:text-white")}
           >
-            Start Editing Free
-          </Link>
-        </div>
-
-        {/* Tier 2: 3-Month Promo ($5 Total) */}
-        <div className="p-7 rounded-2xl bg-[#121318] border-2 border-[#d86f82] relative shadow-lg shadow-[#d86f82]/10 flex flex-col justify-between space-y-6">
-          <div className="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-[#d86f82] text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
-            Launch Offer
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <span className="text-xs font-mono uppercase text-[#a8455a] font-bold tracking-wider">Promo Deal</span>
-              <h3 className="text-xl font-display font-bold text-white mt-1">3-Month Promo</h3>
-            </div>
-
-            <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-display font-bold text-white">{formatPrice(5)}</span>
-                <span className="text-xs text-zinc-400 line-through font-mono">{formatPrice(20)}/mo</span>
-              </div>
-              <span className="text-[11px] text-[#a8455a] font-medium block mt-0.5">for entire 3 months</span>
-            </div>
-
-            <p className="text-xs font-semibold text-[#a8455a]">
-              5,000 AI credits monthly (15k total)
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-zinc-200 border-t border-white/10 pt-5">
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> 3 months full platform access</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> AI Ads Generator & Cloner</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Claude, Cursor, ChatGPT MCP</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Meta, Google & TikTok publishing</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> 1 Brand Kit integration</li>
-            </ul>
-          </div>
-
-          <Link
-            href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-xl transition-colors w-full py-3 text-center text-xs font-semibold rounded-xl"
+            Monthly Billing
+          </button>
+          <button
+            onClick={() => setAnnualBilling(true)}
+            className={"px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors cursor-pointer " + (annualBilling ? "bg-[#d86f82] text-white shadow-sm" : "text-zinc-400 hover:text-white")}
           >
-            Claim $5 Promo Deal →
-          </Link>
+            <span>Yearly Billing</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/15 text-white font-mono font-bold">
+              Save 30%+
+            </span>
+          </button>
         </div>
+        <p className="text-xs text-zinc-400">
+          {annualBilling ? "Billed annually. Cancel anytime with 1 click." : "Billed monthly. Cancel anytime with 1 click."}
+        </p>
+      </div>
 
-        {/* Tier 3: Monthly ($20/mo) */}
-        <div className="p-7 rounded-2xl bg-[#121318] border border-white/10 hover:border-[#d86f82]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
+      {/* 2-Column Core Plans (1:1 with adkit.so) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Tier 1: Single Project */}
+        <div className="p-8 sm:p-10 rounded-2xl bg-[#121318] border border-white/10 hover:border-white/20 transition-colors flex flex-col justify-between space-y-8">
+          <div className="space-y-6">
             <div>
-              <span className="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider">Most Flexible</span>
-              <h3 className="text-xl font-display font-bold text-white mt-1">Monthly</h3>
+              <span className="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider">Single Brand</span>
+              <h3 className="text-2xl font-bold text-white mt-1">Single Project</h3>
+              <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                For running ads on one brand. All tools, one ad account per platform, unlimited team members.
+              </p>
             </div>
 
-            <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-display font-bold text-white">{formatPrice(20)}</span>
+            <div className="flex items-baseline gap-1.5 border-t border-white/10 pt-6">
+              <span className="text-5xl font-extrabold text-white">{formatPrice(singlePrice)}</span>
               <span className="text-xs text-zinc-400 font-mono">/ month</span>
             </div>
+            {annualBilling && (
+              <p className="text-[11px] text-[#d86f82] font-mono">
+                Billed annually at {formatPrice(singlePrice * 12)} / year
+              </p>
+            )}
 
-            <p className="text-xs font-semibold text-emerald-700">
-              20,000 credits monthly
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-white/10 pt-5">
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Cancel anytime, no lock-in</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full AI generator & cloner</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full Ads MCP & Terminal CLI</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Up to 5 connected brands</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Team collaboration tools</li>
-            </ul>
+            <div className="space-y-3">
+              <p className="text-xs font-mono font-bold text-white uppercase tracking-wider">Everything you need:</p>
+              <ul className="space-y-3 text-xs text-zinc-300">
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span><strong>1 Project</strong> (1 brand / client workspace)</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Connect 1 ad account per platform (Meta, Google, TikTok, LinkedIn, X, Reddit)</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Full Ad Library (500k+ competitor ads &amp; swipe files)</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>AI Ads Generator &amp; Creative Cloner</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Ads MCP Server &amp; Terminal CLI</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span><strong>Unlimited</strong> team members &amp; seats</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>7-day free trial · 1-click cancel</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <Link
             href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-zinc-200 bg-[#181920] hover:bg-zinc-200 rounded-xl border border-white/10 transition-colors"
+            className="w-full py-3.5 text-center text-xs font-semibold text-zinc-200 bg-[#181920] hover:bg-[#22232c] hover:text-white rounded-xl border border-white/10 transition-colors"
           >
-            Start Monthly Plan
+            Start 7-Day Free Trial
           </Link>
         </div>
 
-        {/* Tier 4: Lifetime Deal ($120 One-Time) */}
-        <div className="p-7 rounded-2xl bg-[#121318] border-2 border-zinc-900 shadow-xl flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase text-white font-bold tracking-wider">Best Value</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 text-white text-[10px] font-mono font-semibold">One-Time</span>
-            </div>
-            <h3 className="text-xl font-display font-bold text-white mt-1">Lifetime</h3>
+        {/* Tier 2: Multiple Projects (Most Popular) */}
+        <div className="p-8 sm:p-10 rounded-2xl bg-[#121318] border-2 border-[#d86f82] relative flex flex-col justify-between space-y-8 shadow-2xl">
+          <div className="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-[#d86f82] text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+            Most Popular · Agency Tier
+          </div>
 
+          <div className="space-y-6">
             <div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-display font-bold text-white">{formatPrice(120)}</span>
-                <span className="text-xs text-zinc-400 font-mono">one-time</span>
-              </div>
-              <span className="text-[11px] text-zinc-400 block mt-0.5">~6 months of monthly, then free forever</span>
+              <span className="text-xs font-mono uppercase text-[#d86f82] font-bold tracking-wider">Agencies &amp; Operators</span>
+              <h3 className="text-2xl font-bold text-white mt-1">Multiple Projects</h3>
+              <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+                For agencies, media buyers, and operators running multiple brands. Unlimited projects, unlimited ad accounts, one flat price.
+              </p>
             </div>
 
-            <p className="text-xs font-semibold text-purple-700">
-              100,000 lifetime credits (Never expire)
-            </p>
+            <div className="flex items-baseline gap-1.5 border-t border-white/10 pt-6">
+              <span className="text-5xl font-extrabold text-white">{formatPrice(multiPrice)}</span>
+              <span className="text-xs text-zinc-400 font-mono">/ month</span>
+            </div>
+            {annualBilling && (
+              <p className="text-[11px] text-[#d86f82] font-mono">
+                Billed annually at {formatPrice(multiPrice * 12)} / year
+              </p>
+            )}
 
-            <ul className="space-y-2.5 text-xs text-zinc-200 border-t border-white/10 pt-5">
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Pay once, own forever</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> All future updates included</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Full Ads MCP & CLI ecosystem</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Unlimited brands & workspaces</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Dedicated priority support</li>
-            </ul>
+            <div className="space-y-3">
+              <p className="text-xs font-mono font-bold text-[#d86f82] uppercase tracking-wider">Everything in Single Project, plus:</p>
+              <ul className="space-y-3 text-xs text-zinc-200">
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span><strong>Unlimited Projects</strong> (separate client workspaces)</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span><strong>Unlimited Ad Accounts</strong> across all supported platforms</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Unlimited competitor ad search &amp; HD creative downloads</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Full AI Ads Generator, Cloner &amp; Batch Resizer</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Dedicated Ads MCP Server bridge &amp; API keys</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span><strong>Unlimited</strong> team seats with role-based access</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckIcon className="w-4 h-4 text-[#d86f82]" />
+                  <span>Priority engineering support</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <Link
             href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-white bg-[#181920] hover:bg-zinc-800 rounded-xl shadow transition-colors"
+            className="w-full py-3.5 text-center text-xs font-bold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-xl transition-colors active:scale-98"
           >
-            Get Lifetime Access ($120) →
+            Start Agency Trial →
           </Link>
         </div>
       </div>
 
-      {/* Credit Top-Ups Section */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-[#121318] border border-white/10 space-y-8">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs font-mono uppercase text-[#a8455a] font-semibold tracking-wider">Lifetime Add-ons</span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
-            Need more credits?
+      {/* Feature Comparison Matrix Table (1:1 with adkit.so) */}
+      <div className="p-8 sm:p-10 rounded-2xl bg-[#121318] border border-white/10 space-y-8 max-w-5xl mx-auto">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            What you get on each plan
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400">
-            Top up with lifetime credits that never expire. Add them to any plan at any time.
+            Both plans include the full AdKit toolbox and MCP access for your AI agent. The difference is how many brands you can run.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-4">
-          {TOP_UP_PACKS.map((pack, i) => (
-            <div
-              key={i}
-              className={`p-6 rounded-2xl bg-[#121318] border transition-all space-y-4 flex flex-col justify-between ${
-                pack.popular
-                  ? "border-[#d86f82] shadow-md relative"
-                  : "border-white/10 hover:border-black/[0.15]"
-              }`}
-            >
-              {pack.popular && (
-                <div className="absolute -top-3.5 right-4 px-3 py-1 rounded-full bg-[#d86f82] text-[10px] font-bold text-white uppercase font-mono shadow-md">
-                  Best Value
-                </div>
-              )}
-              <div className="space-y-2">
-                <span className="text-sm font-bold text-white block">{pack.credits}</span>
-                <span className="text-3xl font-display font-bold text-white block">{formatPrice(pack.priceUsd)}</span>
-                <span className="text-[11px] text-zinc-400 font-mono block">{pack.perCredit}</span>
-              </div>
-
-              <Link
-                href="/command-center"
-                className={`w-full py-2.5 text-center text-xs font-semibold rounded-xl transition-all ${
-                  pack.popular
-                    ? "w-full py-3 text-center text-xs font-semibold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-xl transition-colors"
-                    : "bg-[#181920] hover:bg-zinc-200 text-zinc-200"
-                }`}
-              >
-                Top Up Now
-              </Link>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-white/10 text-zinc-400 font-mono uppercase tracking-wider">
+                <th className="py-3 px-4">Feature</th>
+                <th className="py-3 px-4">Single Project ({formatPrice(singlePrice)}/mo)</th>
+                <th className="py-3 px-4 text-[#d86f82]">Multiple Projects ({formatPrice(multiPrice)}/mo)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-zinc-300">
+              {COMPARISON_ROWS.map((row, i) => (
+                <tr key={i} className="hover:bg-white/5 transition-colors">
+                  <td className="py-3 px-4 font-medium text-white">{row.feature}</td>
+                  <td className="py-3 px-4">{row.single}</td>
+                  <td className={"py-3 px-4 " + (row.highlight ? "font-bold text-[#d86f82]" : "")}>{row.multi}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Pricing FAQs */}
+      {/* Pricing FAQs (1:1 with adkit.so) */}
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h3 className="text-2xl font-display font-bold text-white">Pricing questions, answered</h3>
-          <p className="text-xs text-zinc-400">Everything you need to know about our plans, credits, and billing.</p>
+          <h3 className="text-2xl font-extrabold text-white">Pricing questions, answered</h3>
+          <p className="text-xs text-zinc-400">Everything you need to know about our plans, projects, and billing.</p>
         </div>
         <div className="space-y-3">
           {PRICING_FAQS.map((faq, i) => (
             <div
               key={i}
-              className="rounded-2xl border border-white/10 bg-[#121318] overflow-hidden shadow-sm"
+              className="rounded-xl border border-white/10 bg-[#121318] overflow-hidden"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-xs sm:text-sm text-white hover:text-[#a8455a]"
+                className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-xs sm:text-sm text-zinc-200 hover:text-white cursor-pointer"
               >
                 <span>{faq.q}</span>
-                <span className="text-[#d86f82] font-mono">{openFaq === i ? "−" : "+"}</span>
+                <span className="text-[#d86f82] font-mono text-base font-bold">{openFaq === i ? "−" : "+"}</span>
               </button>
               {openFaq === i && (
                 <div className="px-4 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-white/5 pt-3">
