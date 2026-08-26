@@ -55,32 +55,32 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 bg-white text-zinc-900">
+    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 min-h-screen bg-[#08080a] text-[#f4f4f6]">
       {/* Header & Currency Switcher Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-black/[0.06]">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
         <div>
           <span className="px-3.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-[#a8455a] bg-[#d86f82]/10 border border-[#d86f82]/20 rounded-full">
             Transparent Pricing
           </span>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-zinc-950 mt-2 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-white mt-2 tracking-tight">
             Plans &amp; Lifetime Offers
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
             Billed in USD. Prices shown in {selectedCurrency.label} for reference.
           </p>
         </div>
 
         {/* Currency Switcher Pills */}
-        <div className="flex items-center gap-1.5 p-1 bg-zinc-100 rounded-xl border border-black/[0.06] overflow-x-auto max-w-full">
-          <span className="text-[11px] font-mono text-zinc-500 px-2 font-medium">Currency:</span>
+        <div className="flex items-center gap-1.5 p-1 bg-[#181920] rounded-xl border border-white/10 overflow-x-auto max-w-full">
+          <span className="text-[11px] font-mono text-zinc-400 px-2 font-medium">Currency:</span>
           {CURRENCIES.map((curr) => (
             <button
               key={curr.code}
               onClick={() => setSelectedCurrency(curr)}
               className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-lg transition-all ${
                 selectedCurrency.code === curr.code
-                  ? "bg-white text-zinc-950 shadow-sm border border-black/[0.06]"
-                  : "text-zinc-600 hover:text-zinc-950"
+                  ? "bg-[#121318] text-white shadow-sm border border-white/10"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               {curr.code}
@@ -92,23 +92,23 @@ export default function PricingPage() {
       {/* 4-Column Pricing Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
         {/* Tier 1: Free ($0) */}
-        <div className="p-7 rounded-2xl bg-white border border-black/[0.08] hover:border-black/[0.15] hover:shadow-md transition-all flex flex-col justify-between space-y-6">
+        <div className="p-7 rounded-2xl bg-[#121318] border border-white/10 hover:border-black/[0.15] hover:shadow-md transition-all flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div>
-              <span className="text-xs font-mono uppercase text-zinc-500 font-bold tracking-wider">Starter</span>
-              <h3 className="text-xl font-display font-bold text-zinc-900 mt-1">Free</h3>
+              <span className="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider">Starter</span>
+              <h3 className="text-xl font-display font-bold text-white mt-1">Free</h3>
             </div>
 
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-display font-bold text-zinc-950">{selectedCurrency.symbol}0</span>
-              <span className="text-xs text-zinc-500 font-mono">/ forever</span>
+              <span className="text-4xl font-display font-bold text-white">{selectedCurrency.symbol}0</span>
+              <span className="text-xs text-zinc-400 font-mono">/ forever</span>
             </div>
 
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-400">
               Full workspace access for solo evaluation. No credit card required.
             </p>
 
-            <ul className="space-y-2.5 text-xs text-zinc-700 border-t border-black/[0.06] pt-5">
+            <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-white/10 pt-5">
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full ad library search</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> 500k+ competitor ads</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Local Ads MCP & CLI inspect</li>
@@ -119,14 +119,14 @@ export default function PricingPage() {
 
           <Link
             href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-zinc-800 bg-zinc-100 hover:bg-zinc-200 rounded-xl border border-black/[0.06] transition-colors"
+            className="w-full py-3 text-center text-xs font-semibold text-zinc-200 bg-[#181920] hover:bg-zinc-200 rounded-xl border border-white/10 transition-colors"
           >
             Start Editing Free
           </Link>
         </div>
 
         {/* Tier 2: 3-Month Promo ($5 Total) */}
-        <div className="p-7 rounded-2xl bg-gradient-to-b from-[#fff5f7] to-white border-2 border-[#d86f82] relative shadow-lg shadow-[#d86f82]/10 flex flex-col justify-between space-y-6">
+        <div className="p-7 rounded-2xl bg-[#121318] border-2 border-[#d86f82] relative shadow-lg shadow-[#d86f82]/10 flex flex-col justify-between space-y-6">
           <div className="absolute -top-3.5 right-6 px-3.5 py-1 rounded-full bg-[#d86f82] text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
             Launch Offer
           </div>
@@ -134,12 +134,12 @@ export default function PricingPage() {
           <div className="space-y-4">
             <div>
               <span className="text-xs font-mono uppercase text-[#a8455a] font-bold tracking-wider">Promo Deal</span>
-              <h3 className="text-xl font-display font-bold text-zinc-900 mt-1">3-Month Promo</h3>
+              <h3 className="text-xl font-display font-bold text-white mt-1">3-Month Promo</h3>
             </div>
 
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-display font-bold text-zinc-950">{formatPrice(5)}</span>
+                <span className="text-4xl font-display font-bold text-white">{formatPrice(5)}</span>
                 <span className="text-xs text-zinc-400 line-through font-mono">{formatPrice(20)}/mo</span>
               </div>
               <span className="text-[11px] text-[#a8455a] font-medium block mt-0.5">for entire 3 months</span>
@@ -149,7 +149,7 @@ export default function PricingPage() {
               5,000 AI credits monthly (15k total)
             </p>
 
-            <ul className="space-y-2.5 text-xs text-zinc-800 border-t border-black/[0.06] pt-5">
+            <ul className="space-y-2.5 text-xs text-zinc-200 border-t border-white/10 pt-5">
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> 3 months full platform access</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> AI Ads Generator & Cloner</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Claude, Cursor, ChatGPT MCP</li>
@@ -160,30 +160,30 @@ export default function PricingPage() {
 
           <Link
             href="/command-center"
-            className="btn-daisy w-full py-3 text-center text-xs font-semibold rounded-xl"
+            className="w-full py-3 text-center text-xs font-semibold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-xl transition-colors w-full py-3 text-center text-xs font-semibold rounded-xl"
           >
             Claim $5 Promo Deal →
           </Link>
         </div>
 
         {/* Tier 3: Monthly ($20/mo) */}
-        <div className="p-7 rounded-2xl bg-white border border-black/[0.08] hover:border-[#d86f82]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-6">
+        <div className="p-7 rounded-2xl bg-[#121318] border border-white/10 hover:border-[#d86f82]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div>
-              <span className="text-xs font-mono uppercase text-zinc-500 font-bold tracking-wider">Most Flexible</span>
-              <h3 className="text-xl font-display font-bold text-zinc-900 mt-1">Monthly</h3>
+              <span className="text-xs font-mono uppercase text-zinc-400 font-bold tracking-wider">Most Flexible</span>
+              <h3 className="text-xl font-display font-bold text-white mt-1">Monthly</h3>
             </div>
 
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-display font-bold text-zinc-950">{formatPrice(20)}</span>
-              <span className="text-xs text-zinc-500 font-mono">/ month</span>
+              <span className="text-4xl font-display font-bold text-white">{formatPrice(20)}</span>
+              <span className="text-xs text-zinc-400 font-mono">/ month</span>
             </div>
 
             <p className="text-xs font-semibold text-emerald-700">
               20,000 credits monthly
             </p>
 
-            <ul className="space-y-2.5 text-xs text-zinc-700 border-t border-black/[0.06] pt-5">
+            <ul className="space-y-2.5 text-xs text-zinc-300 border-t border-white/10 pt-5">
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Cancel anytime, no lock-in</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full AI generator & cloner</li>
               <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Full Ads MCP & Terminal CLI</li>
@@ -194,45 +194,45 @@ export default function PricingPage() {
 
           <Link
             href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-zinc-800 bg-zinc-100 hover:bg-zinc-200 rounded-xl border border-black/[0.06] transition-colors"
+            className="w-full py-3 text-center text-xs font-semibold text-zinc-200 bg-[#181920] hover:bg-zinc-200 rounded-xl border border-white/10 transition-colors"
           >
             Start Monthly Plan
           </Link>
         </div>
 
         {/* Tier 4: Lifetime Deal ($120 One-Time) */}
-        <div className="p-7 rounded-2xl bg-gradient-to-b from-[#f9fafb] to-white border-2 border-zinc-900 shadow-xl flex flex-col justify-between space-y-6">
+        <div className="p-7 rounded-2xl bg-[#121318] border-2 border-zinc-900 shadow-xl flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase text-zinc-950 font-bold tracking-wider">Best Value</span>
+              <span className="text-xs font-mono uppercase text-white font-bold tracking-wider">Best Value</span>
               <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 text-white text-[10px] font-mono font-semibold">One-Time</span>
             </div>
-            <h3 className="text-xl font-display font-bold text-zinc-900 mt-1">Lifetime</h3>
+            <h3 className="text-xl font-display font-bold text-white mt-1">Lifetime</h3>
 
             <div>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-display font-bold text-zinc-950">{formatPrice(120)}</span>
-                <span className="text-xs text-zinc-500 font-mono">one-time</span>
+                <span className="text-4xl font-display font-bold text-white">{formatPrice(120)}</span>
+                <span className="text-xs text-zinc-400 font-mono">one-time</span>
               </div>
-              <span className="text-[11px] text-zinc-600 block mt-0.5">~6 months of monthly, then free forever</span>
+              <span className="text-[11px] text-zinc-400 block mt-0.5">~6 months of monthly, then free forever</span>
             </div>
 
             <p className="text-xs font-semibold text-purple-700">
               100,000 lifetime credits (Never expire)
             </p>
 
-            <ul className="space-y-2.5 text-xs text-zinc-800 border-t border-black/[0.06] pt-5">
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-zinc-900" /> Pay once, own forever</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-zinc-900" /> All future updates included</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-zinc-900" /> Full Ads MCP & CLI ecosystem</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-zinc-900" /> Unlimited brands & workspaces</li>
-              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-zinc-900" /> Dedicated priority support</li>
+            <ul className="space-y-2.5 text-xs text-zinc-200 border-t border-white/10 pt-5">
+              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Pay once, own forever</li>
+              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> All future updates included</li>
+              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Full Ads MCP & CLI ecosystem</li>
+              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Unlimited brands & workspaces</li>
+              <li className="flex items-center gap-2"><CheckIcon className="w-3.5 h-3.5 text-white" /> Dedicated priority support</li>
             </ul>
           </div>
 
           <Link
             href="/command-center"
-            className="w-full py-3 text-center text-xs font-semibold text-white bg-zinc-950 hover:bg-zinc-800 rounded-xl shadow transition-colors"
+            className="w-full py-3 text-center text-xs font-semibold text-white bg-[#181920] hover:bg-zinc-800 rounded-xl shadow transition-colors"
           >
             Get Lifetime Access ($120) →
           </Link>
@@ -240,13 +240,13 @@ export default function PricingPage() {
       </div>
 
       {/* Credit Top-Ups Section */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-zinc-50 border border-black/[0.08] space-y-8">
+      <div className="p-8 sm:p-10 rounded-3xl bg-[#121318] border border-white/10 space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-mono uppercase text-[#a8455a] font-semibold tracking-wider">Lifetime Add-ons</span>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-zinc-950">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
             Need more credits?
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-600">
+          <p className="text-xs sm:text-sm text-zinc-400">
             Top up with lifetime credits that never expire. Add them to any plan at any time.
           </p>
         </div>
@@ -255,10 +255,10 @@ export default function PricingPage() {
           {TOP_UP_PACKS.map((pack, i) => (
             <div
               key={i}
-              className={`p-6 rounded-2xl bg-white border transition-all space-y-4 flex flex-col justify-between ${
+              className={`p-6 rounded-2xl bg-[#121318] border transition-all space-y-4 flex flex-col justify-between ${
                 pack.popular
                   ? "border-[#d86f82] shadow-md relative"
-                  : "border-black/[0.08] hover:border-black/[0.15]"
+                  : "border-white/10 hover:border-black/[0.15]"
               }`}
             >
               {pack.popular && (
@@ -267,17 +267,17 @@ export default function PricingPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <span className="text-sm font-bold text-zinc-900 block">{pack.credits}</span>
-                <span className="text-3xl font-display font-bold text-zinc-950 block">{formatPrice(pack.priceUsd)}</span>
-                <span className="text-[11px] text-zinc-500 font-mono block">{pack.perCredit}</span>
+                <span className="text-sm font-bold text-white block">{pack.credits}</span>
+                <span className="text-3xl font-display font-bold text-white block">{formatPrice(pack.priceUsd)}</span>
+                <span className="text-[11px] text-zinc-400 font-mono block">{pack.perCredit}</span>
               </div>
 
               <Link
                 href="/command-center"
                 className={`w-full py-2.5 text-center text-xs font-semibold rounded-xl transition-all ${
                   pack.popular
-                    ? "btn-daisy"
-                    : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800"
+                    ? "w-full py-3 text-center text-xs font-semibold text-white bg-[#d86f82] hover:bg-[#c85c6f] rounded-xl transition-colors"
+                    : "bg-[#181920] hover:bg-zinc-200 text-zinc-200"
                 }`}
               >
                 Top Up Now
@@ -290,24 +290,24 @@ export default function PricingPage() {
       {/* Pricing FAQs */}
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h3 className="text-2xl font-display font-bold text-zinc-950">Pricing questions, answered</h3>
-          <p className="text-xs text-zinc-500">Everything you need to know about our plans, credits, and billing.</p>
+          <h3 className="text-2xl font-display font-bold text-white">Pricing questions, answered</h3>
+          <p className="text-xs text-zinc-400">Everything you need to know about our plans, credits, and billing.</p>
         </div>
         <div className="space-y-3">
           {PRICING_FAQS.map((faq, i) => (
             <div
               key={i}
-              className="rounded-2xl border border-black/[0.08] bg-white overflow-hidden shadow-sm"
+              className="rounded-2xl border border-white/10 bg-[#121318] overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-xs sm:text-sm text-zinc-900 hover:text-[#a8455a]"
+                className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-xs sm:text-sm text-white hover:text-[#a8455a]"
               >
                 <span>{faq.q}</span>
                 <span className="text-[#d86f82] font-mono">{openFaq === i ? "−" : "+"}</span>
               </button>
               {openFaq === i && (
-                <div className="px-4 pb-4 text-xs text-zinc-600 leading-relaxed border-t border-black/[0.04] pt-3">
+                <div className="px-4 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-white/5 pt-3">
                   {faq.a}
                 </div>
               )}
