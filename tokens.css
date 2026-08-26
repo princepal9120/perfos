@@ -1,25 +1,25 @@
-/* Hallmark · tokens.css · Modern-Minimal / Cobalt System */
+/* Hallmark · tokens.css · Modern-Minimal / Dark Violet System */
 
 :root {
   /* Colors (OKLCH) */
-  --color-paper: oklch(14% 0.005 260);
-  --color-paper-2: oklch(18% 0.008 260);
-  --color-paper-3: oklch(22% 0.01 260);
-  --color-paper-elevated: oklch(25% 0.012 260);
+  --color-paper: #0b0c10;
+  --color-paper-2: #111217;
+  --color-paper-3: #16171f;
+  --color-paper-elevated: #1c1e28;
 
-  --color-ink: oklch(96% 0.005 260);
-  --color-ink-2: oklch(75% 0.01 260);
-  --color-ink-muted: oklch(55% 0.015 260);
-  --color-ink-faint: oklch(35% 0.015 260);
+  --color-ink: #f3f4f6;
+  --color-ink-2: #9ca3af;
+  --color-ink-muted: #6b7280;
+  --color-ink-faint: #4b5563;
 
-  --color-accent: oklch(62% 0.22 250);
-  --color-accent-hover: oklch(55% 0.24 250);
-  --color-accent-subtle: oklch(24% 0.06 250);
+  --color-accent: #a855f7;
+  --color-accent-hover: #9333ea;
+  --color-accent-subtle: rgba(168, 85, 247, 0.15);
 
-  --color-border: oklch(26% 0.008 260);
-  --color-border-subtle: oklch(20% 0.006 260);
-  --color-border-hover: oklch(36% 0.015 260);
-  --color-focus: oklch(62% 0.22 250);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
+  --color-focus: #a855f7;
 
   --color-success: oklch(72% 0.18 150);
   --color-warning: oklch(75% 0.16 75);
