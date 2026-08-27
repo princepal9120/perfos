@@ -1,57 +1,128 @@
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black */
+/* ──────────────────────────────────────────────────────────────
+   Postproxy.dev Design Tokens & Theme (Extracted via designlang)
+   Source: https://postproxy.dev
+   ────────────────────────────────────────────────────────────── */
 @import "tailwindcss";
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-border: var(--border);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-dark: var(--primary-dark);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
+  /* ---------------------------------------------------------------- */
+  /* Postproxy Colors                                                 */
+  /* ---------------------------------------------------------------- */
+  --color-canvas: #0d0d0d;
+  --color-background: #0d0d0d;
+  --color-foreground: #f6f6f6;
+
+  --color-surface: #151515;
+  --color-surface-elevated: #1a1a1a;
+  --color-card: #151515;
+  --color-card-elevated: #1a1a1a;
+  --color-card-foreground: #f6f6f6;
+
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --color-primary: #d76d77;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #c65b65;
+  --color-primary-dark: #ad4751;
+  --color-primary-muted: rgba(215, 109, 119, 0.12);
+
+  --color-secondary: #0000ee;
+  --color-accent: #22c55e;
+  --color-accent-foreground: #ffffff;
+
+  --color-muted: #151515;
+  --color-muted-foreground: #999999;
+  --color-text-muted: #888888;
+  --color-text-strong: #ffffffeb;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #ffffff;
+
+  --color-success: #22c55e;
+  --color-success-foreground: #ffffff;
+
+  /* ---------------------------------------------------------------- */
+  /* Postproxy Typography                                             */
+  /* ---------------------------------------------------------------- */
+  --font-display: "Space Grotesk", "iA Writer Quattro", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", "iA Writer Quattro", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", "iA Writer Quattro", system-ui, -apple-system, sans-serif;
+  --font-mono: "iA Writer Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ---------------------------------------------------------------- */
+  /* Postproxy Radii & Spacing Scale                                  */
+  /* ---------------------------------------------------------------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* ---------------------------------------------------------------- */
+  /* Postproxy Shadows & Elevation                                    */
+  /* ---------------------------------------------------------------- */
+  --shadow-sm: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px;
+  --shadow-md: rgba(0, 0, 0, 0.3) 0px 4px 12px 0px;
+  --shadow-xl: rgba(0, 0, 0, 0.3) 0px 8px 32px 0px;
+
+  /* ---------------------------------------------------------------- */
+  /* Postproxy Motion & Transitions                                   */
+  /* ---------------------------------------------------------------- */
+  --duration-xs: 120ms;
+  --duration-sm: 200ms;
+  --duration-md: 300ms;
+  --ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-custom-1: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @layer base {
   :root, .dark {
-    --background: #08080a;
-    --foreground: #f4f4f6;
-    --card: #121318;
-    --card-elevated: #181920;
-    --card-foreground: #f4f4f6;
+    --background: #0d0d0d;
+    --foreground: #f6f6f6;
+    --card: #151515;
+    --card-elevated: #1a1a1a;
+    --card-foreground: #f6f6f6;
     --border: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(255, 255, 255, 0.16);
     --border-subtle: rgba(255, 255, 255, 0.06);
-    
-    --primary: #d86f82;
+
+    --primary: #d76d77;
     --primary-foreground: #ffffff;
-    --primary-hover: #c85c6f;
-    --primary-dark: #b0485c;
-    --primary-muted: rgba(216, 111, 130, 0.12);
-    
-    --muted: #171822;
-    --muted-foreground: #a1a1aa;
-    --text-muted: #71717a;
-    --accent: #d86f82;
-    
-    --font-display: var(--font-display-face, 'Space Grotesk'), -apple-system, sans-serif;
-    --font-body: var(--font-body-face, 'Inter'), -apple-system, sans-serif;
+    --primary-hover: #c65b65;
+    --primary-dark: #ad4751;
+    --primary-muted: rgba(215, 109, 119, 0.12);
+
+    --muted: #151515;
+    --muted-foreground: #999999;
+    --text-muted: #888888;
+    --accent: #22c55e;
+
+    --comparison-panel-bg: #121212;
+    --comparison-panel-border: #2a2a2a;
+    --comparison-panel-divider: #2a2a2a;
+    --comparison-header-bar-without: #ef4444;
+    --comparison-header-bar-with: #22c55e;
   }
 
   html, body {
-    background-color: #08080a;
-    color: #f4f4f6;
-    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
     margin: 0;
     padding: 0;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-style: normal;
@@ -60,23 +131,38 @@
   }
 }
 
-/* Strict Hallmark anti-gradient utilities */
-.bg-canvas { background-color: #08080a; }
-.bg-surface { background-color: #121318; }
-.bg-surface-elevated { background-color: #181920; }
-.border-line { border: 1px solid rgba(255, 255, 255, 0.08); }
-.border-line-hover:hover { border-color: rgba(255, 255, 255, 0.18); }
+/* ------------------------------------------------------------------ */
+/* Postproxy Custom Utilities & Solid Button Styles                   */
+/* ------------------------------------------------------------------ */
 
-/* Solid Crisp Daisy Button */
-.btn-daisy-solid {
-  background-color: #d86f82;
-  color: #ffffff;
-  border: 1px solid rgba(216, 111, 130, 0.4);
-  transition: background-color 150ms cubic-bezier(0.23, 1, 0.32, 1), transform 100ms ease;
+/* bg-canvas / bg-surface / bg-surface-elevated come from @theme colors above. */
+
+@utility border-line {
+  border: 1px solid var(--color-border);
 }
-.btn-daisy-solid:hover {
-  background-color: #c85c6f;
+
+@utility border-line-hover {
+  &:hover {
+    border-color: var(--color-border-hover);
+  }
 }
-.btn-daisy-solid:active {
-  transform: scale(0.98);
+
+@utility btn-daisy-solid {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border: 1px solid var(--color-primary-muted);
+  transition: background-color var(--duration-xs) var(--ease-spring), transform 100ms ease;
+
+  &:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }

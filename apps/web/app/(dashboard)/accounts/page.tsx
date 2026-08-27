@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -20,6 +21,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  MetaLogo,
+  GoogleLogo,
+  LinkedInLogo,
+  XLogo,
+  TikTokLogo,
+  RedditLogo,
+} from '@/components/marketing/icons';
+import {
   type AdAccount,
   connectAccount,
   getAccounts,
@@ -29,51 +38,57 @@ import {
 type Connector = {
   id: Platform;
   name: string;
-  monogram: string;
+  Logo: (props: { className?: string }) => React.JSX.Element;
   description: string;
 };
 
 const CONNECTORS: Connector[] = [
   {
     id: 'meta',
-    name: 'Meta ads',
-    monogram: 'M',
+    name: 'Meta Ads',
+    Logo: MetaLogo,
     description:
-      'Facebook and Instagram campaigns — spend and claimed conversions.',
+      'Facebook & Instagram campaigns — spend, CTR, and claimed conversions.',
   },
   {
     id: 'google',
-    name: 'Google ads',
-    monogram: 'G',
+    name: 'Google Ads',
+    Logo: GoogleLogo,
     description:
-      'Search, Shopping and Performance Max, with claimed conversions.',
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok ads',
-    monogram: 'T',
-    description: 'Short-form video campaigns and claimed conversions.',
+      'Search, Shopping, YouTube and Performance Max conversions.',
   },
   {
     id: 'linkedin',
-    name: 'LinkedIn ads',
-    monogram: 'in',
-    description: 'B2B campaigns, lead gen forms and audience reach.',
+    name: 'LinkedIn Ads',
+    Logo: LinkedInLogo,
+    description: 'B2B sponsored content, lead gen forms, and audience reach.',
   },
   {
     id: 'twitter',
-    name: 'X ads',
-    monogram: 'X',
-    description: 'Timeline takeovers and engagement-driven campaigns.',
+    name: 'X (Twitter) Ads',
+    Logo: XLogo,
+    description: 'Timeline takeovers, keyword targeting, and engagement campaigns.',
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok Ads',
+    Logo: TikTokLogo,
+    description: 'Short-form video Spark ads and conversion tracking.',
+  },
+  {
+    id: 'reddit',
+    name: 'Reddit Ads',
+    Logo: RedditLogo,
+    description: 'Subreddit placement targeting, conversation ads, and CPC reach.',
   },
 ];
 
 function StatusBadge({ status }: { status: AdAccount['status'] }) {
-  const active = status === 'active';
+  const active = status === 'active' || status === 'connected';
   return (
-    <Badge variant={active ? 'success' : 'warning'} className="gap-1.5">
+    <Badge variant={active ? 'success' : 'warning'} className="gap-1.5 font-mono text-[10px]">
       <span
-        className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-success' : 'bg-warning'}`}
+        className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-emerald-400' : 'bg-amber-400'}`}
         aria-hidden="true"
       />
       {status}
@@ -138,23 +153,21 @@ export default function AccountsPage() {
   const firstOpen = CONNECTORS.find((c) => !countByPlatform[c.id]);
 
   return (
-    <div className="mx-auto w-full max-w-[1280px] px-6 py-8">
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-8">
       {/* header */}
       <div className="mb-8">
         <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
-          Accounts
+          Connected Ad Accounts
         </h1>
-        <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
-          Connect an ad platform to pull campaign spend and claimed conversions.
-          PerfOS reconciles those claims against actual revenue before any
-          budget moves.
+        <p className="mt-1 max-w-prose text-xs text-muted-foreground">
+          Connect your official ad network accounts to synchronize spend, CTR, and claimed conversions. PerfOS reconciles these claims against actual Shopify store orders before any budget shift.
         </p>
       </div>
 
       {error && (
         <div
           role="alert"
-          className="mb-6 rounded-md border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+          className="mb-6 rounded-lg border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs text-red-300"
         >
           {error}
         </div>
@@ -162,8 +175,8 @@ export default function AccountsPage() {
 
       {/* connector grid */}
       <section aria-label="Available platforms">
-        <h2 className="mb-3 text-sm font-medium tracking-tight text-muted-foreground">
-          Platforms
+        <h2 className="mb-3 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+          Supported Platforms (6)
         </h2>
         {loading ? (
           <div
@@ -192,33 +205,33 @@ export default function AccountsPage() {
               return (
                 <Card
                   key={c.id}
-                  className="flex flex-col transition-colors duration-fast ease-out hover:border-border-hover"
+                  className="flex flex-col bg-surface border-border transition-colors hover:border-primary/40"
                 >
                   <CardHeader>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-bg-elevated font-display text-sm font-semibold text-foreground"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary"
                         >
-                          {c.monogram}
+                          <c.Logo className="w-4 h-4 text-primary" />
                         </span>
-                        <CardTitle>{c.name}</CardTitle>
+                        <CardTitle className="text-sm font-semibold">{c.name}</CardTitle>
                       </div>
                       {connected && (
-                        <Badge variant="success" shape="square">
+                        <Badge variant="success" shape="square" className="text-[9px] font-mono uppercase">
                           connected
                         </Badge>
                       )}
                     </div>
-                    <CardDescription className="text-xs leading-relaxed">
+                    <CardDescription className="text-xs leading-relaxed mt-2">
                       {c.description}
                     </CardDescription>
                   </CardHeader>
-                  <CardFooter className="mt-auto">
+                  <CardFooter className="mt-auto pt-2 border-t border-border">
                     {connected ? (
-                      <p className="w-full text-xs text-muted-foreground">
-                        <span className="font-medium tabular-nums text-muted-foreground">
+                      <p className="w-full text-xs text-muted-foreground font-mono">
+                        <span className="font-medium text-foreground">
                           {count}
                         </span>{' '}
                         {count === 1 ? 'account' : 'accounts'} syncing
@@ -228,9 +241,9 @@ export default function AccountsPage() {
                         size="sm"
                         onClick={() => handleConnect(c.id, c.name)}
                         disabled={connecting !== null}
-                        className="w-full"
+                        className="btn-daisy-solid w-full text-xs"
                       >
-                        {busy ? 'Connecting…' : 'Connect'}
+                        {busy ? 'Connecting…' : `Connect ${c.name}`}
                       </Button>
                     )}
                   </CardFooter>
@@ -241,15 +254,15 @@ export default function AccountsPage() {
         )}
       </section>
 
-      {/* connected accounts */}
+      {/* connected accounts table */}
       <section aria-label="Connected accounts" className="mt-10">
         <div className="mb-3 flex items-baseline gap-2">
-          <h2 className="text-sm font-medium tracking-tight text-foreground">
-            Connected accounts
+          <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+            Active Connected Accounts
           </h2>
           {!loading && (
-            <span className="text-xs tabular-nums text-muted-foreground">
-              {accounts.length}
+            <span className="text-xs font-mono text-primary">
+              ({accounts.length})
             </span>
           )}
         </div>
@@ -265,24 +278,10 @@ export default function AccountsPage() {
             ))}
           </div>
         ) : accounts.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border-subtle bg-bg-surface/50 px-6 py-10 text-center">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="mx-auto h-8 w-8 text-zinc-600"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008V17.25Z"
-              />
-            </svg>
-            <p className="mt-3 text-sm text-muted-foreground">
-              No accounts yet. Connect a platform above to pull its campaigns
-              into PerfOS.
+          <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
+            <span className="font-mono text-sm text-muted-foreground block mb-2">⌘</span>
+            <p className="text-xs text-muted-foreground">
+              No accounts connected yet. Connect Google, Meta, LinkedIn, X, TikTok, or Reddit above.
             </p>
             {firstOpen && (
               <Button
@@ -290,7 +289,7 @@ export default function AccountsPage() {
                 size="sm"
                 onClick={() => handleConnect(firstOpen.id, firstOpen.name)}
                 disabled={connecting !== null}
-                className="mt-4"
+                className="mt-4 text-xs"
               >
                 {connecting === firstOpen.id
                   ? 'Connecting…'
@@ -299,15 +298,15 @@ export default function AccountsPage() {
             )}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-border-subtle">
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Platform</TableHead>
-                  <TableHead>Account</TableHead>
+                  <TableHead>Account Name</TableHead>
                   <TableHead>Account ID</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Connected</TableHead>
+                  <TableHead>Connected Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -317,10 +316,11 @@ export default function AccountsPage() {
                   );
                   return (
                     <TableRow key={account.id}>
-                      <TableCell className="whitespace-nowrap px-4 py-3 text-foreground">
-                        {meta?.name ?? account.platform}
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-foreground font-medium flex items-center gap-2">
+                        {meta ? <meta.Logo className="w-3.5 h-3.5 text-primary" /> : null}
+                        <span>{meta?.name ?? account.platform}</span>
                       </TableCell>
-                      <TableCell className="px-4 py-3 font-medium text-foreground">
+                      <TableCell className="px-4 py-3 font-medium text-foreground text-xs">
                         {account.name}
                       </TableCell>
                       <TableCell className="whitespace-nowrap px-4 py-3 font-mono text-xs tabular-nums text-muted-foreground">
@@ -329,7 +329,7 @@ export default function AccountsPage() {
                       <TableCell className="px-4 py-3">
                         <StatusBadge status={account.status} />
                       </TableCell>
-                      <TableCell className="whitespace-nowrap px-4 py-3 text-sm tabular-nums text-muted-foreground">
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-xs font-mono text-muted-foreground">
                         {formatDate(account.connected_at)}
                       </TableCell>
                     </TableRow>

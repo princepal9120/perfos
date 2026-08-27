@@ -1,7 +1,9 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { MetaLogo, ClaudeLogo } from '@/components/marketing/icons';
 
 export default function ClaudeMetaadsPage() {
   const [copied, setCopied] = useState(false);
@@ -9,28 +11,31 @@ export default function ClaudeMetaadsPage() {
     'Analyze our active Meta (Facebook & Instagram) campaigns. Find the 3 highest spending ad sets from the past 14 days, report their CTR and ROAS, and recommend creative variations from our top competitor swipe file.';
 
   return (
-    <div className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 text-foreground">
       <div className="space-y-4 text-center">
         <Link
           href="/integrations/claude"
-          className="text-xs text-primary hover:underline"
+          className="text-xs text-primary hover:underline font-mono"
         >
-          ← Back to Claude Integration
+          &larr; Back to Claude Integration
         </Link>
-        <h1 className="text-4xl font-display font-bold text-foreground dark:text-white tracking-tight">
-          Manage Meta (Facebook & Instagram) with Claude
-        </h1>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-          Equip Claude with direct, typed tools to query metrics, spy on
-          competitor Meta (Facebook & Instagram) creatives, and push fresh
-          variants on autopilot.
+        <div className="flex items-center justify-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 border border-primary/30 text-primary">
+            <MetaLogo className="w-5 h-5 text-primary" />
+          </div>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">
+            Manage Meta Ads with Claude
+          </h1>
+        </div>
+        <p className="text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          Equip Claude with direct, typed tools to query metrics, spy on competitor Meta (Facebook &amp; Instagram) creatives, and push fresh variants on autopilot.
         </p>
       </div>
 
-      <div className="p-6 rounded-2xl bg-card border border-border space-y-4">
+      <div className="p-6 rounded-2xl bg-surface border border-border space-y-4 shadow-2xl">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <span className="text-xs font-mono text-primary font-bold">
-            Example AI Prompt
+            Example Claude Prompt
           </span>
           <button
             onClick={() => {
@@ -38,25 +43,23 @@ export default function ClaudeMetaadsPage() {
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}
-            className="text-xs font-mono px-2.5 py-1 rounded bg-white/8 text-foreground dark:text-white"
+            className="text-xs font-mono px-2.5 py-1 rounded bg-surface-elevated hover:bg-white/10 text-foreground border border-border transition-colors cursor-pointer"
           >
             {copied ? '✓ Copied' : 'Copy Prompt'}
           </button>
         </div>
-        <p className="p-4 rounded-xl bg-black/60 font-mono text-xs text-foreground">
-          &quot;Analyze our active Meta (Facebook & Instagram) campaigns. Find
-          the 3 highest spending ad sets from the past 14 days, report their CTR
-          and ROAS, and recommend creative variations from our top competitor
-          swipe file.&quot;
+        <p className="p-4 rounded-xl bg-black/60 font-mono text-xs text-foreground border border-border leading-relaxed">
+          &quot;{prompt}&quot;
         </p>
       </div>
 
       <div className="text-center pt-4">
         <Link
-          href="/pricing"
-          className="px-8 py-3.5 rounded-xl bg-primary hover:bg-primary text-white dark:text-white text-xs font-semibold shadow-lg shadow-primary/30 transition-all"
+          href="/command-center"
+          className="btn-daisy-solid inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-xs font-semibold"
         >
-          Connect Claude to Meta (Facebook & Instagram) →
+          <span>Launch Claude in Command Center</span>
+          <span>&rarr;</span>
         </Link>
       </div>
     </div>

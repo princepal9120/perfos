@@ -61,7 +61,7 @@ use as the scope checklist for the UI rebuild.
 - 30-day MCP sessions (no hourly reconnect); ~30% fewer tokens in MCP responses.
 
 ## 8. Workspaces / Members / Settings
-- Workspaces: team under one workspace, all projects.
+- Workspaces: team under one workspace, and also multiple workspace add here, all projects.
 - Member roles: read/draft/publish; project-scoped members.
 - Centralized Settings (agent permissions under project nav; settings on phones
   use section dropdown).

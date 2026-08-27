@@ -1,75 +1,88 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: postproxy
+ * Macrostructure mirrors adkit.so/features/ads-mcp/meta. Real PerfOS MCP tools. */
 'use client';
-import Link from 'next/link';
+
+import { AdsMcpPage } from '@/components/marketing/ads-mcp-page';
+import { MetaLogo } from '@/components/marketing/icons';
 
 export default function MetaAdsMcpPage() {
   return (
-    <div className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-      <div className="text-center space-y-4">
-        <Link
-          href="/features/ads-mcp"
-          className="text-xs text-primary hover:underline"
-        >
-          ← Back to All Ads MCPs
-        </Link>
-        <h1 className="text-4xl sm:text-5xl font-display font-bold text-foreground dark:text-white tracking-tight">
-          Meta Ads MCP Connector
-        </h1>
-        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-          Equip Claude, Cursor, and ChatGPT with typed tools to query campaigns,
-          analyze spend, clone top creatives, and adjust budgets on Meta Ads in
-          real-time.
-        </p>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-card border border-border space-y-6">
-        <h2 className="text-base font-display font-bold text-foreground dark:text-white">
-          Included Tools for AI Agents
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-          <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-blue-400 font-bold">
-              adkit_meta_get_campaigns
-            </span>
-            <p className="text-muted-foreground font-sans text-[11px]">
-              List active, paused, and archived campaigns with live spend &
-              ROAS.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-blue-400 font-bold">
-              adkit_meta_update_budget
-            </span>
-            <p className="text-muted-foreground font-sans text-[11px]">
-              Safely reallocate budget between ad sets with policy bounds.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-blue-400 font-bold">
-              adkit_meta_spy_competitor
-            </span>
-            <p className="text-muted-foreground font-sans text-[11px]">
-              Query active competitor ad history and creative duration.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-blue-400 font-bold">
-              adkit_meta_create_variant
-            </span>
-            <p className="text-muted-foreground font-sans text-[11px]">
-              Draft and stage new creative hooks for manual or auto approval.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="text-center pt-4">
-        <Link
-          href="/pricing"
-          className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white text-xs font-semibold shadow-lg shadow-blue-600/30 transition-all"
-        >
-          Connect Meta Ads MCP Now →
-        </Link>
-      </div>
-    </div>
+    <AdsMcpPage
+      platform="Meta"
+      name="Meta Ads"
+      Logo={MetaLogo}
+      hero="The safe MCP server for Meta Ads"
+      sub="Manage Facebook and Instagram campaigns, review creatives, and pull results from your agent. Every change lands as a draft in your workspace — nothing touches a live account until you approve."
+      problem="Hours in Ads Manager instead of building. Manual duplication that breaks on a misclick. No way to pull account performance into a chat. Raw platform MCPs with no guardrails that write straight to the account."
+      relief="Plain English prompts, draft-first replies, and publish-only-with-approval. Your agent scans campaigns, stages budget moves, and drafts creative changes. You review the diff in PerfOS before anything goes live."
+      features={[
+        {
+          cap: 'Manage',
+          title: 'Manage Meta campaigns in bulk',
+          prompt: 'Pause all ads with frequency above 4 in my prospecting campaigns',
+          reply: 'On it. I scanned your campaigns and drafted 8 pauses across 3 prospecting ad sets. Approve the batch and I will submit it.',
+          chip: 'perfos_ads_loop_run',
+        },
+        {
+          cap: 'Analyze',
+          title: 'Analyze Meta Ads in seconds',
+          prompt: 'How are my Facebook and Instagram campaigns doing this month?',
+          reply: 'Spend is on track, ROAS is up, but frequency on two retargeting sets is climbing. Want a fatigue sweep drafted?',
+          chip: 'perfos_measurement_summary',
+        },
+        {
+          cap: 'Library',
+          title: 'Spy on competitors in the Ad Library',
+          prompt: 'Show me Notion\'s Meta ads and their best creatives',
+          reply: 'Found 84 active ads across Facebook and Instagram. Marking the evergreen creative and its landing page as your top copy reference.',
+          chip: 'perfos_adlib_search',
+        },
+        {
+          cap: 'Create',
+          title: 'Generate fresh creative from a winner',
+          prompt: 'Turn my top-performing creative into new variants',
+          reply: 'Generated 3 variants from your winner: Square, Story, Banner. Staged as drafts with hooks and copy — review when ready.',
+          chip: 'perfos_ads_generate',
+        },
+        {
+          cap: 'Clone',
+          title: 'Clone and remix competitor ads',
+          prompt: 'Clone the best creative from my swipe file',
+          reply: 'Pulled the saved creative and remixed the headline for your current offer. Drafted with your brand kit — approve to stage.',
+          chip: 'perfos_ads_clone',
+        },
+        {
+          cap: 'Budget',
+          title: 'Keep ad spend under control',
+          prompt: 'Pause any ad set over $50 CPL, and relaunch Retargeting Q3 — it stopped delivering yesterday',
+          reply: 'Two moves drafted for approval: pause Prospecting: Broad (CPL $64) and reset the Retargeting Q3 daily budget.',
+          chip: 'perfos_measurement_reconcile',
+        },
+      ]}
+      tools={[
+        { name: 'perfos_measurement_summary', desc: 'Cross-network performance snapshot: spend, ROAS, anomalies, and fatigue flags in one call.' },
+        { name: 'perfos_measurement_reconcile', desc: 'Compare reported vs tracked spend and surface discrepancies between the network and your books.' },
+        { name: 'perfos_measurement_iroas', desc: 'Incremental ROAS read with a minimum sample filter, so small datasets do not overstate lift.' },
+        { name: 'perfos_ads_search', desc: 'Search for ads by query, persona, channels, and country across the ad library.' },
+        { name: 'perfos_ads_winners', desc: 'Pull the strongest ads per channel and persona from scored discovery runs.' },
+        { name: 'perfos_ads_clone', desc: 'Clone any ad by ID and remix its creative into a new draft.' },
+        { name: 'perfos_ads_generate', desc: 'Generate a fresh creative brief and assets for a given persona.' },
+        { name: 'perfos_ads_loop_run', desc: 'Run the discovery-to-launch loop with a dry-run default; safe by construction.' },
+        { name: 'perfos_ads_loop_status', desc: 'Check the state of running discovery loops and their latest output.' },
+        { name: 'perfos_adlib_search', desc: 'Full-text ad library search across platforms, competitors, tiers, and minimum runtime.' },
+      ]}
+      personas={[
+        { title: 'Founders & solopreneurs', desc: 'Run ads without living inside Ads Manager. Ask, review, approve.' },
+        { title: 'Agencies & media buyers', desc: 'Manage multiple accounts from one conversation instead of ten dashboards.' },
+        { title: 'Growth marketers', desc: 'Your work already happens with AI agents — ads should not be the exception.' },
+        { title: 'Brand managers', desc: 'Track competitor creative and swipe the winners into your own pipeline.' },
+      ]}
+      faqs={[
+        { q: 'Do changes go live immediately?', a: 'No. Every mutation is a draft in your workspace. Nothing reaches an ad account until you approve it.' },
+        { q: 'Which agents can connect?', a: 'Any MCP-compatible client: Claude, ChatGPT, Cursor, Perplexity, GitHub Copilot, and the PerfOS Command Center itself.' },
+        { q: 'Do I need API keys?', a: 'No. Add the server JSON block to your MCP client, point it at your workspace, and start prompting.' },
+        { q: 'Can it read performance data?', a: 'Yes — spend, ROAS, anomalies, attribution, and incrementality all route through real perfos_measurement_* tools.' },
+      ]}
+    />
   );
 }

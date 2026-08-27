@@ -9,7 +9,10 @@
     "lint": "biome check",
     "tsc": "tsc --noEmit",
     "lint:fix": "biome check --write",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "gen:openapi": "cd ../api && uv run python scripts/generate_openapi.py",
+    "gen:api-types": "openapi-typescript ./openapi.json -o ./lib/api-types.d.ts",
+    "gen": "npm run gen:openapi && npm run gen:api-types"
   },
   "dependencies": {
     "axios": "^1.20.0",
@@ -30,6 +33,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "autoprefixer": "^10.5.4",
+    "openapi-typescript": "^6.7.6",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",

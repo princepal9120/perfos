@@ -1,41 +1,31 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import Link from 'next/link';
-import { PerfOSLogo } from '@/components/marketing/icons';
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-white/10 bg-[#08080a] text-zinc-400 text-xs">
+    <footer className="border-t border-border bg-canvas text-zinc-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Brand Col */}
           <div className="col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#d86f82] flex items-center justify-center text-white">
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                >
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                </svg>
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white font-mono font-bold text-xs">
+                ⌘
               </div>
               <span className="font-display font-bold text-base text-white tracking-tight">
                 PerfOS
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#d86f82]/10 text-[#d86f82] border border-[#d86f82]/20 font-semibold">
-                BY ADKIT
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 font-semibold">
+                AUTONOMOUS ADS
               </span>
             </Link>
             <p className="text-zinc-400 text-xs leading-relaxed max-w-sm">
-              The full performance ad toolbox for marketers and AI agents. Spy
-              on competitor angles, generate on-brand assets, and deploy
-              campaigns seamlessly through MCP &amp; CLI.
+              The full performance ad toolbox for marketers and AI agents. Spy on competitor angles, generate on-brand assets, reconcile Shopify truth, and deploy campaigns seamlessly through MCP &amp; CLI.
             </p>
             <div className="flex items-center gap-3 text-zinc-400">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-medium">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-medium font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 All Systems Operational
               </span>
@@ -50,50 +40,50 @@ export function MarketingFooter() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/features/ad-library"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/discovery"
+                  className="hover:text-primary transition-colors"
                 >
                   Ad Library &amp; Spy
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ai-ads-generator"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/creative"
+                  className="hover:text-primary transition-colors"
                 >
-                  AI Ad Generator
+                  Creative Studio
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-cloner"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/loop"
+                  className="hover:text-primary transition-colors"
                 >
-                  Competitor Cloner
+                  Growth Loop
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-mcp"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
                 >
                   Ads MCP Server
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-cli"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/measurement"
+                  className="hover:text-primary transition-colors"
                 >
-                  Ads Terminal CLI
+                  iROAS Calibration
                 </Link>
               </li>
               <li>
                 <Link
                   href="/pricing"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
-                  Pricing &amp; ROI
+                  Pricing &amp; Plans
                 </Link>
               </li>
             </ul>
@@ -107,50 +97,50 @@ export function MarketingFooter() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/features/ads-mcp/meta"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
+                >
+                  Google Ads
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
                 >
                   Meta Ads (FB/IG)
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-mcp/google"
-                  className="hover:text-[#d86f82] transition-colors"
-                >
-                  Google &amp; YouTube
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/features/ads-mcp/tiktok"
-                  className="hover:text-[#d86f82] transition-colors"
-                >
-                  TikTok Ads
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/features/ads-mcp/linkedin"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
                 >
                   LinkedIn Ads
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-mcp/reddit"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
                 >
-                  Reddit Ads
+                  X (Twitter) Ads
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/features/ads-mcp/x"
-                  className="hover:text-[#d86f82] transition-colors"
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
                 >
-                  X (Twitter) Ads
+                  TikTok Ads
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/mcp"
+                  className="hover:text-primary transition-colors"
+                >
+                  Reddit Ads
                 </Link>
               </li>
             </ul>
@@ -165,7 +155,7 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations/claude"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   Claude Code &amp; Desktop
                 </Link>
@@ -173,7 +163,7 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations/cursor"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   Cursor IDE Agent
                 </Link>
@@ -181,7 +171,7 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations/chatgpt"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   ChatGPT &amp; Custom GPTs
                 </Link>
@@ -189,7 +179,7 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations/grok"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   Grok (xAI)
                 </Link>
@@ -197,7 +187,7 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations/perplexity"
-                  className="hover:text-[#d86f82] transition-colors"
+                  className="hover:text-primary transition-colors"
                 >
                   Perplexity Agent
                 </Link>
@@ -205,9 +195,9 @@ export function MarketingFooter() {
               <li>
                 <Link
                   href="/integrations"
-                  className="hover:text-[#d86f82] transition-colors font-medium text-[#d86f82]"
+                  className="hover:text-primary transition-colors font-medium text-primary"
                 >
-                  View All (8+) →
+                  View All Integrations &rarr;
                 </Link>
               </li>
             </ul>
@@ -215,22 +205,22 @@ export function MarketingFooter() {
         </div>
 
         {/* Bottom Sub-bar */}
-        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-zinc-500">
-            © 2026 PerfOS AdKit Inc. All rights reserved.
+        <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-zinc-500 font-mono">
+            &copy; 2026 PerfOS Inc. All rights reserved.
           </p>
-          <div className="flex items-center gap-6 text-zinc-500">
+          <div className="flex items-center gap-6 text-zinc-500 font-mono text-[11px]">
             <Link
               href="/pricing"
               className="hover:text-zinc-300 transition-colors"
             >
-              Privacy Policy
+              Privacy
             </Link>
             <Link
               href="/pricing"
               className="hover:text-zinc-300 transition-colors"
             >
-              Terms of Service
+              Terms
             </Link>
             <Link
               href="/pricing"
@@ -240,9 +230,9 @@ export function MarketingFooter() {
             </Link>
             <Link
               href="/command-center"
-              className="hover:text-zinc-300 transition-colors"
+              className="text-primary hover:underline transition-colors"
             >
-              Console
+              Command Center &rarr;
             </Link>
           </div>
         </div>

@@ -54,31 +54,25 @@ type TabKey = 'iroas' | 'creatives' | 'anomalies' | 'optimizer';
 const PLATFORM_LABELS: Record<string, string> = {
   google: 'Google Ads',
   meta: 'Meta Ads',
-  shopify: 'Shopify',
-  tiktok: 'TikTok Ads',
   linkedin: 'LinkedIn Ads',
-  pinterest: 'Pinterest Ads',
-  snapchat: 'Snapchat Ads',
-  amazon: 'Amazon Ads',
+  twitter: 'X (Twitter) Ads',
+  x_ads: 'X (Twitter) Ads',
+  tiktok: 'TikTok Ads',
   reddit: 'Reddit Ads',
-  twitter: 'Twitter Ads',
-  youtube: 'YouTube Ads',
-  amazon_ads: 'Amazon DSP',
-  x_ads: 'X Ads',
 };
 
 function formatPlatform(platform: string): string {
   return PLATFORM_LABELS[platform.toLowerCase()] ?? platform;
 }
 
-// Fallback demo data for standalone execution
+// Fallback demo data for standalone execution across the 6 platforms
 const DEMO_IROAS: IroasRow[] = [
-  { platform: 'meta', reported_roas: 3.45, iroas: 2.76, calibration: 0.8 },
   { platform: 'google', reported_roas: 4.12, iroas: 3.71, calibration: 0.9 },
+  { platform: 'meta', reported_roas: 3.45, iroas: 2.76, calibration: 0.8 },
+  { platform: 'linkedin', reported_roas: 2.8, iroas: 2.24, calibration: 0.8 },
+  { platform: 'x_ads', reported_roas: 2.1, iroas: 1.58, calibration: 0.75 },
   { platform: 'tiktok', reported_roas: 2.85, iroas: 1.71, calibration: 0.6 },
-  { platform: 'youtube', reported_roas: 2.3, iroas: 1.84, calibration: 0.8 },
-  { platform: 'pinterest', reported_roas: 1.95, iroas: 1.36, calibration: 0.7 },
-  { platform: 'amazon_ads', reported_roas: 3.8, iroas: 3.42, calibration: 0.9 },
+  { platform: 'reddit', reported_roas: 1.95, iroas: 1.36, calibration: 0.7 },
 ];
 
 const DEMO_CREATIVES: CreativeRow[] = [

@@ -43,12 +43,40 @@ import {
 } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
+function LayersIcon({ className }: { className?: string }) {
+  return (
+    <svg className={cn("h-4 w-4 shrink-0", className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  );
+}
+
+function TargetIcon({ className }: { className?: string }) {
+  return (
+    <svg className={cn("h-4 w-4 shrink-0", className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function BookmarkIcon({ className }: { className?: string }) {
+  return (
+    <svg className={cn("h-4 w-4 shrink-0", className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
 type Tab = 'library' | 'competitors' | 'saved';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'library', label: 'Ads Library (Swipe File)', icon: '🔍' },
-  { id: 'competitors', label: 'Competitor Tracking', icon: '🏢' },
-  { id: 'saved', label: 'Saved Ads (Boards)', icon: '📌' },
+const TABS: { id: Tab; label: string; Icon: (props: { className?: string }) => React.JSX.Element }[] = [
+  { id: 'library', label: 'Ads Library (Swipe File)', Icon: LayersIcon },
+  { id: 'competitors', label: 'Competitor Tracking', Icon: TargetIcon },
+  { id: 'saved', label: 'Saved Ads (Boards)', Icon: BookmarkIcon },
 ];
 
 const COUNTRIES = ['US', 'GB', 'CA', 'AU', 'IN', 'DE'];
@@ -517,10 +545,10 @@ function DiscoveryContent() {
               'flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all',
               activeTab === tab.id
                 ? 'border-b-2 border-primary bg-primary/10 text-primary'
-                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground',
+                : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground',
             )}
           >
-            <span>{tab.icon}</span>
+            <tab.Icon className={activeTab === tab.id ? 'text-primary' : 'text-muted-foreground'} />
             <span>{tab.label}</span>
           </button>
         ))}

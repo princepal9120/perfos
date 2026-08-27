@@ -340,6 +340,9 @@ export default function CreativePage() {
       .catch(() => setAssetsError('Could not load generated assets.'));
   }, []);
 
+  // The create stage can emit the same clip for several winners; show it once.
+  const uniqueAssets = [...new Map(assets.map((a) => [a.asset_url, a])).values()];
+
   /** Render clips from the winners discovery has already scored. */
   async function renderFromWinners() {
     setRendering(true);
@@ -579,16 +582,16 @@ export default function CreativePage() {
         <div className="px-5 py-4">
           {assetsError ? (
             <p className="text-xs text-red-400">{assetsError}</p>
-          ) : assets.length === 0 ? (
+          ) : uniqueAssets.length === 0 ? (
             <p className="text-xs text-muted-foreground">
               No assets yet — scan the ad library, then generate from the
               winners.
             </p>
           ) : (
             <ul className="space-y-2">
-              {assets.slice(0, 20).map((a, i) => (
+              {uniqueAssets.slice(0, 20).map((a) => (
                 <li
-                  key={`${a.asset_url}-${i}`}
+                  key={a.asset_url}
                   className="flex items-center justify-between gap-3 rounded-md border border-border bg-white/3 px-3 py-2 text-xs"
                 >
                   <span className="truncate font-mono text-zinc-300">

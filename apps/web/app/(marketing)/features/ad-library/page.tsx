@@ -1,13 +1,23 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import Link from 'next/link';
 import { useState } from 'react';
+import {
+  MetaLogo,
+  GoogleLogo,
+  LinkedInLogo,
+  XLogo,
+  TikTokLogo,
+  RedditLogo,
+} from '@/components/marketing/icons';
 
 const SAMPLE_ADS = [
   {
     brand: 'Notion',
     domain: 'notion.so',
     platform: 'Meta',
+    Logo: MetaLogo,
     daysActive: 142,
     angle: 'Post-it / Visual Sticky Note Workflow',
     ctrEstimate: '4.8%',
@@ -22,6 +32,7 @@ const SAMPLE_ADS = [
     brand: 'Linear',
     domain: 'linear.app',
     platform: 'LinkedIn',
+    Logo: LinkedInLogo,
     daysActive: 98,
     angle: 'Keyboard shortcuts & sub-50ms issue tracking',
     ctrEstimate: '3.9%',
@@ -35,7 +46,8 @@ const SAMPLE_ADS = [
   {
     brand: 'Supabase',
     domain: 'supabase.com',
-    platform: 'Google / YouTube',
+    platform: 'Google',
+    Logo: GoogleLogo,
     daysActive: 180,
     angle: 'Firebase Alternative / Open Source Postgres',
     ctrEstimate: '5.2%',
@@ -49,12 +61,13 @@ const SAMPLE_ADS = [
   {
     brand: 'Raycast',
     domain: 'raycast.com',
-    platform: 'X / Twitter',
+    platform: 'X',
+    Logo: XLogo,
     daysActive: 112,
     angle: 'Supercharged Mac Spotlight Replacement',
     ctrEstimate: '4.1%',
     category: 'Mac Utility',
-    format: 'GIF / Motion',
+    format: 'Motion Preview',
     hookCopy:
       'Control your tools, clipboard, and AI prompts in a single keystroke.',
     cta: 'Download for Mac',
@@ -63,12 +76,13 @@ const SAMPLE_ADS = [
   {
     brand: 'PostHog',
     domain: 'posthog.com',
-    platform: 'Meta',
+    platform: 'Reddit',
+    Logo: RedditLogo,
     daysActive: 74,
     angle: 'All-in-one product analytics without tracking bloat',
     ctrEstimate: '4.4%',
     category: 'Analytics',
-    format: 'Meme / Comic Illustration',
+    format: 'Comic Illustration',
     hookCopy:
       'Product analytics, session replay, and feature flags. Open source and developer-friendly.',
     cta: 'Get Started Free',
@@ -77,43 +91,16 @@ const SAMPLE_ADS = [
   {
     brand: 'Resend',
     domain: 'resend.com',
-    platform: 'LinkedIn',
+    platform: 'TikTok',
+    Logo: TikTokLogo,
     daysActive: 135,
     angle: 'Email for developers with React Email templates',
     ctrEstimate: '4.9%',
     category: 'Developer Tools',
-    format: 'Clean Minimalist Dark Code',
+    format: 'Clean Dark Code',
     hookCopy:
       'The best way to reach humans instead of spam folders. Build emails with React.',
-    cta: 'Send Your First Email',
-    evergreen: true,
-  },
-  {
-    brand: 'Vercel',
-    domain: 'vercel.com',
-    platform: 'Google / YouTube',
-    daysActive: 210,
-    angle: 'Next.js zero-config edge deployments',
-    ctrEstimate: '5.8%',
-    category: 'Cloud Hosting',
-    format: 'Product Demo Video',
-    hookCopy:
-      'Develop. Preview. Ship. The frontend cloud platform powering the modern web.',
-    cta: 'Deploy Now',
-    evergreen: true,
-  },
-  {
-    brand: 'Cursor',
-    domain: 'cursor.com',
-    platform: 'X / Twitter',
-    daysActive: 160,
-    angle: 'AI Code Editor built to make you 10x faster',
-    ctrEstimate: '6.1%',
-    category: 'AI / Dev',
-    format: 'Side-by-side terminal capture',
-    hookCopy:
-      'The AI code editor. Forked from VS Code, built for autonomous coding agents.',
-    cta: 'Download Cursor',
+    cta: 'Send First Email',
     evergreen: true,
   },
 ];
@@ -151,45 +138,43 @@ export default function AdLibraryPage() {
   });
 
   return (
-    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 text-foreground">
       {/* Hero */}
       <div className="text-center max-w-4xl mx-auto space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-primary text-xs font-mono font-semibold">
-          <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-mono font-semibold">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           500,000+ Tracked Competitor Ads
         </div>
-        <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight leading-[1.08]">
+        <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-[1.08]">
           The Ad Library for{' '}
-          <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">
-            SaaS & Mobile Apps
+          <span className="text-primary">
+            SaaS &amp; DTC Brands
           </span>
         </h1>
-        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Stop scrolling through laggy Meta & Google ad libraries. Search 500k+
-          ads, filter by active longevity, and uncover competitor money-makers
-          that have run for 90+ consecutive days.
+        <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          Stop scrolling through laggy Meta &amp; Google ad libraries. Search 500k+ ads, filter by active longevity, and uncover competitor evergreen winners running for 90+ consecutive days.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
           <Link
-            href="/pricing"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-linear-to-r from-primary to-primary-dark hover:from-purple-500 hover:to-indigo-500 text-white dark:text-white text-xs font-semibold shadow-lg shadow-primary/30 transition-all hover:scale-[1.02]"
+            href="/command-center"
+            className="btn-daisy-solid w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs font-semibold"
           >
-            Start Free Search Trial (7 Days) →
+            Open Live Ad Search &rarr;
           </Link>
           <Link
             href="/features/ads-cloner"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/4 hover:bg-white/8 text-zinc-300 text-xs font-semibold border border-border transition-colors"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-surface hover:bg-surface-elevated text-zinc-300 text-xs font-semibold border border-border transition-colors"
           >
-            Remix Competitor Winner 🧬
+            Remix Competitor Winner
           </Link>
         </div>
       </div>
 
       {/* Interactive Spy Simulator Engine */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-card border border-border space-y-6 shadow-2xl shadow-black/5 dark:shadow-purple-950/20">
+      <div className="p-6 sm:p-8 rounded-2xl bg-surface border border-border space-y-6 shadow-2xl">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 border-b border-border pb-6">
-          <div className="flex items-center gap-3 w-full lg:w-96 bg-black/40 border border-border rounded-xl px-3.5 py-2">
-            <span className="text-muted-foreground">🔍</span>
+          <div className="flex items-center gap-3 w-full lg:w-96 bg-card border border-border rounded-xl px-3.5 py-2">
+            <span className="text-muted-foreground font-mono">⌘</span>
             <input
               type="text"
               placeholder="Search by brand, category, or hook angle..."
@@ -200,15 +185,15 @@ export default function AdLibraryPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
-              {['all', 'Meta', 'LinkedIn', 'Google', 'X'].map((plat) => (
+            <div className="flex items-center gap-1 bg-card p-1 rounded-xl border border-border">
+              {['all', 'Google', 'Meta', 'LinkedIn', 'X', 'TikTok', 'Reddit'].map((plat) => (
                 <button
                   key={plat}
                   onClick={() => setFilter(plat)}
-                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
                     filter === plat
-                      ? 'bg-primary text-white dark:text-white shadow'
-                      : 'text-muted-foreground hover:text-foreground dark:text-white'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {plat === 'all' ? 'All Networks' : plat}
@@ -216,20 +201,20 @@ export default function AdLibraryPage() {
               ))}
             </div>
 
-            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
+            <div className="flex items-center gap-1 bg-card p-1 rounded-xl border border-border">
               {[
                 { id: 'all', label: 'Any Duration' },
                 { id: '90', label: '90+ Days' },
                 { id: '120', label: '120+ Days' },
-                { id: 'evergreen', label: 'Evergreen Only ⭐' },
+                { id: 'evergreen', label: 'Evergreen Only' },
               ].map((dur) => (
                 <button
                   key={dur.id}
                   onClick={() => setDurationFilter(dur.id)}
-                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
+                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
                     durationFilter === dur.id
-                      ? 'bg-indigo-600 text-foreground dark:text-white shadow'
-                      : 'text-muted-foreground hover:text-foreground dark:text-white'
+                      ? 'bg-surface-elevated text-primary border border-primary/30'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {dur.label}
@@ -240,16 +225,19 @@ export default function AdLibraryPage() {
         </div>
 
         {/* Live Grid of Searchable Ads */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAds.map((ad, i) => (
             <div
               key={i}
-              className="p-5 rounded-xl bg-black/40 border border-border hover:border-purple-500/40 transition-all flex flex-col justify-between space-y-4 group hover:shadow-lg hover:shadow-purple-950/30"
+              className="p-5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all flex flex-col justify-between space-y-4 group shadow-lg"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-display font-bold text-sm text-foreground dark:text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary">
+                      <ad.Logo className="w-3.5 h-3.5 text-primary" />
+                    </span>
+                    <span className="font-bold text-sm text-foreground">
                       {ad.brand}
                     </span>
                     <span className="text-[10px] text-muted-foreground font-mono">
@@ -259,8 +247,8 @@ export default function AdLibraryPage() {
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
                       ad.daysActive >= 100
-                        ? 'bg-purple-500/15 text-primary border-primary/30'
-                        : 'bg-white/5 text-muted-foreground border-border'
+                        ? 'bg-primary/15 text-primary border-primary/30'
+                        : 'bg-muted text-muted-foreground border-border'
                     }`}
                   >
                     {ad.daysActive}d active
@@ -269,10 +257,10 @@ export default function AdLibraryPage() {
 
                 <div
                   onClick={() => setSelectedAd(ad)}
-                  className="h-44 rounded-lg bg-linear-to-br from-purple-950/20 via-zinc-900 to-indigo-950/20 border border-white/5 flex flex-col justify-between p-3.5 text-left cursor-pointer group-hover:border-primary/30 transition-colors"
+                  className="h-40 rounded-lg bg-surface-elevated border border-border flex flex-col justify-between p-3.5 text-left cursor-pointer group-hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/8 text-zinc-300">
+                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-muted text-zinc-300">
                       {ad.format}
                     </span>
                     <span className="text-[10px] text-emerald-400 font-mono font-semibold">
@@ -313,16 +301,16 @@ export default function AdLibraryPage() {
               <div className="pt-3 border-t border-border flex gap-2">
                 <Link
                   href={`/features/ads-cloner?source=${encodeURIComponent(ad.brand)}`}
-                  className="flex-1 py-2 text-center rounded-lg bg-primary/20 hover:bg-primary/30 text-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                  className="flex-1 py-2 text-center rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-xs font-semibold transition-colors flex items-center justify-center gap-1"
                 >
-                  <span>Remix Angle</span> ⚡
+                  <span>Remix Angle &rarr;</span>
                 </Link>
                 <button
                   onClick={() => toggleSave(ad.brand)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     savedAds.includes(ad.brand)
-                      ? 'bg-primary text-white dark:text-white'
-                      : 'bg-white/5 hover:bg-white/10 text-zinc-300'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted hover:bg-surface-elevated text-zinc-300'
                   }`}
                 >
                   {savedAds.includes(ad.brand) ? '✓ Saved' : 'Save'}
@@ -336,31 +324,31 @@ export default function AdLibraryPage() {
       {/* Selected Ad Modal Dialog */}
       {selectedAd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="max-w-2xl w-full bg-card border border-border rounded-2xl p-6 space-y-6 shadow-2xl">
+          <div className="max-w-2xl w-full bg-surface border border-border rounded-2xl p-6 space-y-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
-                  {selectedAd.brand[0]}
+                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 text-primary flex items-center justify-center font-bold">
+                  <selectedAd.Logo className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-display font-bold text-foreground dark:text-white">
+                  <h3 className="text-lg font-bold text-foreground">
                     {selectedAd.brand}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground font-mono">
                     {selectedAd.domain} · Active on {selectedAd.platform}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedAd(null)}
-                className="text-muted-foreground hover:text-foreground dark:text-white p-2 text-lg"
+                className="text-muted-foreground hover:text-foreground p-2 text-lg"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-black/50 border border-white/5 space-y-2">
+              <div className="p-4 rounded-xl bg-card border border-border space-y-2">
                 <span className="text-xs font-mono uppercase text-primary font-semibold">
                   Full Primary Hook Copy
                 </span>
@@ -370,27 +358,27 @@ export default function AdLibraryPage() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">
+                <div className="p-3 rounded-lg bg-card border border-border">
+                  <span className="text-muted-foreground block font-mono text-[11px]">
                     Days Running
                   </span>
-                  <span className="text-primary font-bold text-base">
+                  <span className="text-primary font-bold text-base font-mono">
                     {selectedAd.daysActive} days
                   </span>
                 </div>
-                <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">
+                <div className="p-3 rounded-lg bg-card border border-border">
+                  <span className="text-muted-foreground block font-mono text-[11px]">
                     Estimated CTR
                   </span>
-                  <span className="text-emerald-400 font-bold text-base">
+                  <span className="text-emerald-400 font-bold text-base font-mono">
                     {selectedAd.ctrEstimate}
                   </span>
                 </div>
-                <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">
+                <div className="p-3 rounded-lg bg-card border border-border">
+                  <span className="text-muted-foreground block font-mono text-[11px]">
                     Format Type
                   </span>
-                  <span className="text-foreground font-semibold text-sm">
+                  <span className="text-foreground font-semibold text-xs">
                     {selectedAd.format}
                   </span>
                 </div>
@@ -400,64 +388,20 @@ export default function AdLibraryPage() {
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setSelectedAd(null)}
-                className="px-4 py-2 rounded-xl text-xs text-muted-foreground hover:text-foreground dark:text-white"
+                className="px-4 py-2 rounded-xl text-xs text-muted-foreground hover:text-foreground"
               >
                 Close
               </button>
               <Link
                 href={`/features/ads-cloner?source=${encodeURIComponent(selectedAd.brand)}`}
-                className="px-5 py-2 rounded-xl bg-primary hover:bg-primary text-white dark:text-white text-xs font-semibold"
+                className="btn-daisy-solid px-5 py-2 rounded-xl text-xs font-semibold"
               >
-                Remix for My Brand →
+                Remix for My Brand &rarr;
               </Link>
             </div>
           </div>
         </div>
       )}
-
-      {/* Feature Pillar Deep-Dive */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-primary text-2xl">
-            ⏱️
-          </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
-            Longevity Filter
-          </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Eliminate low-budget test creatives from your research. When an ad
-            has been active for 90+ consecutive days across Meta and Google, you
-            can bet it&apos;s profitable.
-          </p>
-        </div>
-
-        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-2xl">
-            📁
-          </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
-            Swipe File Sync
-          </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Organize winning creatives into categorized folders. Export
-            structured JSON schemas directly to Claude or Cursor through our
-            native Ads MCP server.
-          </p>
-        </div>
-
-        <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
-            📬
-          </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
-            Weekly Competitor Digests
-          </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Automated alerts sent to Slack or email whenever competitors launch
-            new angles, scale budgets, or shut down fatigued ad variants.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

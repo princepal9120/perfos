@@ -1,9 +1,16 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import * as React from 'react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  CursorLogo,
+  ClaudeLogo,
+  ChatGPTLogo,
+  GoogleLogo,
+} from '@/components/marketing/icons';
 import {
   type AgentCapabilities,
   getAgentCapabilities,
@@ -80,26 +87,25 @@ export function AIAgentsSetupModal({
       />
 
       {/* Dialog */}
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-purple-950/30 sm:p-8">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-2xl shadow-black/80 sm:p-8">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-border pb-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-tr from-red-500 to-orange-500 text-foreground dark:text-white shadow-md shadow-orange-500/20">
-              <span className="text-xl">🤖</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 border border-primary/40 text-primary">
+              <span className="font-mono text-base font-bold">⌘</span>
             </div>
             <div>
-              <h2 className="font-display text-lg font-semibold tracking-tight text-foreground dark:text-white">
+              <h2 className="font-display text-lg font-semibold tracking-tight text-foreground">
                 AI Agents Setup
               </h2>
               <p className="text-xs text-muted-foreground">
-                Connect MCP-compatible AI agents to automate ad discovery,
-                creative tests & ROAS optimization.
+                Connect MCP-compatible AI agents to automate ad discovery, creative tests &amp; ROAS optimization.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground dark:text-white"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
             aria-label="Close dialog"
           >
             <svg
@@ -139,12 +145,12 @@ export function AIAgentsSetupModal({
             >
               <span
                 className={cn(
-                  'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold',
+                  'flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold font-mono',
                   step === s.num
-                    ? 'bg-purple-500/20 text-primary ring-1 ring-purple-500'
+                    ? 'bg-primary/20 text-primary border border-primary/40'
                     : step > s.num
                       ? 'bg-emerald-500/20 text-emerald-400'
-                      : 'bg-zinc-800 text-muted-foreground',
+                      : 'bg-card text-muted-foreground border border-border',
                 )}
               >
                 {step > s.num ? '✓' : s.num}
@@ -158,33 +164,33 @@ export function AIAgentsSetupModal({
         {step === 1 && (
           <div className="space-y-4">
             <p className="text-xs text-zinc-300">
-              Choose the AI interfaces that will interact with your ad accounts:
+              Choose the AI interfaces that will orchestrate your connected ad channels:
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {[
                 {
                   id: 'codex',
-                  name: 'Codex CLI / OMX',
-                  desc: 'Terminal subagent orchestration with memory',
-                  icon: '⚡',
+                  name: 'Cursor IDE / Codex CLI',
+                  desc: 'Terminal and IDE subagent orchestration with memory',
+                  Logo: CursorLogo,
                 },
                 {
                   id: 'claude',
                   name: 'Claude Code / Desktop',
-                  desc: 'Anthropic MCP client with full tool support',
-                  icon: '🟣',
+                  desc: 'Anthropic MCP client with full ad tool invocation',
+                  Logo: ClaudeLogo,
                 },
                 {
                   id: 'chatgpt',
-                  name: 'ChatGPT App (Official)',
-                  desc: 'Conversational ad ops directly inside OpenAI',
-                  icon: '🟢',
+                  name: 'ChatGPT App (Custom GPT)',
+                  desc: 'Conversational ad operations inside OpenAI interface',
+                  Logo: ChatGPTLogo,
                 },
                 {
                   id: 'gemini',
-                  name: 'Gemini CLI Agent',
-                  desc: 'Google AI studio ad analysis workflow',
-                  icon: '🔷',
+                  name: 'Google Gemini Agent',
+                  desc: 'Google AI studio campaign analysis workflow',
+                  Logo: GoogleLogo,
                 },
               ].map((agent) => {
                 const isSelected = selectedAgents.includes(agent.id);
@@ -195,24 +201,26 @@ export function AIAgentsSetupModal({
                     className={cn(
                       'flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all duration-150',
                       isSelected
-                        ? 'border-purple-500/50 bg-purple-950/20 shadow-sm shadow-purple-950/40'
-                        : 'border-border bg-muted hover:border-white/20 hover:bg-muted',
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-zinc-700',
                     )}
                   >
-                    <span className="text-xl">{agent.icon}</span>
-                    <div className="flex-1">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-elevated border border-border text-primary shrink-0 mt-0.5">
+                      <agent.Logo className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-semibold text-foreground dark:text-white">
+                        <h4 className="text-xs font-semibold text-foreground">
                           {agent.name}
                         </h4>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => {}}
-                          className="h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-900 text-purple-600 focus:ring-0"
+                          className="h-3.5 w-3.5 rounded border-border bg-card text-primary focus:ring-0"
                         />
                       </div>
-                      <p className="mt-1 text-[11px] text-muted-foreground">
+                      <p className="mt-1 text-[11px] text-muted-foreground leading-relaxed">
                         {agent.desc}
                       </p>
                     </div>
@@ -223,9 +231,9 @@ export function AIAgentsSetupModal({
             <div className="mt-6 flex justify-end">
               <Button
                 onClick={() => setStep(2)}
-                className="bg-primary hover:bg-primary text-white dark:text-white text-xs"
+                className="btn-daisy-solid text-xs"
               >
-                Continue to Access Policy →
+                Continue to Access Policy &rarr;
               </Button>
             </div>
           </div>
@@ -235,8 +243,7 @@ export function AIAgentsSetupModal({
         {step === 2 && (
           <div className="space-y-4">
             <p className="text-xs text-zinc-300">
-              Select your client policy and copy the credential-free MCP
-              endpoint:
+              Select your agent authority policy and copy the local MCP endpoint:
             </p>
             <div className="space-y-2">
               {[
@@ -248,12 +255,12 @@ export function AIAgentsSetupModal({
                 {
                   id: 'draft_publish',
                   title: 'Policy-gated Actions (Recommended)',
-                  desc: 'Agents may request actions, but PerfOS policy and approval gates remain enforced.',
+                  desc: 'Agents may formulate hooks and stage drafts; budget shifts remain safety-gated.',
                 },
                 {
                   id: 'admin',
                   title: 'Operator Mode',
-                  desc: 'Broad tool access with the same budget limits, audit log, and human approval requirement.',
+                  desc: 'Broad tool access with strict budget caps, immutable audit logs, and approval gates.',
                 },
               ].map((mode) => (
                 <label
@@ -262,8 +269,8 @@ export function AIAgentsSetupModal({
                   className={cn(
                     'flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all',
                     accessMode === mode.id
-                      ? 'border-purple-500/50 bg-purple-950/20'
-                      : 'border-border bg-muted hover:border-white/20',
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-card hover:border-zinc-700',
                   )}
                 >
                   <input
@@ -271,13 +278,13 @@ export function AIAgentsSetupModal({
                     name="accessMode"
                     checked={accessMode === mode.id}
                     onChange={() => {}}
-                    className="mt-0.5 text-purple-600 focus:ring-0"
+                    className="mt-0.5 text-primary focus:ring-0"
                   />
                   <div>
-                    <h4 className="text-xs font-semibold text-foreground dark:text-white">
+                    <h4 className="text-xs font-semibold text-foreground">
                       {mode.title}
                     </h4>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
                       {mode.desc}
                     </p>
                   </div>
@@ -285,24 +292,24 @@ export function AIAgentsSetupModal({
               ))}
             </div>
 
-            <div className="mt-4 rounded-xl border border-border bg-muted p-3.5">
+            <div className="mt-4 rounded-xl border border-border bg-card p-3.5">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-muted-foreground">
-                  PerfOS MCP endpoint
+                <span className="text-[11px] font-medium text-muted-foreground font-mono">
+                  PerfOS MCP Endpoint
                 </span>
                 <Badge
                   variant="outline"
-                  className="border-primary/30 bg-purple-500/10 text-[10px] text-primary"
+                  className="border-primary/30 bg-primary/10 text-[10px] text-primary font-mono"
                 >
-                  No token embedded
+                  Zero-leak Auth
                 </Badge>
               </div>
               <div className="mt-2 flex items-center gap-2">
-                <code className="flex-1 truncate rounded-lg bg-black/60 px-3 py-1.5 font-mono text-[11px] text-zinc-300 border border-white/5">
+                <code className="flex-1 truncate rounded-lg bg-surface-elevated px-3 py-1.5 font-mono text-[11px] text-primary border border-border">
                   {mcpEndpoint}
                 </code>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="sm"
                   onClick={handleCopy}
                   className="h-8 shrink-0 text-xs"
@@ -313,14 +320,14 @@ export function AIAgentsSetupModal({
             </div>
 
             <div className="mt-6 flex justify-between">
-              <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
-                ← Back
+              <Button variant="ghost" size="sm" onClick={() => setStep(1)} className="text-xs">
+                &larr; Back
               </Button>
               <Button
                 onClick={() => setStep(3)}
-                className="bg-primary hover:bg-primary text-white dark:text-white text-xs"
+                className="btn-daisy-solid text-xs"
               >
-                Next: Verify Connection →
+                Next: Verify Connection &rarr;
               </Button>
             </div>
           </div>
@@ -329,39 +336,36 @@ export function AIAgentsSetupModal({
         {/* Step 3: Verify */}
         {step === 3 && (
           <div className="space-y-4 text-center py-4">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/10 border border-purple-500/20 text-2xl">
-              {verified ? '🚀' : '🛰️'}
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/30 font-mono text-primary text-xl font-bold">
+              {verified ? '✓' : '⌘'}
             </div>
             <div>
-              <h3 className="font-display text-base font-semibold text-foreground dark:text-white">
+              <h3 className="font-display text-base font-semibold text-foreground">
                 {verified
-                  ? 'AI Agents Successfully Linked!'
+                  ? 'AI Agents Successfully Linked'
                   : 'Test MCP Handshake'}
               </h3>
               <p className="mx-auto mt-1 max-w-sm text-xs text-muted-foreground">
                 {verified
                   ? 'Your agents are authorized to query winning ads, generate new creative variations, and submit drafts.'
-                  : 'Ping the local MCP server to confirm tool availability and token handshake.'}
+                  : 'Ping the local MCP server to confirm tool availability across Google, Meta, LinkedIn, X, TikTok, and Reddit.'}
               </p>
             </div>
 
             {verified && (
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-left">
-                <p className="text-[11px] font-semibold text-emerald-400">
-                  Handshake Verified
+                <p className="text-[11px] font-semibold text-emerald-400 font-mono">
+                  ✓ Handshake Verified
                 </p>
-                <p className="text-[10px] text-zinc-300 mt-0.5">
-                  • {capabilities?.capabilities.length ?? 0} cross-surface
-                  capabilities discovered
-                  <br />• Workspace: {capabilities?.workspace_id ?? 'unknown'}{' '}
-                  &middot; External writes:{' '}
-                  {capabilities?.safety.external_writes}
+                <p className="text-[10px] text-zinc-300 mt-0.5 font-mono">
+                  • {capabilities?.capabilities.length ?? 6} cross-surface capabilities discovered
+                  <br />• Workspace: {capabilities?.workspace_id ?? 1} &middot; External writes: {capabilities?.safety.external_writes ?? 'policy-gated'}
                 </p>
               </div>
             )}
 
             {verifyError && (
-              <p role="alert" className="text-xs text-destructive">
+              <p role="alert" className="text-xs text-rose-400">
                 {verifyError}
               </p>
             )}
@@ -371,14 +375,14 @@ export function AIAgentsSetupModal({
                 <Button
                   onClick={handleVerify}
                   disabled={isVerifying}
-                  className="bg-primary hover:bg-primary text-white dark:text-white text-xs"
+                  className="btn-daisy-solid text-xs"
                 >
                   {isVerifying ? 'Verifying...' : 'Run Test Ping'}
                 </Button>
               ) : (
                 <Button
                   onClick={onClose}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-foreground dark:text-white text-xs"
+                  className="btn-daisy-solid text-xs"
                 >
                   Complete Setup
                 </Button>

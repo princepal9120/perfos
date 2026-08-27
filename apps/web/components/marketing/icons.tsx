@@ -12,7 +12,7 @@ export function PerfOSLogo({ className = 'w-7 h-7' }: { className?: string }) {
     >
       <path
         d="M 50 50 C 38 34, 18 34, 18 50 C 18 66, 38 66, 50 50 Z"
-        stroke="#d86f82"
+        stroke="#d76d77"
         strokeWidth="6.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -24,14 +24,14 @@ export function PerfOSLogo({ className = 'w-7 h-7' }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <polygon points="50,50 66,12 55,42" fill="#d86f82" />
+      <polygon points="50,50 66,12 55,42" fill="#d76d77" />
       <polygon points="50,50 34,88 45,58" fill="#ffffff" />
       <circle
         cx="50"
         cy="50"
         r="5.5"
-        fill="#08080a"
-        stroke="#d86f82"
+        fill="#0d0d0d"
+        stroke="#d76d77"
         strokeWidth="2.5"
       />
       <circle cx="50" cy="50" r="2" fill="#ffffff" />

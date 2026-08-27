@@ -52,6 +52,13 @@
         "command": "cd apps/api && uv sync --all-extras",
         "cwd": "."
       }
+    },
+    "gen:openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && uv run python scripts/generate_openapi.py",
+        "cwd": "."
+      }
     }
   },
   "tags": ["backend", "api"]

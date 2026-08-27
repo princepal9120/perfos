@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
 'use client';
 
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
@@ -20,6 +21,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  GoogleLogo,
+  MetaLogo,
+  LinkedInLogo,
+  XLogo,
+  TikTokLogo,
+  RedditLogo,
+} from '@/components/marketing/icons';
+import {
   getIntegrations,
   type Integration,
   type IntegrationCategory,
@@ -30,13 +39,17 @@ import {
   toggleIntegration,
 } from '@/lib/api';
 
-const PROVIDERS: { id: IntegrationProvider; label: string }[] = [
-  { id: 'google_ads', label: 'Google Ads' },
-  { id: 'meta_ads', label: 'Meta Ads' },
-  { id: 'shopify', label: 'Shopify' },
-  { id: 'stripe', label: 'Stripe' },
-  { id: 'slack', label: 'Slack' },
-  { id: 'linear', label: 'Linear' },
+const PROVIDERS: {
+  id: string;
+  label: string;
+  Logo: (props: { className?: string }) => React.JSX.Element;
+}[] = [
+  { id: 'google_ads', label: 'Google Ads', Logo: GoogleLogo },
+  { id: 'meta_ads', label: 'Meta Ads', Logo: MetaLogo },
+  { id: 'linkedin', label: 'LinkedIn Ads', Logo: LinkedInLogo },
+  { id: 'twitter', label: 'X (Twitter) Ads', Logo: XLogo },
+  { id: 'tiktok', label: 'TikTok Ads', Logo: TikTokLogo },
+  { id: 'reddit', label: 'Reddit Ads', Logo: RedditLogo },
 ];
 
 const CATEGORIES: { id: IntegrationCategory; label: string }[] = [
@@ -47,47 +60,33 @@ const CATEGORIES: { id: IntegrationCategory; label: string }[] = [
 ];
 
 const inputCls =
-  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
-
-const PROVIDER_DOT: Record<string, string> = {
-  google_ads: 'bg-blue-500',
-  meta_ads: 'bg-indigo-500',
-  shopify: 'bg-green-500',
-  stripe: 'bg-purple-500',
-  slack: 'bg-amber-500',
-  linear: 'bg-pink-500',
-};
+  'flex h-9 w-full rounded-md border border-border bg-card px-3 py-1 text-xs shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 text-foreground';
 
 function ProviderChip({ provider }: { provider: string }) {
+  const p = PROVIDERS.find((item) => item.id === provider || item.label.toLowerCase().includes(provider.toLowerCase()));
   return (
-    <span className="inline-flex items-center gap-2 font-medium">
-      <span
-        className={`h-2 w-2 shrink-0 rounded-full ${PROVIDER_DOT[provider] ?? 'bg-muted-foreground'}`}
-        aria-hidden="true"
-      />
-      {provider.replace(/_/g, ' ').toUpperCase()}
+    <span className="inline-flex items-center gap-2 font-medium text-xs text-foreground">
+      {p ? <p.Logo className="w-3.5 h-3.5 text-primary" /> : null}
+      <span>{p?.label ?? provider.replace(/_/g, ' ').toUpperCase()}</span>
     </span>
   );
 }
 
 function CategoryChip({ category }: { category: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-border bg-muted/50 px-2 py-0.5 text-xs capitalize text-muted-foreground">
+    <span className="inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[10px] font-mono capitalize text-muted-foreground">
       {category}
     </span>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const variant =
-    status === 'connected'
-      ? 'success'
-      : status === 'disabled'
-        ? 'secondary'
-        : status === 'error'
-          ? 'destructive'
-          : 'warning';
-  return <Badge variant={variant}>{status}</Badge>;
+  const active = status === 'connected' || status === 'active';
+  return (
+    <Badge variant={active ? 'success' : 'secondary'} className="font-mono text-[9px] uppercase">
+      {status}
+    </Badge>
+  );
 }
 
 export default function IntegrationsPage() {
@@ -95,7 +94,7 @@ export default function IntegrationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [provider, setProvider] = useState<IntegrationProvider>('google_ads');
+  const [provider, setProvider] = useState<string>('google_ads');
   const [category, setCategory] = useState<IntegrationCategory>('ads');
   const [endpoint, setEndpoint] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -115,7 +114,7 @@ export default function IntegrationsPage() {
       setIntegrations(Array.isArray(data) ? data : []);
       setError(null);
     } catch {
-      setError('Could not load integrations. Is the API running in mock mode?');
+      setError('Could not load integrations. Check that the API is running.');
     } finally {
       setLoading(false);
     }
@@ -137,7 +136,7 @@ export default function IntegrationsPage() {
     try {
       await registerIntegration({
         name: trimmed,
-        provider,
+        provider: provider as IntegrationProvider,
         category,
         endpoint: endpoint.trim() || null,
         api_key: apiKey.trim() || null,
@@ -167,206 +166,209 @@ export default function IntegrationsPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="font-display text-lg font-semibold tracking-tight">
-          Integrations
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Connect external tools (ad platforms, analytics, CRM) so PerfOS can
-          pull spend and revenue data and act on it.
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
+          Platform Integrations
+        </h1>
+        <p className="mt-1 text-xs text-muted-foreground max-w-prose">
+          Connect your 6 primary performance ad channels (Google, Meta, LinkedIn, X, TikTok, Reddit) so PerfOS can orchestrate campaigns and reconcile revenue deterministically.
         </p>
       </div>
 
       {error && (
         <div
           role="alert"
-          className="mb-6 rounded-md border border-destructive/40 bg-destructive/20 px-4 py-3 text-sm text-destructive-foreground"
+          className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-300"
         >
           {error}
         </div>
       )}
 
-      <section aria-label="Register an integration" className="max-w-md">
-        <Card className="card-premium">
-          <CardHeader>
-            <CardTitle className="text-sm">Connect an integration</CardTitle>
-            <CardDescription className="text-xs leading-relaxed">
-              API keys are stored per workspace. Status is mocked in demo mode.
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="integration-name"
-                  className="text-xs font-medium text-muted-foreground"
-                >
-                  Name
-                </label>
-                <input
-                  id="integration-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Google Ads main account"
-                  className={inputCls}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="integration-provider"
-                  className="text-xs font-medium text-muted-foreground"
-                >
-                  Provider
-                </label>
-                <select
-                  id="integration-provider"
-                  value={provider}
-                  onChange={(e) =>
-                    setProvider(e.target.value as IntegrationProvider)
-                  }
-                  className={inputCls}
-                >
-                  {PROVIDERS.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="integration-category"
-                  className="text-xs font-medium text-muted-foreground"
-                >
-                  Category
-                </label>
-                <select
-                  id="integration-category"
-                  value={category}
-                  onChange={(e) =>
-                    setCategory(e.target.value as IntegrationCategory)
-                  }
-                  className={inputCls}
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="integration-endpoint"
-                  className="text-xs font-medium text-muted-foreground"
-                >
-                  Endpoint
-                </label>
-                <input
-                  id="integration-endpoint"
-                  value={endpoint}
-                  onChange={(e) => setEndpoint(e.target.value)}
-                  placeholder="https://api.example.com/v1"
-                  className={inputCls}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="integration-api-key"
-                  className="text-xs font-medium text-muted-foreground"
-                >
-                  API key
-                </label>
-                <input
-                  id="integration-api-key"
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-live-…"
-                  autoComplete="off"
-                  className={inputCls}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={saving} className="w-full">
-                {saving ? 'Connecting…' : 'Connect integration'}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
-      </section>
+      <div className="grid gap-8 lg:grid-cols-12">
+        {/* Registration Form */}
+        <section aria-label="Register an integration" className="lg:col-span-4">
+          <Card className="bg-surface border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold">Connect an Ad Channel</CardTitle>
+              <CardDescription className="text-xs leading-relaxed">
+                Add API credentials for Google, Meta, LinkedIn, X, TikTok, or Reddit.
+              </CardDescription>
+            </CardHeader>
+            <form onSubmit={handleSubmit}>
+              <CardContent className="space-y-3.5 text-xs">
+                <div className="space-y-1">
+                  <label
+                    htmlFor="integration-name"
+                    className="text-[11px] font-medium text-muted-foreground"
+                  >
+                    Account / Channel Name
+                  </label>
+                  <input
+                    id="integration-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Google Ads Primary Account"
+                    className={inputCls}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label
+                    htmlFor="integration-provider"
+                    className="text-[11px] font-medium text-muted-foreground"
+                  >
+                    Ad Platform
+                  </label>
+                  <select
+                    id="integration-provider"
+                    value={provider}
+                    onChange={(e) => setProvider(e.target.value)}
+                    className={inputCls}
+                  >
+                    {PROVIDERS.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label
+                    htmlFor="integration-category"
+                    className="text-[11px] font-medium text-muted-foreground"
+                  >
+                    Category
+                  </label>
+                  <select
+                    id="integration-category"
+                    value={category}
+                    onChange={(e) =>
+                      setCategory(e.target.value as IntegrationCategory)
+                    }
+                    className={inputCls}
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label
+                    htmlFor="integration-endpoint"
+                    className="text-[11px] font-medium text-muted-foreground"
+                  >
+                    API Endpoint / Account ID
+                  </label>
+                  <input
+                    id="integration-endpoint"
+                    value={endpoint}
+                    onChange={(e) => setEndpoint(e.target.value)}
+                    placeholder="act_102938471"
+                    className={inputCls}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label
+                    htmlFor="integration-api-key"
+                    className="text-[11px] font-medium text-muted-foreground"
+                  >
+                    Access Token / API Key
+                  </label>
+                  <input
+                    id="integration-api-key"
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="EAAK…"
+                    autoComplete="off"
+                    className={inputCls}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="pt-2 border-t border-border">
+                <Button type="submit" disabled={saving} className="btn-daisy-solid w-full text-xs">
+                  {saving ? 'Connecting…' : 'Save Connection'}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </section>
 
-      <section aria-label="Registered integrations" className="mt-8">
-        <h3 className="text-sm font-semibold">Connected integrations</h3>
-        {loading ? (
-          <div
-            className="mt-3 space-y-2"
-            aria-busy="true"
-            aria-label="Loading integrations"
-          >
-            {[0, 1].map((i) => (
-              <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-            ))}
-          </div>
-        ) : integrations.length === 0 ? (
-          <p className="mt-3 rounded-md border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No integrations connected yet. Register your first integration
-            above.
-          </p>
-        ) : (
-          <div className="mt-3 overflow-hidden rounded-lg border border-border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Integration</TableHead>
-                  <TableHead>Provider</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Endpoint</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {integrations.map((i) => (
-                  <TableRow key={i.id}>
-                    <TableCell className="px-4 py-3 font-medium">
-                      {i.name}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap px-4 py-3">
-                      <ProviderChip provider={i.provider} />
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap px-4 py-3">
-                      <CategoryChip category={i.category} />
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <StatusBadge status={i.status} />
-                    </TableCell>
-                    <TableCell className="max-w-[220px] truncate px-4 py-3 text-muted-foreground">
-                      {i.endpoint ?? '-'}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap px-4 py-3 text-right">
-                      <Button
-                        variant={i.enabled ? 'outline' : 'default'}
-                        size="sm"
-                        onClick={() => handleToggle(i)}
-                        disabled={busyId === i.id}
-                      >
-                        {busyId === i.id
-                          ? '…'
-                          : i.enabled
-                            ? 'Disable'
-                            : 'Enable'}
-                      </Button>
-                    </TableCell>
+        {/* Registered Integrations List */}
+        <section aria-label="Registered integrations" className="lg:col-span-8 space-y-3">
+          <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+            Connected Platform Status
+          </h2>
+          {loading ? (
+            <div
+              className="space-y-2"
+              aria-busy="true"
+              aria-label="Loading integrations"
+            >
+              {[0, 1].map((i) => (
+                <div key={i} className="h-12 animate-pulse rounded-md bg-surface border border-border" />
+              ))}
+            </div>
+          ) : integrations.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center text-xs text-muted-foreground">
+              No integrations configured yet. Use the form on the left to connect Google, Meta, LinkedIn, X, TikTok, or Reddit.
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-lg border border-border bg-surface">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Integration</TableHead>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Account ID</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </section>
+                </TableHeader>
+                <TableBody>
+                  {integrations.map((i) => (
+                    <TableRow key={i.id}>
+                      <TableCell className="px-4 py-3 font-medium text-foreground text-xs">
+                        {i.name}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-4 py-3">
+                        <ProviderChip provider={i.provider} />
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-4 py-3">
+                        <CategoryChip category={i.category} />
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        <StatusBadge status={i.status} />
+                      </TableCell>
+                      <TableCell className="max-w-[180px] truncate px-4 py-3 text-muted-foreground font-mono text-xs">
+                        {i.endpoint ?? '-'}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-right">
+                        <Button
+                          variant={i.enabled ? 'outline' : 'default'}
+                          size="sm"
+                          onClick={() => handleToggle(i)}
+                          disabled={busyId === i.id}
+                          className="text-xs h-7"
+                        >
+                          {busyId === i.id
+                            ? '…'
+                            : i.enabled
+                              ? 'Disable'
+                              : 'Enable'}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

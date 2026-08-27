@@ -643,7 +643,7 @@ export default function Sidebar() {
             onClick={() => setIsSetupOpen(true)}
             className="btn-daisy-solid flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-xs"
           >
-            <span>🤖</span>
+            <BotIcon className="h-3.5 w-3.5" />
             <span>AI Agents Setup</span>
           </button>
 
