@@ -135,4 +135,31 @@ class RunEvent(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
 
-__all__ = ["AgentCommand", "CreativeAsset", "LaunchDraft", "LoopRun", "RunEvent", "Winner"]
+class AgentJob(Base):
+    """Durable dispatch job; transport execution can be retried by a worker."""
+
+    __tablename__ = "agent_jobs"
+    __table_args__ = (Index("ix_agent_jobs_workspace_created", "workspace_id", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    agent_id: Mapped[int] = mapped_column(ForeignKey("connected_agents.id"), index=True)
+    command_id: Mapped[str | None] = mapped_column(String(64), index=True, default=None)
+    status: Mapped[str] = mapped_column(String(24), default="queued")
+    payload_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    result_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    error: Mapped[str | None] = mapped_column(String(2048), default=None)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    started_at: Mapped[datetime | None] = mapped_column(default=None)
+    finished_at: Mapped[datetime | None] = mapped_column(default=None)
+
+
+__all__ = [
+    "AgentCommand",
+    "AgentJob",
+    "CreativeAsset",
+    "LaunchDraft",
+    "LoopRun",
+    "RunEvent",
+    "Winner",
+]

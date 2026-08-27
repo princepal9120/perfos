@@ -145,4 +145,7 @@ def get_workspace_from_header(headers) -> str | None:
     authorization = headers.get("authorization")
     if authorization and authorization.lower().startswith("bearer "):
         return verify_token(authorization[7:].strip())
+    session = headers.get("perfos-session")
+    if session:
+        return verify_token(session)
     return None

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import Header, HTTPException, status
+from fastapi import Cookie, Header, HTTPException, status
 
 from app.core.security import get_workspace_from_header
 
@@ -11,6 +11,7 @@ def get_current_workspace(
     x_workspace_id: str | None = Header(default=None, alias="X-Workspace-Id"),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
     authorization: str | None = Header(default=None),
+    perfos_session: str | None = Cookie(default=None, alias="perfos_session"),
 ) -> int:
     """Return the authenticated workspace id or raise 401."""
     workspace_id = get_workspace_from_header(
@@ -18,6 +19,7 @@ def get_current_workspace(
             "x-workspace-id": x_workspace_id,
             "x-api-key": x_api_key,
             "authorization": authorization,
+            "perfos-session": perfos_session,
         }
     )
     if not workspace_id:

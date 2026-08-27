@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal, TypeAlias
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, Cookie
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -12,9 +12,11 @@ from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
 from app.core.deps import get_current_workspace
 from app.core.security import create_token as sign_token
-from app.core.security import decrypt_secret, verify_workspace
+from app.core.security import decrypt_secret, encrypt_secret, verify_workspace
 from app.models import (
     AdAccount,
+    AgentCommand,
+    AgentJob,
     Approval,
     ConnectedAgent,
     CreativePerformance,
@@ -29,6 +31,7 @@ from app.models import (
     Workspace,
 )
 from app.services.audit import log_action
+from app.services.agent_jobs import dispatch_job
 from app.services.briefing import build_briefing
 from app.services.execution import execute_recommendation
 from app.services.optimizer import recommend_reallocation
@@ -81,6 +84,11 @@ class TokenRequest(BaseModel):
 class TokenOut(BaseModel):
     access_token: str
     token_type: str
+    workspace_id: int
+
+
+class SessionOut(BaseModel):
+    authenticated: bool = True
     workspace_id: int
 
 
@@ -203,6 +211,9 @@ class AgentOut(_ORMModel):
     status: str
     config_json: Any | None = None
     last_run_at: datetime | None = None
+    command_id: str | None = None
+    job_id: str | None = None
+    job_status: str | None = None
 
 
 def _redact_config(config: Any) -> Any:
@@ -240,6 +251,20 @@ class MCPServerOut(_ORMModel):
     status: str
     config_json: dict[str, Any] | None = None
     last_checked_at: datetime | None = None
+
+
+def _mcp_out(row: MCPServer) -> dict[str, Any]:
+    return {
+        "id": row.id,
+        "workspace_id": row.workspace_id,
+        "name": row.name,
+        "transport": row.transport,
+        "endpoint": row.endpoint,
+        "enabled": row.enabled,
+        "status": row.status,
+        "config_json": _redact_config(row.config_json),
+        "last_checked_at": row.last_checked_at,
+    }
 
 
 INTEGRATION_PROVIDERS = Literal[
@@ -307,6 +332,7 @@ def _audit(
     action: str,
     target: str,
     payload: dict,
+    command_id: str | None = None,
 ) -> None:
     log_action(
         workspace_id=workspace_id,
@@ -315,6 +341,8 @@ def _audit(
         target=target,
         payload=payload,
         session=db,
+        command_id=command_id,
+        correlation_id=command_id,
     )
 
 
@@ -346,6 +374,45 @@ def create_token(body: TokenRequest, db: DbDep) -> TokenOut:
         token_type="bearer",
         workspace_id=workspace.id,
     )
+
+
+@router.post("/auth/session", response_model=SessionOut)
+def create_session(body: TokenRequest, response: Response, db: DbDep) -> SessionOut:
+    """Exchange a credential once for an HttpOnly browser session cookie.
+
+    The browser never needs to persist or send the workspace API key after this
+    request. Agents should continue using ``/auth/token`` or API-key headers.
+    """
+    if not body.api_key:
+        raise HTTPException(status_code=401, detail="api_key required")
+    query = db.query(Workspace)
+    workspace = None
+    if body.workspace_id is not None:
+        workspace = query.filter(Workspace.id == body.workspace_id).first()
+    elif body.workspace is not None:
+        workspace = query.filter(Workspace.name == body.workspace).first()
+    if workspace is None:
+        raise HTTPException(status_code=404, detail="Workspace not found")
+    if not verify_workspace(body.api_key, str(workspace.id)):
+        raise HTTPException(status_code=401, detail="invalid api_key")
+    from app.core.config import settings
+
+    response.set_cookie(
+        "perfos_session",
+        sign_token(str(workspace.id)),
+        httponly=True,
+        secure=settings.SECURE_COOKIES,
+        samesite="lax",
+        path="/",
+        max_age=24 * 60 * 60,
+    )
+    return SessionOut(workspace_id=workspace.id)
+
+
+@router.delete("/auth/session", response_model=dict)
+def delete_session(response: Response) -> dict:
+    response.delete_cookie("perfos_session", path="/")
+    return {"authenticated": False}
 
 
 @router.get("/workspaces", response_model=list[WorkspaceOut])
@@ -614,12 +681,37 @@ def register_agent(body: AgentCreate, db: DbDep, workspace_id: WorkspaceId) -> C
 
 @router.post("/agents/{agent_id}/dispatch", response_model=AgentOut)
 def dispatch_agent(
-    agent_id: int, body: DispatchRequest, db: DbDep, workspace_id: WorkspaceId
+    agent_id: int,
+    body: DispatchRequest,
+    db: DbDep,
+    workspace_id: WorkspaceId,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> ConnectedAgent:
     agent = db.get(ConnectedAgent, agent_id)
     if agent is None or agent.workspace_id != workspace_id:
         raise HTTPException(status_code=404, detail="Agent not found")
+    from app.services.commanding import begin_command, command_payload, finish_command
+
+    command, created = begin_command(
+        db,
+        workspace_id,
+        "agents.dispatch",
+        idempotency_key=idempotency_key,
+        request={"agent_id": agent_id, "payload": body.payload},
+    )
+    if not created:
+        return {
+            **AgentOut.model_validate(agent).model_dump(),
+            **(command.response_json or {}),
+        }
     agent.last_run_at = _now()
+    job = dispatch_job(
+        db,
+        agent,
+        workspace_id,
+        body.payload,
+        command_id=command.id,
+    )
     _audit(
         db,
         workspace_id,
@@ -627,10 +719,43 @@ def dispatch_agent(
         "agent.dispatch",
         f"agent:{agent.id}",
         body.payload,
+        command_id=command.id,
     )
+    response = {
+        **AgentOut.model_validate(agent).model_dump(),
+        **command_payload(command),
+        "job_id": job.id,
+        "job_status": job.status,
+    }
+    finish_command(db, command, status="completed", response=response)
     db.commit()
     db.refresh(agent)
-    return agent
+    return response
+
+
+@router.get("/agents/jobs")
+def list_agent_jobs(db: DbDep, workspace_id: WorkspaceId, limit: int = 100) -> list[dict]:
+    jobs = (
+        db.query(AgentJob)
+        .filter(AgentJob.workspace_id == workspace_id)
+        .order_by(AgentJob.created_at.desc())
+        .limit(max(1, min(limit, 500)))
+        .all()
+    )
+    return [
+        {
+            "job_id": job.id,
+            "agent_id": job.agent_id,
+            "command_id": job.command_id,
+            "status": job.status,
+            "payload": job.payload_json,
+            "result": job.result_json,
+            "error": job.error,
+            "created_at": job.created_at.isoformat(),
+            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+        }
+        for job in jobs
+    ]
 
 
 # ---- MCP servers (manage the tools your agents can call) ----
@@ -638,25 +763,30 @@ def dispatch_agent(
 
 @router.get("/mcp", response_model=list[MCPServerOut])
 def list_mcp_servers(db: DbDep, workspace_id: WorkspaceId) -> list[MCPServer]:
-    return (
+    rows = (
         db.query(MCPServer)
         .filter(MCPServer.workspace_id == workspace_id)
         .order_by(MCPServer.id)
         .all()
     )
+    return [_mcp_out(row) for row in rows]
 
 
 @router.post("/mcp", response_model=MCPServerOut, status_code=201)
 def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
-    """Register an MCP server (http/sse/stdio). Status is mocked in demo mode."""
+    """Register and probe an MCP server; status is never optimistic."""
+    from app.services.mcp_registry import check_transport
+
+    status, discovered = check_transport(body.transport, body.endpoint, body.config_json)
+    config = {**(body.config_json or {}), **discovered}
     server = MCPServer(
         workspace_id=workspace_id,
         name=body.name,
         transport=body.transport,
         endpoint=body.endpoint,
         enabled=body.enabled,
-        config_json=body.config_json,
-        status="connected" if body.enabled else "disabled",
+        config_json=config,
+        status="disabled" if not body.enabled else status,
     )
     db.add(server)
     # audit before commit so the log row joins the same transaction
@@ -670,16 +800,23 @@ def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: Workspac
     )
     db.commit()
     db.refresh(server)
-    return server
+    return _mcp_out(server)
 
 
 @router.post("/mcp/{server_id}/toggle", response_model=MCPServerOut)
 def toggle_mcp_server(server_id: int, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
+    from app.services.mcp_registry import check_transport
+
     server = db.get(MCPServer, server_id)
     if server is None or server.workspace_id != workspace_id:
         raise HTTPException(status_code=404, detail="MCP server not found")
     server.enabled = not server.enabled
-    server.status = "connected" if server.enabled else "disabled"
+    server.status = "disabled"
+    if server.enabled:
+        server.status, discovered = check_transport(
+            server.transport, server.endpoint, server.config_json
+        )
+        server.config_json = {**(server.config_json or {}), **discovered}
     server.last_checked_at = _now()
     _audit(
         db,
@@ -691,7 +828,7 @@ def toggle_mcp_server(server_id: int, db: DbDep, workspace_id: WorkspaceId) -> M
     )
     db.commit()
     db.refresh(server)
-    return server
+    return _mcp_out(server)
 
 
 # ---- External integrations (ads/analytics/crm/creative providers) ----
@@ -718,10 +855,10 @@ def register_integration(
         category=body.category,
         provider=body.provider,
         endpoint=body.endpoint,
-        api_key_encrypted=body.api_key,
+        api_key_encrypted=encrypt_secret(body.api_key) if body.api_key else None,
         enabled=True,
         config_json=body.config_json,
-        status="connected",
+        status="configured" if body.api_key or body.endpoint else "unconfigured",
     )
     db.add(integration)
     # audit before commit so the log row joins the same transaction
@@ -735,7 +872,7 @@ def register_integration(
     )
     db.commit()
     db.refresh(integration)
-    return integration
+    return _integration_out(integration)
 
 
 @router.post("/integrations/{integration_id}/toggle", response_model=IntegrationOut)
@@ -792,9 +929,43 @@ def call_tool(body: ToolCallRequest, db: DbDep, workspace_id: WorkspaceId) -> di
 
 
 @router.post("/agents/dispatch-all")
-def dispatch_all_agents(db: DbDep, workspace_id: WorkspaceId) -> dict:
-    """Set last_run_at on every connected agent and report who was dispatched."""
-    return OrchestratorService.dispatch_all_agents(workspace_id, db)
+def dispatch_all_agents(
+    db: DbDep,
+    workspace_id: WorkspaceId,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+) -> dict:
+    """Queue durable dispatch jobs for every connected agent."""
+    from app.services.commanding import begin_command, command_payload, finish_command
+
+    command, created = begin_command(
+        db,
+        workspace_id,
+        "agents.dispatch_all",
+        idempotency_key=idempotency_key,
+        request={},
+    )
+    if not created:
+        return command.response_json or {**command_payload(command), "status": "running"}
+    agents = (
+        db.query(ConnectedAgent)
+        .filter(ConnectedAgent.workspace_id == workspace_id)
+        .order_by(ConnectedAgent.id)
+        .all()
+    )
+    jobs = []
+    for agent in agents:
+        agent.last_run_at = _now()
+        jobs.append(dispatch_job(db, agent, workspace_id, {}, command_id=command.id))
+    result = {
+        **command_payload(command),
+        "dispatched_agents": [agent.name for agent in agents],
+        "count": len(agents),
+        "jobs": [{"job_id": job.id, "status": job.status} for job in jobs],
+        "called_at": _now().isoformat(),
+    }
+    finish_command(db, command, status="completed", response=result)
+    db.commit()
+    return result
 
 
 # ---- Measurement: iROAS / creatives / anomalies / optimizer / incrementality ----
