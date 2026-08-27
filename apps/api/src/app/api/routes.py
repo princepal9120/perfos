@@ -10,9 +10,15 @@ from app.agents.orchestrator import run_analysis
 from app.agents.policy import evaluate as evaluate_policy
 from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
-from app.core.deps import get_current_workspace
+from app.core.deps import get_current_workspace, require_scope
 from app.core.security import create_token as sign_token
-from app.core.security import decrypt_secret, encrypt_secret, verify_workspace
+from app.core.security import (
+    decrypt_secret,
+    encrypt_secret,
+    generate_api_key,
+    hash_key,
+    resolve_api_key,
+)
 from app.models import (
     AdAccount,
     AgentCommand,
@@ -29,6 +35,7 @@ from app.models import (
     Revenue,
     Spend,
     Workspace,
+    WorkspaceApiKey,
 )
 from app.services.audit import log_action
 from app.services.agent_jobs import dispatch_job
@@ -68,6 +75,8 @@ def _actor(workspace_id: int) -> str:
 
 DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
 WorkspaceId: TypeAlias = Annotated[int, Depends(get_current_workspace)]
+DraftWorkspaceId: TypeAlias = Annotated[int, Depends(require_scope("draft"))]
+PublishWorkspaceId: TypeAlias = Annotated[int, Depends(require_scope("publish"))]
 
 
 class _ORMModel(BaseModel):
@@ -85,11 +94,34 @@ class TokenOut(BaseModel):
     access_token: str
     token_type: str
     workspace_id: int
+    scope: str = "publish"
 
 
 class SessionOut(BaseModel):
     authenticated: bool = True
     workspace_id: int
+    scope: str = "publish"
+
+
+class ApiKeyOut(_ORMModel):
+    id: int
+    name: str
+    scope: str
+    prefix: str
+    revoked: bool = False
+    created_at: datetime | None = None
+    last_used_at: datetime | None = None
+
+
+class ApiKeyCreate(BaseModel):
+    name: str = "default"
+    scope: Literal["read", "draft", "publish"] = "read"
+
+
+class ApiKeyCreated(ApiKeyOut):
+    """Carries the plaintext key. Returned once, at creation, and never again."""
+
+    api_key: str
 
 
 class WorkspaceOut(_ORMModel):
@@ -346,7 +378,7 @@ def _audit(
     )
 
 
-@router.get("/health")
+@router.get("/health", tags=["health"], summary="Health check")
 def health(db: DbDep) -> dict:
     try:
         db.execute(text("SELECT 1"))
@@ -355,7 +387,7 @@ def health(db: DbDep) -> dict:
     return {"status": "ok"}
 
 
-@router.post("/auth/token", response_model=TokenOut)
+@router.post("/auth/token", response_model=TokenOut, tags=["auth"], summary="Exchange API key for bearer token")
 def create_token(body: TokenRequest, db: DbDep) -> TokenOut:
     if not body.api_key:
         raise HTTPException(status_code=401, detail="api_key required")
@@ -367,16 +399,18 @@ def create_token(body: TokenRequest, db: DbDep) -> TokenOut:
         workspace = query.filter(Workspace.name == body.workspace).first()
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
-    if not verify_workspace(body.api_key, str(workspace.id)):
+    scope = resolve_api_key(body.api_key, str(workspace.id))
+    if not scope:
         raise HTTPException(status_code=401, detail="invalid api_key")
     return TokenOut(
-        access_token=sign_token(str(workspace.id)),
+        access_token=sign_token(str(workspace.id), scope),
         token_type="bearer",
         workspace_id=workspace.id,
+        scope=scope,
     )
 
 
-@router.post("/auth/session", response_model=SessionOut)
+@router.post("/auth/session", response_model=SessionOut, tags=["auth"], summary="Exchange API key for HttpOnly session cookie")
 def create_session(body: TokenRequest, response: Response, db: DbDep) -> SessionOut:
     """Exchange a credential once for an HttpOnly browser session cookie.
 
@@ -393,13 +427,14 @@ def create_session(body: TokenRequest, response: Response, db: DbDep) -> Session
         workspace = query.filter(Workspace.name == body.workspace).first()
     if workspace is None:
         raise HTTPException(status_code=404, detail="Workspace not found")
-    if not verify_workspace(body.api_key, str(workspace.id)):
+    scope = resolve_api_key(body.api_key, str(workspace.id))
+    if not scope:
         raise HTTPException(status_code=401, detail="invalid api_key")
     from app.core.config import settings
 
     response.set_cookie(
         "perfos_session",
-        sign_token(str(workspace.id)),
+        sign_token(str(workspace.id), scope),
         httponly=True,
         secure=settings.SECURE_COOKIES,
         samesite="lax",
@@ -409,20 +444,79 @@ def create_session(body: TokenRequest, response: Response, db: DbDep) -> Session
     return SessionOut(workspace_id=workspace.id)
 
 
-@router.delete("/auth/session", response_model=dict)
+@router.delete("/auth/session", response_model=dict, tags=["auth"], summary="Clear session cookie")
 def delete_session(response: Response) -> dict:
     response.delete_cookie("perfos_session", path="/")
     return {"authenticated": False}
 
 
-@router.get("/workspaces", response_model=list[WorkspaceOut])
+@router.get("/auth/session", response_model=SessionOut, tags=["auth"], summary="Inspect browser session")
+def read_session(db: DbDep, perfos_session: str | None = Cookie(default=None)) -> SessionOut:
+    """Return session metadata without exposing the signed token to JavaScript."""
+    from app.core.security import verify_token_scoped
+
+    resolved = verify_token_scoped(perfos_session)
+    if (
+        not resolved
+        or not resolved[0].isdigit()
+        or db.get(Workspace, int(resolved[0])) is None
+    ):
+        raise HTTPException(status_code=401, detail="browser session required")
+    return SessionOut(workspace_id=int(resolved[0]), scope=resolved[1])
+
+
+@router.get("/api-keys", response_model=list[ApiKeyOut], tags=["auth"], summary="List workspace API keys")
+def list_api_keys(db: DbDep, workspace_id: WorkspaceId) -> list[WorkspaceApiKey]:
+    return (
+        db.query(WorkspaceApiKey)
+        .filter(WorkspaceApiKey.workspace_id == workspace_id)
+        .order_by(WorkspaceApiKey.id)
+        .all()
+    )
+
+
+@router.post("/api-keys", response_model=ApiKeyCreated, status_code=201, tags=["auth"], summary="Mint a scoped API key")
+def create_api_key(body: ApiKeyCreate, db: DbDep, workspace_id: PublishWorkspaceId) -> ApiKeyCreated:
+    """Minting is publish-scoped so a read key cannot escalate itself."""
+    plain = generate_api_key()
+    record = WorkspaceApiKey(
+        workspace_id=workspace_id,
+        name=body.name,
+        key_hash=hash_key(plain),
+        scope=body.scope,
+        prefix=plain[:11],
+    )
+    db.add(record)
+    db.commit()
+    db.refresh(record)
+    _audit(db, workspace_id, _actor(workspace_id), "api_key.create", record.name, {"scope": record.scope})
+    return ApiKeyCreated(**ApiKeyOut.model_validate(record).model_dump(), api_key=plain)
+
+
+@router.delete("/api-keys/{key_id}", response_model=ApiKeyOut, tags=["auth"], summary="Revoke an API key")
+def revoke_api_key(key_id: int, db: DbDep, workspace_id: PublishWorkspaceId) -> WorkspaceApiKey:
+    record = (
+        db.query(WorkspaceApiKey)
+        .filter(WorkspaceApiKey.id == key_id, WorkspaceApiKey.workspace_id == workspace_id)
+        .first()
+    )
+    if record is None:
+        raise HTTPException(status_code=404, detail="API key not found")
+    record.revoked = True
+    db.commit()
+    db.refresh(record)
+    _audit(db, workspace_id, _actor(workspace_id), "api_key.revoke", record.name, {"scope": record.scope})
+    return record
+
+
+@router.get("/workspaces", response_model=list[WorkspaceOut], tags=["workspaces"], summary="List workspaces")
 def list_workspaces(db: DbDep, workspace_id: WorkspaceId) -> list[Workspace]:
     return (
         db.query(Workspace).filter(Workspace.id == workspace_id).order_by(Workspace.id).all()
     )
 
 
-@router.get("/accounts", response_model=list[AccountOut])
+@router.get("/accounts", response_model=list[AccountOut], tags=["accounts"], summary="List ad accounts")
 def list_accounts(db: DbDep, workspace_id: WorkspaceId) -> list[AdAccount]:
     return (
         db.query(AdAccount)
@@ -432,7 +526,7 @@ def list_accounts(db: DbDep, workspace_id: WorkspaceId) -> list[AdAccount]:
     )
 
 
-@router.post("/accounts", response_model=AccountOut, status_code=201)
+@router.post("/accounts", response_model=AccountOut, status_code=201, tags=["accounts"], summary="Connect an ad account")
 def connect_account(body: AccountCreate, db: DbDep, workspace_id: WorkspaceId) -> AdAccount:
     account = AdAccount(
         workspace_id=workspace_id,
@@ -446,7 +540,7 @@ def connect_account(body: AccountCreate, db: DbDep, workspace_id: WorkspaceId) -
     return account
 
 
-@router.get("/reconcile", response_model=ReconcileOut)
+@router.get("/reconcile", response_model=ReconcileOut, tags=["analytics"], summary="Revenue reconciliation across channels")
 def get_reconcile(db: DbDep, workspace_id: WorkspaceId) -> dict:
     ws = workspace_id
     spend_rows = (
@@ -471,19 +565,19 @@ def get_reconcile(db: DbDep, workspace_id: WorkspaceId) -> dict:
     return run_reconcile(spends, revenues)
 
 
-@router.get("/attribution")
+@router.get("/attribution", tags=["analytics"], summary="Attribution analysis")
 def get_attribution(workspace_id: WorkspaceId) -> dict:
     from app.agents.orchestrator import run_analysis
 
     return run_analysis(workspace_id)["attribution"]
 
 
-@router.get("/briefing", response_model=BriefingOut)
+@router.get("/briefing", response_model=BriefingOut, tags=["analytics"], summary="Build campaign briefing")
 def get_briefing(db: DbDep, workspace_id: WorkspaceId) -> dict:
     return build_briefing(workspace_id)
 
 
-@router.get("/recommendations", response_model=list[RecommendationOut])
+@router.get("/recommendations", response_model=list[RecommendationOut], tags=["recommendations"], summary="List recommendations")
 def list_recommendations(db: DbDep, workspace_id: WorkspaceId) -> list[Recommendation]:
     return (
         db.query(Recommendation)
@@ -497,6 +591,8 @@ def list_recommendations(db: DbDep, workspace_id: WorkspaceId) -> list[Recommend
     "/recommendations/generate",
     response_model=list[RecommendationOut],
     status_code=201,
+    tags=["recommendations"],
+    summary="Generate fresh recommendations",
 )
 def generate_recommendations(db: DbDep, workspace_id: WorkspaceId) -> list[Recommendation]:
     """Run the analysis pipeline and persist fresh recommendations for the workspace.
@@ -532,9 +628,13 @@ def generate_recommendations(db: DbDep, workspace_id: WorkspaceId) -> list[Recom
     return persisted
 
 
-@router.post("/recommendations/{recommendation_id}/approve", response_model=DecisionResult)
+@router.post("/recommendations/{recommendation_id}/approve", response_model=DecisionResult, tags=["recommendations"], summary="Approve a recommendation (policy-gated)")
 def approve_recommendation(
-    recommendation_id: int, body: DecisionRequest, db: DbDep, workspace_id: WorkspaceId
+    recommendation_id: int,
+    body: DecisionRequest,
+    db: DbDep,
+    workspace_id: PublishWorkspaceId,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> DecisionResult:
     rec = db.get(Recommendation, recommendation_id)
     if rec is None or rec.workspace_id != workspace_id:
@@ -543,26 +643,44 @@ def approve_recommendation(
         raise HTTPException(
             status_code=409, detail=f"Recommendation is {rec.status}, not pending"
         )
+    from app.services.commanding import begin_command, finish_command, record_event
+
+    command, created = begin_command(
+        db,
+        workspace_id,
+        "recommendations.approve",
+        idempotency_key=idempotency_key,
+        request={"recommendation_id": recommendation_id, **body.model_dump()},
+        actor=body.actor,
+    )
+    if not created:
+        if command.response_json is not None:
+            return DecisionResult.model_validate(command.response_json)
+        raise HTTPException(status_code=409, detail="command is already running")
     decision = evaluate_policy(rec, workspace_id=workspace_id)
     outcome = decision.get("decision", "block")
     reasons = decision.get("reasons", [])
     if outcome == "block":
-        return DecisionResult(
+        result = DecisionResult(
             recommendation_id=rec.id,
             status=rec.status,
             decision="block",
             reasons=reasons,
         )
+        finish_command(db, command, status="completed", response=result.model_dump())
+        db.commit()
+        return result
     db.add(
         Approval(
             recommendation_id=rec.id,
             actor=body.actor,
             decision="approved",
             note=body.note,
+            command_id=command.id,
         )
     )
     if outcome == "allow":
-        execute_recommendation(rec, workspace_id, session=db)
+        execute_recommendation(rec, workspace_id, session=db, command_id=command.id)
     _audit(
         db,
         workspace_id,
@@ -570,20 +688,36 @@ def approve_recommendation(
         f"recommendation.{outcome}",
         f"recommendation:{rec.id}",
         {"reasons": reasons},
+        command_id=command.id,
     )
-    db.commit()
-    db.refresh(rec)
-    return DecisionResult(
+    result = DecisionResult(
         recommendation_id=rec.id,
         status=rec.status,
         decision=outcome,
         reasons=reasons,
     )
+    finish_command(db, command, status="completed", response=result.model_dump())
+    record_event(
+        db,
+        workspace_id,
+        "recommendation.approval_recorded",
+        command_id=command.id,
+        stage="approval",
+        actor=body.actor,
+        payload={"recommendation_id": rec.id, "decision": outcome},
+    )
+    db.commit()
+    db.refresh(rec)
+    return result
 
 
-@router.post("/recommendations/{recommendation_id}/reject", response_model=DecisionResult)
+@router.post("/recommendations/{recommendation_id}/reject", response_model=DecisionResult, tags=["recommendations"], summary="Reject a recommendation")
 def reject_recommendation(
-    recommendation_id: int, body: DecisionRequest, db: DbDep, workspace_id: WorkspaceId
+    recommendation_id: int,
+    body: DecisionRequest,
+    db: DbDep,
+    workspace_id: DraftWorkspaceId,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> DecisionResult:
     rec = db.get(Recommendation, recommendation_id)
     if rec is None or rec.workspace_id != workspace_id:
@@ -592,6 +726,20 @@ def reject_recommendation(
         raise HTTPException(
             status_code=409, detail=f"Recommendation is {rec.status}, not pending"
         )
+    from app.services.commanding import begin_command, finish_command, record_event
+
+    command, created = begin_command(
+        db,
+        workspace_id,
+        "recommendations.reject",
+        idempotency_key=idempotency_key,
+        request={"recommendation_id": recommendation_id, **body.model_dump()},
+        actor=body.actor,
+    )
+    if not created:
+        if command.response_json is not None:
+            return DecisionResult.model_validate(command.response_json)
+        raise HTTPException(status_code=409, detail="command is already running")
     rec.status = "rejected"
     db.add(
         Approval(
@@ -599,6 +747,7 @@ def reject_recommendation(
             actor=body.actor,
             decision="rejected",
             note=body.note,
+            command_id=command.id,
         )
     )
     _audit(
@@ -608,18 +757,30 @@ def reject_recommendation(
         "recommendation.rejected",
         f"recommendation:{rec.id}",
         {"note": body.note},
+        command_id=command.id,
     )
-    db.commit()
-    db.refresh(rec)
-    return DecisionResult(
+    result = DecisionResult(
         recommendation_id=rec.id,
         status=rec.status,
         decision="rejected",
         reasons=[],
     )
+    finish_command(db, command, status="completed", response=result.model_dump())
+    record_event(
+        db,
+        workspace_id,
+        "recommendation.rejected",
+        command_id=command.id,
+        stage="approval",
+        actor=body.actor,
+        payload={"recommendation_id": rec.id},
+    )
+    db.commit()
+    db.refresh(rec)
+    return result
 
 
-@router.get("/experiments", response_model=list[ExperimentOut])
+@router.get("/experiments", response_model=list[ExperimentOut], tags=["experiments"], summary="List experiments")
 def list_experiments(db: DbDep, workspace_id: WorkspaceId) -> list[Experiment]:
     return (
         db.query(Experiment)
@@ -629,7 +790,7 @@ def list_experiments(db: DbDep, workspace_id: WorkspaceId) -> list[Experiment]:
     )
 
 
-@router.post("/experiments", response_model=ExperimentOut, status_code=201)
+@router.post("/experiments", response_model=ExperimentOut, status_code=201, tags=["experiments"], summary="Create an experiment")
 def create_experiment(body: ExperimentCreate, db: DbDep, workspace_id: WorkspaceId) -> Experiment:
     experiment = Experiment(
         workspace_id=workspace_id,
@@ -644,7 +805,7 @@ def create_experiment(body: ExperimentCreate, db: DbDep, workspace_id: Workspace
     return experiment
 
 
-@router.get("/outcomes", response_model=list[OutcomeOut])
+@router.get("/outcomes", response_model=list[OutcomeOut], tags=["experiments"], summary="List experiment outcomes")
 def list_outcomes(db: DbDep, workspace_id: WorkspaceId) -> list[Outcome]:
     return (
         db.query(Outcome)
@@ -655,7 +816,7 @@ def list_outcomes(db: DbDep, workspace_id: WorkspaceId) -> list[Outcome]:
     )
 
 
-@router.get("/agents", response_model=list[AgentOut])
+@router.get("/agents", response_model=list[AgentOut], tags=["agents"], summary="List connected agents")
 def list_agents(db: DbDep, workspace_id: WorkspaceId) -> list[ConnectedAgent]:
     return (
         db.query(ConnectedAgent)
@@ -665,7 +826,7 @@ def list_agents(db: DbDep, workspace_id: WorkspaceId) -> list[ConnectedAgent]:
     )
 
 
-@router.post("/agents", response_model=AgentOut, status_code=201)
+@router.post("/agents", response_model=AgentOut, status_code=201, tags=["agents"], summary="Register an agent")
 def register_agent(body: AgentCreate, db: DbDep, workspace_id: WorkspaceId) -> ConnectedAgent:
     agent = ConnectedAgent(
         workspace_id=workspace_id,
@@ -679,7 +840,7 @@ def register_agent(body: AgentCreate, db: DbDep, workspace_id: WorkspaceId) -> C
     return agent
 
 
-@router.post("/agents/{agent_id}/dispatch", response_model=AgentOut)
+@router.post("/agents/{agent_id}/dispatch", response_model=AgentOut, tags=["agents"], summary="Dispatch an agent job")
 def dispatch_agent(
     agent_id: int,
     body: DispatchRequest,
@@ -733,7 +894,7 @@ def dispatch_agent(
     return response
 
 
-@router.get("/agents/jobs")
+@router.get("/agents/jobs", tags=["agents"], summary="List agent jobs")
 def list_agent_jobs(db: DbDep, workspace_id: WorkspaceId, limit: int = 100) -> list[dict]:
     jobs = (
         db.query(AgentJob)
@@ -761,7 +922,7 @@ def list_agent_jobs(db: DbDep, workspace_id: WorkspaceId, limit: int = 100) -> l
 # ---- MCP servers (manage the tools your agents can call) ----
 
 
-@router.get("/mcp", response_model=list[MCPServerOut])
+@router.get("/mcp", response_model=list[MCPServerOut], tags=["mcp"], summary="List MCP servers")
 def list_mcp_servers(db: DbDep, workspace_id: WorkspaceId) -> list[MCPServer]:
     rows = (
         db.query(MCPServer)
@@ -772,7 +933,7 @@ def list_mcp_servers(db: DbDep, workspace_id: WorkspaceId) -> list[MCPServer]:
     return [_mcp_out(row) for row in rows]
 
 
-@router.post("/mcp", response_model=MCPServerOut, status_code=201)
+@router.post("/mcp", response_model=MCPServerOut, status_code=201, tags=["mcp"], summary="Register an MCP server")
 def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
     """Register and probe an MCP server; status is never optimistic."""
     from app.services.mcp_registry import check_transport
@@ -803,7 +964,7 @@ def register_mcp_server(body: MCPServerCreate, db: DbDep, workspace_id: Workspac
     return _mcp_out(server)
 
 
-@router.post("/mcp/{server_id}/toggle", response_model=MCPServerOut)
+@router.post("/mcp/{server_id}/toggle", response_model=MCPServerOut, tags=["mcp"], summary="Toggle MCP server enabled/disabled")
 def toggle_mcp_server(server_id: int, db: DbDep, workspace_id: WorkspaceId) -> MCPServer:
     from app.services.mcp_registry import check_transport
 
@@ -834,7 +995,7 @@ def toggle_mcp_server(server_id: int, db: DbDep, workspace_id: WorkspaceId) -> M
 # ---- External integrations (ads/analytics/crm/creative providers) ----
 
 
-@router.get("/integrations", response_model=list[IntegrationOut])
+@router.get("/integrations", response_model=list[IntegrationOut], tags=["integrations"], summary="List integrations")
 def list_integrations(db: DbDep, workspace_id: WorkspaceId) -> list[ExternalIntegration]:
     return (
         db.query(ExternalIntegration)
@@ -844,7 +1005,7 @@ def list_integrations(db: DbDep, workspace_id: WorkspaceId) -> list[ExternalInte
     )
 
 
-@router.post("/integrations", response_model=IntegrationOut, status_code=201)
+@router.post("/integrations", response_model=IntegrationOut, status_code=201, tags=["integrations"], summary="Register an integration")
 def register_integration(
     body: IntegrationCreate, db: DbDep, workspace_id: WorkspaceId
 ) -> ExternalIntegration:
@@ -875,7 +1036,7 @@ def register_integration(
     return _integration_out(integration)
 
 
-@router.post("/integrations/{integration_id}/toggle", response_model=IntegrationOut)
+@router.post("/integrations/{integration_id}/toggle", response_model=IntegrationOut, tags=["integrations"], summary="Toggle integration enabled/disabled")
 def toggle_integration(
     integration_id: int, db: DbDep, workspace_id: WorkspaceId
 ) -> ExternalIntegration:
@@ -906,7 +1067,7 @@ class ToolCallRequest(BaseModel):
     params: dict = {}
 
 
-@router.get("/capabilities")
+@router.get("/capabilities", tags=["command-center"], summary="Describe agent capabilities contract")
 def agent_capabilities(workspace_id: WorkspaceId) -> dict:
     """Describe the supported REST, CLI, and MCP surfaces without exposing secrets."""
     from app.agent_contract import build_agent_contract
@@ -914,21 +1075,50 @@ def agent_capabilities(workspace_id: WorkspaceId) -> dict:
     return build_agent_contract(workspace_id)
 
 
-@router.get("/pipeline")
+@router.get("/pipeline", tags=["command-center"], summary="Run full analysis pipeline")
 def run_full_pipeline(db: DbDep, workspace_id: WorkspaceId) -> dict:
     """Run reconcile -> analysis -> recommend and gather stack statuses."""
     return OrchestratorService.run_full_pipeline(workspace_id, db)
 
 
-@router.post("/tools/call")
-def call_tool(body: ToolCallRequest, db: DbDep, workspace_id: WorkspaceId) -> dict:
+@router.post("/tools/call", tags=["command-center"], summary="Call an integration tool")
+def call_tool(
+    body: ToolCallRequest,
+    db: DbDep,
+    workspace_id: WorkspaceId,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+) -> dict:
     """Call a supported integration tool (mock backends in demo mode)."""
     if not body.tool_name.strip():
         raise HTTPException(status_code=400, detail="tool_name is required")
-    return OrchestratorService.call_tool(workspace_id, body.tool_name.strip(), body.params)
+    from app.services.commanding import begin_command, command_payload, finish_command
+
+    command, created = begin_command(
+        db,
+        workspace_id,
+        "tools.call",
+        idempotency_key=idempotency_key,
+        request=body.model_dump(),
+    )
+    if not created:
+        return command.response_json or {**command_payload(command), "status": "running"}
+    result = OrchestratorService.call_tool(workspace_id, body.tool_name.strip(), body.params)
+    result = {**result, **command_payload(command)}
+    finish_command(db, command, status="completed", response=result)
+    _audit(
+        db,
+        workspace_id,
+        "agent",
+        "tool.call",
+        body.tool_name.strip(),
+        {"params": body.params, "status": result.get("status")},
+        command_id=command.id,
+    )
+    db.commit()
+    return result
 
 
-@router.post("/agents/dispatch-all")
+@router.post("/agents/dispatch-all", tags=["command-center"], summary="Dispatch all agents")
 def dispatch_all_agents(
     db: DbDep,
     workspace_id: WorkspaceId,
@@ -1066,13 +1256,13 @@ class IncrementalityOut(_ORMModel):
     completed_at: datetime | None = None
 
 
-@router.get("/iroas", response_model=list[IroasRow])
+@router.get("/iroas", response_model=list[IroasRow], tags=["analytics"], summary="Incrementality-corrected ROAS")
 def get_iroas(db: DbDep, workspace_id: WorkspaceId) -> list[IroasRow]:
     """Incrementality-corrected ROAS per channel (deterministic mock calibration)."""
     return [IroasRow(**row) for row in compute_iroas(workspace_id, db)]
 
 
-@router.get("/creatives", response_model=list[CreativeOut])
+@router.get("/creatives", response_model=list[CreativeOut], tags=["analytics"], summary="List creative performance")
 def list_creatives(db: DbDep, workspace_id: WorkspaceId) -> list[CreativePerformance]:
     return (
         db.query(CreativePerformance)
@@ -1082,13 +1272,13 @@ def list_creatives(db: DbDep, workspace_id: WorkspaceId) -> list[CreativePerform
     )
 
 
-@router.get("/anomalies", response_model=list[AnomalyOut])
-def list_anomalies() -> list[AnomalyOut]:
+@router.get("/anomalies", response_model=list[AnomalyOut], tags=["analytics"], summary="List anomaly alerts")
+def list_anomalies(workspace_id: WorkspaceId) -> list[AnomalyOut]:
     """Deterministic mock anomaly feed (spend/CPA/CTR deviations)."""
     return [AnomalyOut(**row) for row in ANOMALIES_MOCK]
 
 
-@router.post("/optimizer/reallocate", response_model=OptimizerPlan)
+@router.post("/optimizer/reallocate", response_model=OptimizerPlan, tags=["optimizer"], summary="Generate budget reallocation plan")
 def run_optimizer(db: DbDep, workspace_id: WorkspaceId) -> OptimizerPlan:
     """Deterministic what-if reallocation plan. Plan only; nothing executes."""
     return OptimizerPlan(**recommend_reallocation(workspace_id, db))
@@ -1108,7 +1298,7 @@ def _incrementality_or_404(db: Session, workspace_id: int, test_id: int) -> Incr
     return test
 
 
-@router.get("/incrementality", response_model=list[IncrementalityOut])
+@router.get("/incrementality", response_model=list[IncrementalityOut], tags=["incrementality"], summary="List incrementality tests")
 def list_incrementality(db: DbDep, workspace_id: WorkspaceId) -> list[IncrementalityTest]:
     return (
         db.query(IncrementalityTest)
@@ -1118,7 +1308,7 @@ def list_incrementality(db: DbDep, workspace_id: WorkspaceId) -> list[Incrementa
     )
 
 
-@router.post("/incrementality", response_model=IncrementalityOut, status_code=201)
+@router.post("/incrementality", response_model=IncrementalityOut, status_code=201, tags=["incrementality"], summary="Create incrementality test")
 def create_incrementality_test(
     body: IncrementalityCreate, db: DbDep, workspace_id: WorkspaceId
 ) -> IncrementalityTest:
@@ -1140,7 +1330,7 @@ def create_incrementality_test(
     return test
 
 
-@router.post("/incrementality/{test_id}/run", response_model=IncrementalityOut)
+@router.post("/incrementality/{test_id}/run", response_model=IncrementalityOut, tags=["incrementality"], summary="Run incrementality test")
 def run_incrementality_test(
     test_id: int, db: DbDep, workspace_id: WorkspaceId
 ) -> IncrementalityTest:
@@ -1164,7 +1354,7 @@ def run_incrementality_test(
     return test
 
 
-@router.post("/incrementality/{test_id}/complete", response_model=IncrementalityOut)
+@router.post("/incrementality/{test_id}/complete", response_model=IncrementalityOut, tags=["incrementality"], summary="Complete incrementality test")
 def complete_incrementality_test(
     test_id: int, db: DbDep, workspace_id: WorkspaceId
 ) -> IncrementalityTest:
@@ -1217,7 +1407,7 @@ def _fmt_money(v: float) -> str:
     return f"${v:,.0f}"
 
 
-@router.post("/chat", response_model=ChatResponse)
+@router.post("/chat", response_model=ChatResponse, tags=["chat"], summary="Chat with PerfOS agent")
 def chat_agent(body: ChatRequest, db: DbDep, workspace_id: WorkspaceId) -> ChatResponse:
     """Natural-language entry point. Routes intent to the real engine and
     returns a human reply plus any approval-gated actions."""

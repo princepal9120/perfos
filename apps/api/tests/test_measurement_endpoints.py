@@ -78,8 +78,10 @@ def test_creatives_and_anomalies(client, seeded_db, db_session):
     assert by_id["CR-FRESH-002"]["fatigue_score"] < 0.7
 
     # Deterministic anomaly feed.
-    first = client.get("/api/anomalies").json()
-    second = client.get("/api/anomalies").json()
+    auth = {"X-Workspace-Id": str(ws_id), "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY}
+    assert client.get("/api/anomalies").status_code == 401
+    first = client.get("/api/anomalies", headers=auth).json()
+    second = client.get("/api/anomalies", headers=auth).json()
     assert first == second and len(first) >= 1
     assert {"platform", "metric", "severity", "detected_at", "detail"} <= set(first[0])
 

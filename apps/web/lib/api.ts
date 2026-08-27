@@ -5,17 +5,21 @@ import axios from 'axios';
  *
  * Base URL resolution:
  *  - On Cloudflare Pages (and other hosts) use NEXT_PUBLIC_API_URL if set.
- *  - Locally, leave it as "/api" and let next.config.js rewrite to the backend.
+ *  - Locally, reuse the page's own hostname so the SameSite=Lax session cookie
+ *    still counts as same-site (localhost:3000 -> localhost:8000).
  */
+function localApiBase(): string {
+  const host =
+    typeof window !== 'undefined' && window.location.hostname
+      ? window.location.hostname
+      : '127.0.0.1';
+  return `http://${host}:8000/api`;
+}
+
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.length > 0
     ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-    : 'http://127.0.0.1:8000/api';
-
-/** Workspace-scoped routes 401 without this; matches the backend's demo default. */
-const API_KEY =
-  process.env.NEXT_PUBLIC_API_KEY ||
-  (process.env.NODE_ENV === 'development' ? 'perfos-demo-key' : '');
+    : localApiBase();
 
 export const api = axios.create({
   baseURL: API_BASE,
@@ -23,16 +27,12 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'X-Workspace-Id': '1',
-    'X-API-Key': API_KEY,
   },
+  withCredentials: true,
 });
 
 export function setWorkspaceId(id: string | number) {
   api.defaults.headers.common['X-Workspace-Id'] = String(id);
-}
-
-export function setApiKey(key: string) {
-  api.defaults.headers.common['X-API-Key'] = key;
 }
 
 /** Generic GET by absolute or relative app path. */
@@ -76,11 +76,21 @@ export type AgentProvider =
   | 'anthropic';
 export type Risk = 'low' | 'medium' | 'high';
 
+/** Access level granted by a credential, ascending: read < draft < publish. */
+export type Scope = 'read' | 'draft' | 'publish';
+
 /** TokenOut */
 export interface TokenOut {
   access_token: string;
   token_type: string;
   workspace_id: number;
+  scope: Scope;
+}
+
+export interface SessionOut {
+  authenticated: boolean;
+  workspace_id: number;
+  scope: Scope;
 }
 
 /** TokenRequest */
@@ -89,6 +99,19 @@ export interface TokenRequest {
   password?: string;
   workspace_id?: number;
   workspace?: string;
+}
+
+/** Exchange a credential for an HttpOnly browser session; do not persist the key. */
+export async function createBrowserSession(
+  body: TokenRequest,
+): Promise<SessionOut> {
+  const { data } = await api.post<SessionOut>('/auth/session', body);
+  setWorkspaceId(data.workspace_id);
+  return data;
+}
+
+export async function clearBrowserSession(): Promise<void> {
+  await api.delete('/auth/session');
 }
 
 /** WorkspaceOut (created_at has an ORM default) */
@@ -923,9 +946,7 @@ export async function cloneAd(
 }
 
 /** POST /create */
-export async function generateCreative(
-  persona = 'saas',
-): Promise<{
+export async function generateCreative(persona = 'saas'): Promise<{
   persona: string;
   winners_used: number;
   assets: GeneratedAsset[];

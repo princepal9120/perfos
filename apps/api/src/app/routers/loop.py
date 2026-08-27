@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.core.deps import get_current_workspace
+from app.core.deps import get_current_workspace, require_scope
 from app.models import LaunchDraft, LoopRun
 from app.services.audit import log_action
 from app.services.commanding import begin_command, command_payload, finish_command, record_event
@@ -19,6 +19,8 @@ from app.services.commanding import begin_command, command_payload, finish_comma
 router = APIRouter(tags=["lifecycle"], dependencies=[Depends(get_current_workspace)])
 DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
 WorkspaceId: TypeAlias = Annotated[int, Depends(get_current_workspace)]
+DraftWorkspaceId: TypeAlias = Annotated[int, Depends(require_scope("draft"))]
+PublishWorkspaceId: TypeAlias = Annotated[int, Depends(require_scope("publish"))]
 
 
 class LoopRequest(BaseModel):
@@ -31,7 +33,7 @@ def _summary(run: LoopRun) -> dict:
     return run.summary_json or {"run_id": run.id, "status": run.status}
 
 
-@router.post("/loop")
+@router.post("/loop", summary="Run one lifecycle pass: find → score → create → launch → track → double-down")
 async def trigger_loop(
     body: LoopRequest,
     db: DbDep,
@@ -117,7 +119,7 @@ async def trigger_loop(
         raise HTTPException(status_code=503, detail=f"loop failed: {exc}") from exc
 
 
-@router.get("/loop/status")
+@router.get("/loop/status", summary="Last loop run status")
 def get_loop_status(db: DbDep, workspace_id: WorkspaceId) -> dict:
     run = (
         db.query(LoopRun)
@@ -134,11 +136,13 @@ def get_loop_status(db: DbDep, workspace_id: WorkspaceId) -> dict:
             "started_at": run.started_at.isoformat() if run.started_at else None,
             "finished_at": run.finished_at.isoformat() if run.finished_at else None,
         },
+        "finished_at": run.finished_at.isoformat() if run.finished_at else None,
+        "summary": _summary(run),
         **_summary(run),
     }
 
 
-@router.get("/loop/drafts")
+@router.get("/loop/drafts", summary="List launch drafts awaiting approval")
 def list_loop_drafts(db: DbDep, workspace_id: WorkspaceId) -> list[dict]:
     """List durable launch proposals awaiting (or having received) approval."""
     drafts = (
@@ -169,11 +173,11 @@ def _draft_dict(draft: LaunchDraft) -> dict:
     }
 
 
-@router.post("/loop/drafts/{draft_id}/approve")
+@router.post("/loop/drafts/{draft_id}/approve", summary="Approve a launch draft")
 def approve_loop_draft(
     draft_id: str,
     db: DbDep,
-    workspace_id: WorkspaceId,
+    workspace_id: PublishWorkspaceId,
     actor: str = "human",
 ) -> dict:
     draft = (
@@ -213,11 +217,11 @@ def approve_loop_draft(
     return _draft_dict(draft)
 
 
-@router.post("/loop/drafts/{draft_id}/reject")
+@router.post("/loop/drafts/{draft_id}/reject", summary="Reject a launch draft")
 def reject_loop_draft(
     draft_id: str,
     db: DbDep,
-    workspace_id: WorkspaceId,
+    workspace_id: DraftWorkspaceId,
     actor: str = "human",
     reason: str | None = None,
 ) -> dict:
