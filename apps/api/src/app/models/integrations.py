@@ -37,6 +37,8 @@ class AuditLog(Base):
     action: Mapped[str] = mapped_column(String(64))
     target: Mapped[str] = mapped_column(String(255))
     payload_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    command_id: Mapped[str | None] = mapped_column(String(64), index=True, default=None)
+    correlation_id: Mapped[str | None] = mapped_column(String(64), index=True, default=None)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
 
 

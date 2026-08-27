@@ -7,8 +7,6 @@ deterministically from the launch id, so runs are stable and testable.
 
 from __future__ import annotations
 
-from typing import Any
-
 __all__ = ["track_stage"]
 
 

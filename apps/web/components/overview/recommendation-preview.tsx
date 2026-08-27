@@ -1,12 +1,18 @@
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { RecommendationItem } from "@/components/overview/briefing";
+import Link from 'next/link';
+import type { RecommendationItem } from '@/components/overview/briefing';
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
-const riskVariant: Record<string, "success" | "warning" | "destructive"> = {
-  low: "success",
-  medium: "warning",
-  high: "destructive",
+const riskVariant: Record<string, 'success' | 'warning' | 'destructive'> = {
+  low: 'success',
+  medium: 'warning',
+  high: 'destructive',
 };
 
 export function RecommendationPreview({
@@ -19,15 +25,22 @@ export function RecommendationPreview({
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div>
           <CardTitle>Recommendations</CardTitle>
-          <CardDescription>Top actions from today&apos;s analysis</CardDescription>
+          <CardDescription>
+            Top actions from today&apos;s analysis
+          </CardDescription>
         </div>
-        <Link href="/recommendations" className="text-xs font-medium text-muted-foreground hover:text-foreground dark:text-white transition-colors">
+        <Link
+          href="/recommendations"
+          className="text-xs font-medium text-muted-foreground hover:text-foreground dark:text-white transition-colors"
+        >
           View all
         </Link>
       </CardHeader>
       <CardContent className="divide-y divide-white/6">
         {recommendations.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No recommendations yet.</p>
+          <p className="text-xs text-muted-foreground">
+            No recommendations yet.
+          </p>
         ) : (
           recommendations.map((rec) => (
             <div
@@ -37,7 +50,7 @@ export function RecommendationPreview({
               <div className="min-w-0 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="rounded border border-border bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {rec.type.replace(/_/g, " ")}
+                    {rec.type.replace(/_/g, ' ')}
                   </span>
                   <p className="text-xs font-medium text-foreground">
                     {rec.reason}
@@ -55,7 +68,9 @@ export function RecommendationPreview({
                     {Math.round(rec.confidence)}%
                   </span>
                 )}
-                <Badge variant={riskVariant[rec.risk] ?? "warning"}>{rec.risk}</Badge>
+                <Badge variant={riskVariant[rec.risk] ?? 'warning'}>
+                  {rec.risk}
+                </Badge>
               </div>
             </div>
           ))

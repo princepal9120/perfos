@@ -1,11 +1,14 @@
-"use client";
-import Link from "next/link";
+'use client';
+import Link from 'next/link';
 
 export default function ChatGptIntegrationPage() {
   return (
     <div className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       <div className="space-y-4">
-        <Link href="/integrations" className="text-xs text-emerald-400 hover:underline">
+        <Link
+          href="/integrations"
+          className="text-xs text-emerald-400 hover:underline"
+        >
           ← Back to All Integrations
         </Link>
         <h1 className="text-4xl font-display font-bold text-foreground dark:text-white tracking-tight">
@@ -21,7 +24,8 @@ export default function ChatGptIntegrationPage() {
           Custom GPT & API Key Setup
         </h2>
         <p className="text-xs text-muted-foreground">
-          Use our official AdKit GPT in the GPT Store or connect the AdKit OpenAPI schema directly to your Custom GPT actions.
+          Use our official AdKit GPT in the GPT Store or connect the AdKit
+          OpenAPI schema directly to your Custom GPT actions.
         </p>
       </div>
 

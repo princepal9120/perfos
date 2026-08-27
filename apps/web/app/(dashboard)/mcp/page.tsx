@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -18,35 +18,35 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   getMcpServers,
+  type MCPServer,
+  type MCPServerCreate,
   registerMcpServer,
   setWorkspaceId,
   toggleMcpServer,
-  type MCPServer,
-  type MCPServerCreate,
-} from "@/lib/api";
+} from '@/lib/api';
 
-const TRANSPORTS: { id: MCPServerCreate["transport"]; label: string }[] = [
-  { id: "http", label: "HTTP" },
-  { id: "sse", label: "SSE" },
-  { id: "stdio", label: "Stdio" },
+const TRANSPORTS: { id: MCPServerCreate['transport']; label: string }[] = [
+  { id: 'http', label: 'HTTP' },
+  { id: 'sse', label: 'SSE' },
+  { id: 'stdio', label: 'Stdio' },
 ];
 
 const inputCls =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 
 function TransportChip({ transport }: { transport: string }) {
   return (
     <span className="inline-flex items-center gap-2 font-medium">
       <span
         className={`h-2 w-2 shrink-0 rounded-full ${
-          transport === "http"
-            ? "bg-primary"
-            : transport === "sse"
-              ? "bg-amber-500"
-              : "bg-accent-blue"
+          transport === 'http'
+            ? 'bg-primary'
+            : transport === 'sse'
+              ? 'bg-amber-500'
+              : 'bg-accent-blue'
         }`}
         aria-hidden="true"
       />
@@ -57,13 +57,13 @@ function TransportChip({ transport }: { transport: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const variant =
-    status === "connected"
-      ? "success"
-      : status === "disabled"
-        ? "secondary"
-        : status === "error"
-          ? "destructive"
-          : "warning";
+    status === 'connected'
+      ? 'success'
+      : status === 'disabled'
+        ? 'secondary'
+        : status === 'error'
+          ? 'destructive'
+          : 'warning';
   return <Badge variant={variant}>{status}</Badge>;
 }
 
@@ -71,15 +71,16 @@ export default function McpPage() {
   const [servers, setServers] = useState<MCPServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [transport, setTransport] = useState<MCPServerCreate["transport"]>("http");
-  const [endpoint, setEndpoint] = useState("");
+  const [name, setName] = useState('');
+  const [transport, setTransport] =
+    useState<MCPServerCreate['transport']>('http');
+  const [endpoint, setEndpoint] = useState('');
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.localStorage.getItem("perfos_workspace_id");
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('perfos_workspace_id');
       setWorkspaceId(stored ? Number(stored) || 1 : 1);
     }
   }, []);
@@ -90,7 +91,7 @@ export default function McpPage() {
       setServers(Array.isArray(data) ? data : []);
       setError(null);
     } catch {
-      setError("Could not load MCP servers. Is the API running in mock mode?");
+      setError('Could not load MCP servers. Is the API running in mock mode?');
     } finally {
       setLoading(false);
     }
@@ -104,7 +105,7 @@ export default function McpPage() {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      setError("Server name is required.");
+      setError('Server name is required.');
       return;
     }
     setSaving(true);
@@ -115,11 +116,11 @@ export default function McpPage() {
         transport,
         endpoint: endpoint.trim() || null,
       });
-      setName("");
-      setEndpoint("");
+      setName('');
+      setEndpoint('');
       await load();
     } catch {
-      setError("Failed to register MCP server. Check that the backend is up.");
+      setError('Failed to register MCP server. Check that the backend is up.');
     } finally {
       setSaving(false);
     }
@@ -141,18 +142,21 @@ export default function McpPage() {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="font-display text-lg font-semibold tracking-tight">MCP servers</h2>
+        <h2 className="font-display text-lg font-semibold tracking-tight">
+          MCP servers
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Connect Model Context Protocol servers so your agents can call external
-          tools (analytics, ad platforms, databases) during performance work.
+          Connect Model Context Protocol servers so your agents can call
+          external tools (analytics, ad platforms, databases) during performance
+          work.
         </p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Built-in PerfOS tools (FastMCP):{" "}
+          Built-in PerfOS tools (FastMCP):{' '}
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
             http://127.0.0.1:8000/mcp
-          </code>
-          {" "}
-          or stdio <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
+          </code>{' '}
+          or stdio{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
             python -m app.mcp_server
           </code>
         </p>
@@ -203,7 +207,7 @@ export default function McpPage() {
                   id="mcp-transport"
                   value={transport}
                   onChange={(e) =>
-                    setTransport(e.target.value as MCPServerCreate["transport"])
+                    setTransport(e.target.value as MCPServerCreate['transport'])
                   }
                   className={inputCls}
                 >
@@ -232,7 +236,7 @@ export default function McpPage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={saving} className="w-full">
-                {saving ? "Connecting…" : "Connect server"}
+                {saving ? 'Connecting…' : 'Connect server'}
               </Button>
             </CardFooter>
           </form>
@@ -270,7 +274,9 @@ export default function McpPage() {
               <TableBody>
                 {servers.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell className="px-4 py-3 font-medium">{s.name}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium">
+                      {s.name}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3">
                       <TransportChip transport={s.transport} />
                     </TableCell>
@@ -278,20 +284,20 @@ export default function McpPage() {
                       <StatusBadge status={s.status} />
                     </TableCell>
                     <TableCell className="max-w-[220px] truncate px-4 py-3 text-muted-foreground">
-                      {s.endpoint ?? "n/a"}
+                      {s.endpoint ?? 'n/a'}
                     </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3 text-right">
                       <Button
-                        variant={s.enabled ? "outline" : "default"}
+                        variant={s.enabled ? 'outline' : 'default'}
                         size="sm"
                         onClick={() => handleToggle(s)}
                         disabled={busyId === s.id}
                       >
                         {busyId === s.id
-                          ? "…"
+                          ? '…'
                           : s.enabled
-                            ? "Disable"
-                            : "Enable"}
+                            ? 'Disable'
+                            : 'Enable'}
                       </Button>
                     </TableCell>
                   </TableRow>

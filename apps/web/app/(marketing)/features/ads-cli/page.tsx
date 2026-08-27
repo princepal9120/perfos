@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 
 export default function AdsCliPage() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText("npm install -g @adkit/cli");
+    navigator.clipboard.writeText('npm install -g @adkit/cli');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -19,17 +19,23 @@ export default function AdsCliPage() {
           Terminal-Native Ad Management
         </span>
         <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight">
-          The <span className="bg-linear-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Ads CLI</span> for Growth Engineers
+          The{' '}
+          <span className="bg-linear-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+            Ads CLI
+          </span>{' '}
+          for Growth Engineers
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg">
-          Query metrics, launch experiments, and automate campaign deployments directly from your terminal or CI/CD pipelines with zero browser latency.
+          Query metrics, launch experiments, and automate campaign deployments
+          directly from your terminal or CI/CD pipelines with zero browser
+          latency.
         </p>
         <div className="flex justify-center gap-4 pt-2">
           <button
             onClick={handleCopy}
             className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-foreground dark:text-white text-xs font-semibold shadow-lg shadow-emerald-600/30 transition-all font-mono"
           >
-            {copied ? "✓ Copied!" : "$ npm install -g @adkit/cli"}
+            {copied ? '✓ Copied!' : '$ npm install -g @adkit/cli'}
           </button>
           <Link
             href="/features/ads-mcp"
@@ -49,12 +55,29 @@ export default function AdsCliPage() {
           <span className="ml-2">zsh — adkit-cli</span>
         </div>
         <div className="text-zinc-300 space-y-2">
-          <p><span className="text-emerald-400">$</span> adkit spy --domain notion.so --duration 90d</p>
-          <p className="text-muted-foreground">→ Discovered 14 evergreen ads running &gt; 90 days on Meta &amp; LinkedIn.</p>
-          <p><span className="text-emerald-400">$</span> adkit clone --ad-id 489201 --remix --brand-kit perfos.json</p>
-          <p className="text-muted-foreground">✓ Synthesized 10 on-brand creative variants into ./staged-creatives/</p>
-          <p><span className="text-emerald-400">$</span> adkit deploy --network meta --campaign &quot;Indie Launch Q3&quot; --budget 150</p>
-          <p className="text-emerald-300 font-bold">✓ Successfully deployed 5 ad sets to Meta Ads API. Live in 3 minutes.</p>
+          <p>
+            <span className="text-emerald-400">$</span> adkit spy --domain
+            notion.so --duration 90d
+          </p>
+          <p className="text-muted-foreground">
+            → Discovered 14 evergreen ads running &gt; 90 days on Meta &amp;
+            LinkedIn.
+          </p>
+          <p>
+            <span className="text-emerald-400">$</span> adkit clone --ad-id
+            489201 --remix --brand-kit perfos.json
+          </p>
+          <p className="text-muted-foreground">
+            ✓ Synthesized 10 on-brand creative variants into ./staged-creatives/
+          </p>
+          <p>
+            <span className="text-emerald-400">$</span> adkit deploy --network
+            meta --campaign &quot;Indie Launch Q3&quot; --budget 150
+          </p>
+          <p className="text-emerald-300 font-bold">
+            ✓ Successfully deployed 5 ad sets to Meta Ads API. Live in 3
+            minutes.
+          </p>
         </div>
       </div>
     </div>

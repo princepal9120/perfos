@@ -29,11 +29,21 @@ class AdRecord(BaseModel):
     advertiser: str
     ad_id: str = Field(description="Stable id used for dedupe per platform.")
     creative_url: str | None = None
+    landing_url: str | None = Field(
+        default=None, description="Destination the ad clicks through to."
+    )
 
     spend_estimate: float | None = Field(
         default=None, description="Estimated spend where the library exposes it."
     )
     impressions: int | None = None
+    variant_count: int | None = Field(
+        default=None,
+        description=(
+            "Near-duplicate copies of this ad running at once. Public libraries hide "
+            "spend/impressions for commercial ads, so this is the only volume signal."
+        ),
+    )
     start_date: datetime | None = Field(
         default=None, description="Library-reported first-seen date when available."
     )
@@ -63,6 +73,7 @@ class WinnerSignal(BaseModel):
     advertiser: str
     ad_id: str
     creative_url: str | None = None
+    landing_url: str | None = None
 
     score: float = Field(ge=0.0, le=100.0, description="Deterministic 0-100 ad score.")
     tier: Tier
@@ -71,3 +82,5 @@ class WinnerSignal(BaseModel):
     start_date: datetime | None = None
     hook: str | None = None
     cta: str | None = None
+    text: str | None = Field(default=None, description="Ad body copy, the thing worth cloning.")
+    runtime_days: float = Field(default=0.0, description="Observed days live at scoring time.")

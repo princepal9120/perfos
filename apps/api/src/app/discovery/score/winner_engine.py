@@ -21,7 +21,7 @@ missing fields degrade deterministically instead of raising.
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.discovery.schemas import AdRecord, WinnerSignal
 
@@ -72,9 +72,9 @@ def longevity_days(ad: AdRecord, now: datetime | None = None) -> float:
     start = ad.start_date
     if start is None:
         return 0.0
-    now = datetime.now(timezone.utc) if now is None else now
+    now = datetime.now(UTC) if now is None else now
     if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
+        start = start.replace(tzinfo=UTC)
     return max((now - start).total_seconds() / 86400.0, 0.0)
 
 
@@ -95,6 +95,17 @@ def _batch_max(values: list[float]) -> float:
     return max(values, default=0.0)
 
 
+def _volume(ad: AdRecord) -> float:
+    """Best available volume signal for an ad.
+
+    Impressions when the library exposes them (political ads only on Meta),
+    otherwise the count of near-duplicate variants the advertiser is running.
+    """
+    if ad.impressions:
+        return float(ad.impressions)
+    return float(ad.variant_count or 0)
+
+
 def _concentrations(ads: list[AdRecord]) -> dict[str, float]:
     """ad_id -> share of its advertiser's spend (fallback: impressions).
 
@@ -108,8 +119,8 @@ def _concentrations(ads: list[AdRecord]) -> dict[str, float]:
         if ad.spend_estimate is not None and ad.spend_estimate > 0:
             adv_spend[ad.advertiser] += ad.spend_estimate
             has_spend.add(ad.advertiser)
-        if ad.impressions is not None and ad.impressions > 0:
-            adv_impr[ad.advertiser] += float(ad.impressions)
+        if _volume(ad) > 0:
+            adv_impr[ad.advertiser] += _volume(ad)
             has_impr.add(ad.advertiser)
 
     shares: dict[str, float] = {}
@@ -119,7 +130,7 @@ def _concentrations(ads: list[AdRecord]) -> dict[str, float]:
             numer = float(ad.spend_estimate or 0.0)
         elif ad.advertiser in has_impr and adv_impr[ad.advertiser] > 0:
             denom = adv_impr[ad.advertiser]
-            numer = float(ad.impressions or 0)
+            numer = _volume(ad)
         else:
             shares[ad.ad_id] = 0.0
             continue
@@ -135,7 +146,7 @@ def _score_one(
     concentration: float,
 ) -> float:
     runtime_component = min(days / PROVEN_MIN_DAYS, 1.0)
-    reach_component = (float(ad.impressions or 0) / max_reach) if max_reach > 0 else 0.0
+    reach_component = (_volume(ad) / max_reach) if max_reach > 0 else 0.0
     spend_value = float(ad.spend_estimate or 0.0)
     spend_component = (spend_value / max_spend) if max_spend > 0 else 0.0
     composite = (
@@ -161,7 +172,7 @@ def score_ads(ads: list[AdRecord], *, now: datetime | None = None) -> list[Winne
 
     longevities = [longevity_days(ad, now) for ad in ads]
     concentrations = _concentrations(ads)
-    max_reach = _batch_max([float(ad.impressions or 0) for ad in ads])
+    max_reach = _batch_max([_volume(ad) for ad in ads])
     max_spend = _batch_max([float(ad.spend_estimate or 0.0) for ad in ads])
 
     signals = [
@@ -170,11 +181,14 @@ def score_ads(ads: list[AdRecord], *, now: datetime | None = None) -> list[Winne
             advertiser=ad.advertiser,
             ad_id=ad.ad_id,
             creative_url=ad.creative_url,
+            landing_url=ad.landing_url,
             score=_score_one(ad, days, max_reach, max_spend, concentrations.get(ad.ad_id, 0.0)),
             tier=longevity_tier(days),
             start_date=ad.start_date,
             hook=ad.hook,
             cta=ad.cta,
+            text=ad.text,
+            runtime_days=round(days, 1),
         )
         for ad, days in zip(ads, longevities)
     ]
@@ -184,7 +198,7 @@ def score_ads(ads: list[AdRecord], *, now: datetime | None = None) -> list[Winne
 if __name__ == "__main__":  # pragma: no cover - runnable self-check
     from datetime import timedelta
 
-    _now = datetime.now(timezone.utc)
+    _now = datetime.now(UTC)
     _ads = [
         AdRecord(
             platform="meta", advertiser="Acme", ad_id="a1",

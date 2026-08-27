@@ -1,16 +1,56 @@
-"use client";
+'use client';
 
-import Link from "next/link";
+import Link from 'next/link';
 
 const AGENTS = [
-  { name: "Claude Code & Desktop", slug: "claude", icon: "🤖", desc: "Native MCP stdio and SSE configuration for Claude Desktop and Claude CLI." },
-  { name: "Cursor IDE", slug: "cursor", icon: "⚡", desc: "Launch and monitor ad creatives without ever leaving your VS Code / Cursor workflow." },
-  { name: "ChatGPT & GPT-4o", slug: "chatgpt", icon: "🧠", desc: "Custom GPT actions and MCP bridge for OpenAI ChatGPT Pro & Team users." },
-  { name: "Grok (xAI)", slug: "grok", icon: "🚀", desc: "Leverage real-time X post trend analysis with direct AdKit campaign tool actions." },
-  { name: "Codex & OpenCode", slug: "codex", icon: "⚙️", desc: "Autonomous agentic coding tools with complete AdKit API and MCP schema hooks." },
-  { name: "OpenClaw & ClawStack", slug: "openclaw", icon: "🐾", desc: "Open-source AI execution runtime with pre-built AdKit growth skill wrappers." },
-  { name: "Perplexity AI", slug: "perplexity", icon: "🔍", desc: "Live competitor research synthesis with structured AdKit swipe file persistence." },
-  { name: "Hermes Agent", slug: "hermes", icon: "🛡️", desc: "Self-hosted local LLM agent execution for private ad campaign management." }
+  {
+    name: 'Claude Code & Desktop',
+    slug: 'claude',
+    icon: '🤖',
+    desc: 'Native MCP stdio and SSE configuration for Claude Desktop and Claude CLI.',
+  },
+  {
+    name: 'Cursor IDE',
+    slug: 'cursor',
+    icon: '⚡',
+    desc: 'Launch and monitor ad creatives without ever leaving your VS Code / Cursor workflow.',
+  },
+  {
+    name: 'ChatGPT & GPT-4o',
+    slug: 'chatgpt',
+    icon: '🧠',
+    desc: 'Custom GPT actions and MCP bridge for OpenAI ChatGPT Pro & Team users.',
+  },
+  {
+    name: 'Grok (xAI)',
+    slug: 'grok',
+    icon: '🚀',
+    desc: 'Leverage real-time X post trend analysis with direct AdKit campaign tool actions.',
+  },
+  {
+    name: 'Codex & OpenCode',
+    slug: 'codex',
+    icon: '⚙️',
+    desc: 'Autonomous agentic coding tools with complete AdKit API and MCP schema hooks.',
+  },
+  {
+    name: 'OpenClaw & ClawStack',
+    slug: 'openclaw',
+    icon: '🐾',
+    desc: 'Open-source AI execution runtime with pre-built AdKit growth skill wrappers.',
+  },
+  {
+    name: 'Perplexity AI',
+    slug: 'perplexity',
+    icon: '🔍',
+    desc: 'Live competitor research synthesis with structured AdKit swipe file persistence.',
+  },
+  {
+    name: 'Hermes Agent',
+    slug: 'hermes',
+    icon: '🛡️',
+    desc: 'Self-hosted local LLM agent execution for private ad campaign management.',
+  },
 ];
 
 export default function IntegrationsIndexPage() {
@@ -21,10 +61,14 @@ export default function IntegrationsIndexPage() {
           AI Agent Ecosystem
         </span>
         <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight">
-          Works with every <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">AI Agent</span>
+          Works with every{' '}
+          <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">
+            AI Agent
+          </span>
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg">
-          Add one line of config to your favorite IDE, agent framework, or desktop assistant to unlock autonomous ad management.
+          Add one line of config to your favorite IDE, agent framework, or
+          desktop assistant to unlock autonomous ad management.
         </p>
       </div>
 

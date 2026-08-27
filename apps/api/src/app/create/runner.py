@@ -14,8 +14,10 @@ from app.create.store import AssetStore
 from app.discovery.schemas import WinnerSignal
 
 
-def run_create(winners: list[WinnerSignal]) -> list[GeneratedAsset]:
-    """Generate clips for each winner and persist them to .build/assets.json.
+def run_create(
+    winners: list[WinnerSignal], *, workspace_id: int = 0, run_id: str | None = None
+) -> list[GeneratedAsset]:
+    """Generate clips for each winner and persist them durably for a workspace.
 
     The top remixed hook variant seeds the brief text so downstream clip
     generation inherits the strongest hook angle per winner.
@@ -30,7 +32,13 @@ def run_create(winners: list[WinnerSignal]) -> list[GeneratedAsset]:
             brief_text=f"{top_hook} | CTA: {winner.cta or ''}".strip(" |"),
         )
         for asset in generate_clips(brief):
-            store.add(asset, source_ad_id=winner.ad_id)
+            store.add(
+                asset,
+                source_ad_id=winner.ad_id,
+                workspace_id=workspace_id,
+                run_id=run_id,
+                brief_text=brief.brief_text,
+            )
             assets.append(asset)
     return assets
 

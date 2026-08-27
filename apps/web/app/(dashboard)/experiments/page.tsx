@@ -1,15 +1,17 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Stat } from '@/components/ui/stat';
 import {
   Table,
   TableBody,
@@ -19,38 +21,36 @@ import {
   TableHeader,
   TableRow,
   useTableSort,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Stat } from "@/components/ui/stat";
-import { cn } from "@/lib/utils";
-import { getIncrementalityTests, type IncrementalityTest } from "@/lib/api";
+} from '@/components/ui/table';
+import { getIncrementalityTests, type IncrementalityTest } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
 /* Types & Contracts                                                  */
 /* ------------------------------------------------------------------ */
 
 type ExperimentPlatform =
-  | "meta"
-  | "google"
-  | "tiktok"
-  | "linkedin"
-  | "youtube"
-  | "reddit"
-  | "shopify";
+  | 'meta'
+  | 'google'
+  | 'tiktok'
+  | 'linkedin'
+  | 'youtube'
+  | 'reddit'
+  | 'shopify';
 
 type ExperimentType =
-  | "ab_creative"
-  | "geo_holdout"
-  | "bid_strategy"
-  | "audience_split"
-  | "landing_page";
+  | 'ab_creative'
+  | 'geo_holdout'
+  | 'bid_strategy'
+  | 'audience_split'
+  | 'landing_page';
 
 type ExperimentStatus =
-  | "running"
-  | "conclusive"
-  | "inconclusive"
-  | "draft"
-  | "paused";
+  | 'running'
+  | 'conclusive'
+  | 'inconclusive'
+  | 'draft'
+  | 'paused';
 
 interface ExperimentItem extends Record<string, unknown> {
   id: string;
@@ -74,7 +74,7 @@ interface ExperimentItem extends Record<string, unknown> {
   confidence: number;
   sample_size_label: string;
   duration_label: string;
-  winner: "control" | "variant" | "none";
+  winner: 'control' | 'variant' | 'none';
   recommendation: string;
   started_at: string | null;
   completed_at: string | null;
@@ -86,57 +86,85 @@ interface ExperimentItem extends Record<string, unknown> {
 
 const PLATFORM_META: Record<
   ExperimentPlatform,
-  { label: string; dot: string; badgeVariant: "default" | "secondary" | "neutral" }
+  {
+    label: string;
+    dot: string;
+    badgeVariant: 'default' | 'secondary' | 'neutral';
+  }
 > = {
-  meta: { label: "Meta Ads", dot: "bg-blue-400", badgeVariant: "secondary" },
-  google: { label: "Google Ads", dot: "bg-amber-400", badgeVariant: "secondary" },
-  tiktok: { label: "TikTok Ads", dot: "bg-pink-400", badgeVariant: "secondary" },
-  linkedin: { label: "LinkedIn Ads", dot: "bg-sky-400", badgeVariant: "secondary" },
-  youtube: { label: "YouTube Ads", dot: "bg-red-400", badgeVariant: "secondary" },
-  reddit: { label: "Reddit Ads", dot: "bg-orange-400", badgeVariant: "secondary" },
-  shopify: { label: "Shopify Store", dot: "bg-emerald-400", badgeVariant: "secondary" },
+  meta: { label: 'Meta Ads', dot: 'bg-blue-400', badgeVariant: 'secondary' },
+  google: {
+    label: 'Google Ads',
+    dot: 'bg-amber-400',
+    badgeVariant: 'secondary',
+  },
+  tiktok: {
+    label: 'TikTok Ads',
+    dot: 'bg-pink-400',
+    badgeVariant: 'secondary',
+  },
+  linkedin: {
+    label: 'LinkedIn Ads',
+    dot: 'bg-sky-400',
+    badgeVariant: 'secondary',
+  },
+  youtube: {
+    label: 'YouTube Ads',
+    dot: 'bg-red-400',
+    badgeVariant: 'secondary',
+  },
+  reddit: {
+    label: 'Reddit Ads',
+    dot: 'bg-orange-400',
+    badgeVariant: 'secondary',
+  },
+  shopify: {
+    label: 'Shopify Store',
+    dot: 'bg-emerald-400',
+    badgeVariant: 'secondary',
+  },
 };
 
 const TEST_TYPE_LABELS: Record<ExperimentType, string> = {
-  ab_creative: "Creative A/B",
-  geo_holdout: "Geo holdout",
-  bid_strategy: "Bid strategy",
-  audience_split: "Audience split",
-  landing_page: "On-site A/B",
+  ab_creative: 'Creative A/B',
+  geo_holdout: 'Geo holdout',
+  bid_strategy: 'Bid strategy',
+  audience_split: 'Audience split',
+  landing_page: 'On-site A/B',
 };
 
 const STATUS_CONFIG: Record<
   ExperimentStatus,
   {
     label: string;
-    variant: "default" | "success" | "warning" | "secondary" | "neutral";
+    variant: 'default' | 'success' | 'warning' | 'secondary' | 'neutral';
     dotClass: string;
   }
 > = {
   running: {
-    label: "Running",
-    variant: "default",
-    dotClass: "bg-blue-400 animate-pulse",
+    label: 'Running',
+    variant: 'default',
+    dotClass: 'bg-blue-400 animate-pulse',
   },
   conclusive: {
-    label: "Conclusive",
-    variant: "success",
-    dotClass: "bg-emerald-400",
+    label: 'Conclusive',
+    variant: 'success',
+    dotClass: 'bg-emerald-400',
   },
   inconclusive: {
-    label: "Inconclusive",
-    variant: "warning",
-    dotClass: "bg-amber-400",
+    label: 'Inconclusive',
+    variant: 'warning',
+    dotClass: 'bg-amber-400',
   },
   draft: {
-    label: "Draft",
-    variant: "secondary",
-    dotClass: "bg-zinc-500",
+    label: 'Draft',
+    variant: 'secondary',
+    dotClass: 'bg-zinc-500',
   },
   paused: {
-    label: "Paused",
-    variant: "neutral",
-    dotClass: "bg-zinc-600",
+    label: 'Paused',
+    variant: 'neutral',
+    dotClass: 'bg-zinc-600',
   },
 };
 
@@ -146,235 +174,235 @@ const STATUS_CONFIG: Record<
 
 const INITIAL_MOCK_EXPERIMENTS: ExperimentItem[] = [
   {
-    id: "EXP-101",
-    name: "Meta UGC Founder Hook vs 3D Product Demo",
+    id: 'EXP-101',
+    name: 'Meta UGC Founder Hook vs 3D Product Demo',
     hypothesis:
-      "Opening with authentic founder hook in first 2 seconds increases 3s hook rate by >20% and lowers blended customer acquisition cost on Meta Advantage+ campaign.",
-    platform: "meta",
-    test_type: "ab_creative",
-    status: "running",
-    primary_metric: "Hook rate (3s)",
-    control_name: "3D Product Render V2",
-    control_metric_value: "28.4%",
+      'Opening with authentic founder hook in first 2 seconds increases 3s hook rate by >20% and lowers blended customer acquisition cost on Meta Advantage+ campaign.',
+    platform: 'meta',
+    test_type: 'ab_creative',
+    status: 'running',
+    primary_metric: 'Hook rate (3s)',
+    control_name: '3D Product Render V2',
+    control_metric_value: '28.4%',
     control_numeric: 28.4,
     control_spend: 4850,
     control_conversions: 198,
-    variant_name: "Founder Problem-Hook V1",
-    variant_metric_value: "39.1%",
+    variant_name: 'Founder Problem-Hook V1',
+    variant_metric_value: '39.1%',
     variant_numeric: 39.1,
     variant_spend: 4920,
     variant_conversions: 264,
     lift_pct: 37.7,
     confidence: 98.6,
-    sample_size_label: "288,500 imp · 462 conv",
-    duration_label: "Day 12 of 14",
-    winner: "variant",
+    sample_size_label: '288,500 imp · 462 conv',
+    duration_label: 'Day 12 of 14',
+    winner: 'variant',
     recommendation:
-      "Statistically significant winner (+37.7% lift). Recommended action: Roll out Founder Hook to 100% of Advantage+ ad set budget.",
-    started_at: "2026-08-14T09:00:00Z",
+      'Statistically significant winner (+37.7% lift). Recommended action: Roll out Founder Hook to 100% of Advantage+ ad set budget.',
+    started_at: '2026-08-14T09:00:00Z',
     completed_at: null,
   },
   {
-    id: "EXP-102",
-    name: "Google Search tCPA ($32) vs Target ROAS (320%) Bidding",
+    id: 'EXP-102',
+    name: 'Google Search tCPA ($32) vs Target ROAS (320%) Bidding',
     hypothesis:
-      "Switching high-intent search campaigns to target ROAS bidding captures higher order value baskets and improves blended MER without losing conversion volume.",
-    platform: "google",
-    test_type: "bid_strategy",
-    status: "conclusive",
-    primary_metric: "ROAS",
-    control_name: "tCPA Bidding ($32 cap)",
-    control_metric_value: "2.74x",
+      'Switching high-intent search campaigns to target ROAS bidding captures higher order value baskets and improves blended MER without losing conversion volume.',
+    platform: 'google',
+    test_type: 'bid_strategy',
+    status: 'conclusive',
+    primary_metric: 'ROAS',
+    control_name: 'tCPA Bidding ($32 cap)',
+    control_metric_value: '2.74x',
     control_numeric: 2.74,
     control_spend: 12400,
     control_conversions: 388,
-    variant_name: "tROAS Target 320%",
-    variant_metric_value: "3.52x",
+    variant_name: 'tROAS Target 320%',
+    variant_metric_value: '3.52x',
     variant_numeric: 3.52,
     variant_spend: 13100,
     variant_conversions: 421,
     lift_pct: 28.5,
     confidence: 99.2,
-    sample_size_label: "166,100 imp · 809 conv",
-    duration_label: "Completed Aug 20",
-    winner: "variant",
+    sample_size_label: '166,100 imp · 809 conv',
+    duration_label: 'Completed Aug 20',
+    winner: 'variant',
     recommendation:
-      "Significant ROAS improvement (+28.5% at 99.2% confidence). Adopt Target ROAS strategy permanently across non-brand search portfolios.",
-    started_at: "2026-08-01T00:00:00Z",
-    completed_at: "2026-08-20T23:59:59Z",
+      'Significant ROAS improvement (+28.5% at 99.2% confidence). Adopt Target ROAS strategy permanently across non-brand search portfolios.',
+    started_at: '2026-08-01T00:00:00Z',
+    completed_at: '2026-08-20T23:59:59Z',
   },
   {
-    id: "EXP-103",
-    name: "TikTok Spark Ad Organic Boost vs In-Feed Direct Response",
+    id: 'EXP-103',
+    name: 'TikTok Spark Ad Organic Boost vs In-Feed Direct Response',
     hypothesis:
-      "Boosting top organic creator video as Spark Ad improves engagement rate, increases watch time, and lowers effective CAC compared to studio direct-response cut.",
-    platform: "tiktok",
-    test_type: "ab_creative",
-    status: "running",
-    primary_metric: "CAC",
-    control_name: "In-Feed Studio Ad #4",
-    control_metric_value: "$29.09",
+      'Boosting top organic creator video as Spark Ad improves engagement rate, increases watch time, and lowers effective CAC compared to studio direct-response cut.',
+    platform: 'tiktok',
+    test_type: 'ab_creative',
+    status: 'running',
+    primary_metric: 'CAC',
+    control_name: 'In-Feed Studio Ad #4',
+    control_metric_value: '$29.09',
     control_numeric: 29.09,
     control_spend: 3200,
     control_conversions: 110,
-    variant_name: "Spark Ad @fit_sarah #12",
-    variant_metric_value: "$21.30",
+    variant_name: 'Spark Ad @fit_sarah #12',
+    variant_metric_value: '$21.30',
     variant_numeric: 21.3,
     variant_spend: 3450,
     variant_conversions: 162,
     lift_pct: 26.8,
     confidence: 94.8,
-    sample_size_label: "455,000 imp · 272 conv",
-    duration_label: "Day 8 of 14",
-    winner: "variant",
+    sample_size_label: '455,000 imp · 272 conv',
+    duration_label: 'Day 8 of 14',
+    winner: 'variant',
     recommendation:
-      "Spark Ad reduces acquisition cost by 26.8%. Nearing 95% statistical power threshold (currently 94.8%).",
-    started_at: "2026-08-18T12:00:00Z",
+      'Spark Ad reduces acquisition cost by 26.8%. Nearing 95% statistical power threshold (currently 94.8%).',
+    started_at: '2026-08-18T12:00:00Z',
     completed_at: null,
   },
   {
-    id: "EXP-104",
-    name: "California & Texas Geo-Holdout Incrementality Test",
+    id: 'EXP-104',
+    name: 'California & Texas Geo-Holdout Incrementality Test',
     hypothesis:
-      "Measuring true incremental lift (iROAS) by withholding Meta prospecting spend in CA and TX markets while maintaining national control baseline.",
-    platform: "meta",
-    test_type: "geo_holdout",
-    status: "conclusive",
-    primary_metric: "iROAS",
-    control_name: "Holdout Regions (CA, TX)",
-    control_metric_value: "1.00x Base",
+      'Measuring true incremental lift (iROAS) by withholding Meta prospecting spend in CA and TX markets while maintaining national control baseline.',
+    platform: 'meta',
+    test_type: 'geo_holdout',
+    status: 'conclusive',
+    primary_metric: 'iROAS',
+    control_name: 'Holdout Regions (CA, TX)',
+    control_metric_value: '1.00x Base',
     control_numeric: 1.0,
     control_spend: 0,
     control_conversions: 412,
-    variant_name: "Treated Regions (NY, FL, IL)",
-    variant_metric_value: "2.86x iROAS",
+    variant_name: 'Treated Regions (NY, FL, IL)',
+    variant_metric_value: '2.86x iROAS',
     variant_numeric: 2.86,
     variant_spend: 28500,
     variant_conversions: 1340,
     lift_pct: 22.4,
     confidence: 96.1,
-    sample_size_label: "890,000 imp · 1,752 conv",
-    duration_label: "Completed Aug 10",
-    winner: "variant",
+    sample_size_label: '890,000 imp · 1,752 conv',
+    duration_label: 'Completed Aug 10',
+    winner: 'variant',
     recommendation:
-      "Meta prospecting shows 22.4% true incremental lift with 2.86 iROAS. Calibration parameter updated in optimizer.",
-    started_at: "2026-07-20T00:00:00Z",
-    completed_at: "2026-08-10T00:00:00Z",
+      'Meta prospecting shows 22.4% true incremental lift with 2.86 iROAS. Calibration parameter updated in optimizer.',
+    started_at: '2026-07-20T00:00:00Z',
+    completed_at: '2026-08-10T00:00:00Z',
   },
   {
-    id: "EXP-105",
-    name: "LinkedIn Sponsored Content: Single Image vs Document Carousel",
+    id: 'EXP-105',
+    name: 'LinkedIn Sponsored Content: Single Image vs Document Carousel',
     hypothesis:
-      "Multi-slide PDF breakdown on B2B marketing benchmark report drives higher click-through rate and lead form completions than static hero graphic.",
-    platform: "linkedin",
-    test_type: "ab_creative",
-    status: "running",
-    primary_metric: "CTR",
-    control_name: "Static Executive Graphic",
-    control_metric_value: "0.92%",
+      'Multi-slide PDF breakdown on B2B marketing benchmark report drives higher click-through rate and lead form completions than static hero graphic.',
+    platform: 'linkedin',
+    test_type: 'ab_creative',
+    status: 'running',
+    primary_metric: 'CTR',
+    control_name: 'Static Executive Graphic',
+    control_metric_value: '0.92%',
     control_numeric: 0.92,
     control_spend: 4100,
     control_conversions: 54,
-    variant_name: "7-Slide PDF Case Study Carousel",
-    variant_metric_value: "1.84%",
+    variant_name: '7-Slide PDF Case Study Carousel',
+    variant_metric_value: '1.84%',
     variant_numeric: 1.84,
     variant_spend: 4250,
     variant_conversions: 88,
     lift_pct: 100.0,
     confidence: 99.8,
-    sample_size_label: "99,200 imp · 142 conv",
-    duration_label: "Day 7 of 14",
-    winner: "variant",
+    sample_size_label: '99,200 imp · 142 conv',
+    duration_label: 'Day 7 of 14',
+    winner: 'variant',
     recommendation:
-      "Document carousel achieves 2x CTR (+100.0% lift) with strong significance. Shift B2B creative production toward document carousels.",
-    started_at: "2026-08-19T08:00:00Z",
+      'Document carousel achieves 2x CTR (+100.0% lift) with strong significance. Shift B2B creative production toward document carousels.',
+    started_at: '2026-08-19T08:00:00Z',
     completed_at: null,
   },
   {
-    id: "EXP-106",
-    name: "YouTube Demand Gen Video: 15s Bumper vs 45s Narrative",
+    id: 'EXP-106',
+    name: 'YouTube Demand Gen Video: 15s Bumper vs 45s Narrative',
     hypothesis:
-      "Longer problem-solution narrative with customer testimonial drives higher post-view search lift and direct website conversions than 15s cut.",
-    platform: "youtube",
-    test_type: "ab_creative",
-    status: "inconclusive",
-    primary_metric: "Conversion rate",
-    control_name: "15s High-Energy Bumper",
-    control_metric_value: "1.42%",
+      'Longer problem-solution narrative with customer testimonial drives higher post-view search lift and direct website conversions than 15s cut.',
+    platform: 'youtube',
+    test_type: 'ab_creative',
+    status: 'inconclusive',
+    primary_metric: 'Conversion rate',
+    control_name: '15s High-Energy Bumper',
+    control_metric_value: '1.42%',
     control_numeric: 1.42,
     control_spend: 6200,
     control_conversions: 142,
-    variant_name: "45s Narrative Testimonial",
-    variant_metric_value: "1.55%",
+    variant_name: '45s Narrative Testimonial',
+    variant_metric_value: '1.55%',
     variant_numeric: 1.55,
     variant_spend: 6400,
     variant_conversions: 148,
     lift_pct: 9.1,
     confidence: 64.2,
-    sample_size_label: "530,000 imp · 290 conv",
-    duration_label: "Ended Aug 19",
-    winner: "none",
+    sample_size_label: '530,000 imp · 290 conv',
+    duration_label: 'Ended Aug 19',
+    winner: 'none',
     recommendation:
-      "Inconclusive result (64.2% confidence below 95% threshold). No statistically significant difference in conversion rate detected.",
-    started_at: "2026-08-05T00:00:00Z",
-    completed_at: "2026-08-19T00:00:00Z",
+      'Inconclusive result (64.2% confidence below 95% threshold). No statistically significant difference in conversion rate detected.',
+    started_at: '2026-08-05T00:00:00Z',
+    completed_at: '2026-08-19T00:00:00Z',
   },
   {
-    id: "EXP-107",
-    name: "Reddit Community-Specific Copy: r/webdev vs Tech Interests",
+    id: 'EXP-107',
+    name: 'Reddit Community-Specific Copy: r/webdev vs Tech Interests',
     hypothesis:
-      "Tailoring ad copy with authentic developer terminology directly referencing subreddit communities yields lower CPM and higher qualified trial signups.",
-    platform: "reddit",
-    test_type: "audience_split",
-    status: "draft",
-    primary_metric: "CPA",
-    control_name: "Broad Interest Tech Audience",
-    control_metric_value: "$45.00 est",
+      'Tailoring ad copy with authentic developer terminology directly referencing subreddit communities yields lower CPM and higher qualified trial signups.',
+    platform: 'reddit',
+    test_type: 'audience_split',
+    status: 'draft',
+    primary_metric: 'CPA',
+    control_name: 'Broad Interest Tech Audience',
+    control_metric_value: '$45.00 est',
     control_numeric: 45.0,
     control_spend: 0,
     control_conversions: 0,
-    variant_name: "r/webdev + r/reactjs Placements",
-    variant_metric_value: "$28.00 est",
+    variant_name: 'r/webdev + r/reactjs Placements',
+    variant_metric_value: '$28.00 est',
     variant_numeric: 28.0,
     variant_spend: 0,
     variant_conversions: 0,
     lift_pct: null,
     confidence: 0,
-    sample_size_label: "0 imp · 0 conv",
-    duration_label: "Scheduled 14d",
-    winner: "none",
+    sample_size_label: '0 imp · 0 conv',
+    duration_label: 'Scheduled 14d',
+    winner: 'none',
     recommendation:
-      "Draft experiment ready for launch. Awaiting creative approval and tracking pixel confirmation.",
+      'Draft experiment ready for launch. Awaiting creative approval and tracking pixel confirmation.',
     started_at: null,
     completed_at: null,
   },
   {
-    id: "EXP-108",
-    name: "Shopify Cart Threshold: Free Shipping $65 vs $80 Bundle Upsell",
+    id: 'EXP-108',
+    name: 'Shopify Cart Threshold: Free Shipping $65 vs $80 Bundle Upsell',
     hypothesis:
-      "Increasing free shipping minimum to $80 with dynamic cart progress bar lifts average order value without lowering overall checkout conversion rate.",
-    platform: "shopify",
-    test_type: "landing_page",
-    status: "running",
-    primary_metric: "AOV",
-    control_name: "Standard $65 Threshold",
-    control_metric_value: "$72.50",
+      'Increasing free shipping minimum to $80 with dynamic cart progress bar lifts average order value without lowering overall checkout conversion rate.',
+    platform: 'shopify',
+    test_type: 'landing_page',
+    status: 'running',
+    primary_metric: 'AOV',
+    control_name: 'Standard $65 Threshold',
+    control_metric_value: '$72.50',
     control_numeric: 72.5,
     control_spend: 1800,
     control_conversions: 620,
-    variant_name: "Dynamic $80 Upsell Bar",
-    variant_metric_value: "$84.10",
+    variant_name: 'Dynamic $80 Upsell Bar',
+    variant_metric_value: '$84.10',
     variant_numeric: 84.1,
     variant_spend: 1800,
     variant_conversions: 598,
     lift_pct: 16.0,
     confidence: 91.4,
-    sample_size_label: "129,200 sessions · 1,218 orders",
-    duration_label: "Day 6 of 14",
-    winner: "variant",
+    sample_size_label: '129,200 sessions · 1,218 orders',
+    duration_label: 'Day 6 of 14',
+    winner: 'variant',
     recommendation:
-      "AOV increased by +$11.60 (+16.0%). Cart abandonment remained steady at 22.4%.",
-    started_at: "2026-08-20T00:00:00Z",
+      'AOV increased by +$11.60 (+16.0%). Cart abandonment remained steady at 22.4%.',
+    started_at: '2026-08-20T00:00:00Z',
     completed_at: null,
   },
 ];
@@ -403,13 +431,13 @@ function ExpRow({
 }: ExpRowProps) {
   const pMeta = PLATFORM_META[experiment.platform] ?? {
     label: experiment.platform,
-    dot: "bg-zinc-400",
-    badgeVariant: "secondary",
+    dot: 'bg-zinc-400',
+    badgeVariant: 'secondary',
   };
   const sMeta = STATUS_CONFIG[experiment.status] ?? {
     label: experiment.status,
-    variant: "secondary",
-    dotClass: "bg-zinc-400",
+    variant: 'secondary',
+    dotClass: 'bg-zinc-400',
   };
 
   const isLiftPositive =
@@ -420,8 +448,8 @@ function ExpRow({
   return (
     <TableRow
       className={cn(
-        "cursor-pointer transition-colors duration-150 ease-out",
-        expanded && "bg-white/4 border-b-0"
+        'cursor-pointer transition-colors duration-150 ease-out',
+        expanded && 'bg-white/4 border-b-0',
       )}
       onClick={onToggleExpand}
     >
@@ -430,20 +458,24 @@ function ExpRow({
         <div className="flex items-start gap-2.5">
           <button
             type="button"
-            aria-label={expanded ? "Collapse details" : "Expand details"}
+            aria-label={expanded ? 'Collapse details' : 'Expand details'}
             className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-muted transition-transform duration-200 ease-out hover:text-text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
           >
             <svg
               className={cn(
-                "h-3.5 w-3.5 transition-transform duration-200",
-                expanded && "rotate-90 text-accent"
+                'h-3.5 w-3.5 transition-transform duration-200',
+                expanded && 'rotate-90 text-accent',
               )}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
           <div className="min-w-0">
@@ -465,7 +497,7 @@ function ExpRow({
       {/* Platform */}
       <TableCell className="whitespace-nowrap py-3.5">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary">
-          <span className={cn("h-1.5 w-1.5 rounded-full", pMeta.dot)} />
+          <span className={cn('h-1.5 w-1.5 rounded-full', pMeta.dot)} />
           <span>{pMeta.label}</span>
         </div>
       </TableCell>
@@ -491,8 +523,8 @@ function ExpRow({
           <span className="text-text-muted/60">→</span>
           <span
             className={cn(
-              "font-semibold text-text-primary",
-              experiment.winner === "variant" && "text-emerald-400"
+              'font-semibold text-text-primary',
+              experiment.winner === 'variant' && 'text-emerald-400',
             )}
             title={experiment.variant_name}
           >
@@ -507,11 +539,15 @@ function ExpRow({
           {experiment.lift_pct !== null ? (
             <div className="flex items-center gap-1.5">
               <Badge
-                variant={isLiftPositive ? "up" : isLiftNegative ? "down" : "neutral"}
+                variant={
+                  isLiftPositive ? 'up' : isLiftNegative ? 'down' : 'neutral'
+                }
                 shape="pill"
                 className="font-semibold"
               >
-                {isLiftPositive ? `+${experiment.lift_pct}%` : `${experiment.lift_pct}%`}
+                {isLiftPositive
+                  ? `+${experiment.lift_pct}%`
+                  : `${experiment.lift_pct}%`}
               </Badge>
             </div>
           ) : (
@@ -528,7 +564,7 @@ function ExpRow({
       {/* Status */}
       <TableCell className="whitespace-nowrap py-3.5">
         <div className="inline-flex items-center gap-1.5">
-          <span className={cn("h-1.5 w-1.5 rounded-full", sMeta.dotClass)} />
+          <span className={cn('h-1.5 w-1.5 rounded-full', sMeta.dotClass)} />
           <Badge variant={sMeta.variant} shape="square">
             {sMeta.label}
           </Badge>
@@ -546,7 +582,7 @@ function ExpRow({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-end gap-1.5">
-          {experiment.status === "draft" && onRun && (
+          {experiment.status === 'draft' && onRun && (
             <Button
               size="sm"
               variant="outline"
@@ -556,7 +592,7 @@ function ExpRow({
               Launch
             </Button>
           )}
-          {experiment.status === "running" && onComplete && (
+          {experiment.status === 'running' && onComplete && (
             <Button
               size="sm"
               variant="outline"
@@ -566,8 +602,8 @@ function ExpRow({
               Conclude
             </Button>
           )}
-          {experiment.status === "conclusive" &&
-            experiment.winner === "variant" &&
+          {experiment.status === 'conclusive' &&
+            experiment.winner === 'variant' &&
             onApplyWinner && (
               <Button
                 size="sm"
@@ -648,7 +684,7 @@ function ExpDetailPanel({
                   {experiment.control_name}
                 </span>
               </div>
-              {experiment.winner === "control" && (
+              {experiment.winner === 'control' && (
                 <Badge variant="success" shape="square">
                   Winner
                 </Badge>
@@ -685,10 +721,10 @@ function ExpDetailPanel({
           {/* Variant Card */}
           <div
             className={cn(
-              "rounded-lg border p-4 bg-bg-surface transition-colors",
-              experiment.winner === "variant"
-                ? "border-emerald-500/30 bg-emerald-500/2"
-                : "border-border"
+              'rounded-lg border p-4 bg-bg-surface transition-colors',
+              experiment.winner === 'variant'
+                ? 'border-emerald-500/30 bg-emerald-500/2'
+                : 'border-border',
             )}
           >
             <div className="flex items-center justify-between border-b border-border pb-3">
@@ -700,7 +736,7 @@ function ExpDetailPanel({
                   {experiment.variant_name}
                 </span>
               </div>
-              {experiment.winner === "variant" && (
+              {experiment.winner === 'variant' && (
                 <Badge variant="success" shape="square">
                   Winner (+{experiment.lift_pct}%)
                 </Badge>
@@ -713,10 +749,10 @@ function ExpDetailPanel({
                 </span>
                 <p
                   className={cn(
-                    "mt-0.5 text-base font-bold tabular-nums",
-                    experiment.winner === "variant"
-                      ? "text-emerald-400"
-                      : "text-text-primary"
+                    'mt-0.5 text-base font-bold tabular-nums',
+                    experiment.winner === 'variant'
+                      ? 'text-emerald-400'
+                      : 'text-text-primary',
                   )}
                 >
                   {experiment.variant_metric_value}
@@ -760,7 +796,7 @@ function ExpDetailPanel({
           </div>
 
           <div className="flex items-center gap-2">
-            {experiment.winner === "variant" && (
+            {experiment.winner === 'variant' && (
               <Button size="sm" onClick={onApplyWinner}>
                 Deploy winning variant
               </Button>
@@ -782,14 +818,18 @@ interface NewExperimentModalProps {
   onSubmit: (newItem: ExperimentItem) => void;
 }
 
-function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps) {
-  const [name, setName] = useState("");
-  const [hypothesis, setHypothesis] = useState("");
-  const [platform, setPlatform] = useState<ExperimentPlatform>("meta");
-  const [testType, setTestType] = useState<ExperimentType>("ab_creative");
-  const [primaryMetric, setPrimaryMetric] = useState("ROAS");
-  const [controlName, setControlName] = useState("Baseline / Existing Asset");
-  const [variantName, setVariantName] = useState("Challenger Creative V1");
+function NewExperimentModal({
+  open,
+  onClose,
+  onSubmit,
+}: NewExperimentModalProps) {
+  const [name, setName] = useState('');
+  const [hypothesis, setHypothesis] = useState('');
+  const [platform, setPlatform] = useState<ExperimentPlatform>('meta');
+  const [testType, setTestType] = useState<ExperimentType>('ab_creative');
+  const [primaryMetric, setPrimaryMetric] = useState('ROAS');
+  const [controlName, setControlName] = useState('Baseline / Existing Asset');
+  const [variantName, setVariantName] = useState('Challenger Creative V1');
 
   if (!open) return null;
 
@@ -803,37 +843,37 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
       hypothesis: hypothesis.trim(),
       platform,
       test_type: testType,
-      status: "draft",
+      status: 'draft',
       primary_metric: primaryMetric,
-      control_name: controlName.trim() || "Control Variant",
-      control_metric_value: "Pending",
+      control_name: controlName.trim() || 'Control Variant',
+      control_metric_value: 'Pending',
       control_numeric: 0,
       control_spend: 0,
       control_conversions: 0,
-      variant_name: variantName.trim() || "Variant B",
-      variant_metric_value: "Pending",
+      variant_name: variantName.trim() || 'Variant B',
+      variant_metric_value: 'Pending',
       variant_numeric: 0,
       variant_spend: 0,
       variant_conversions: 0,
       lift_pct: null,
       confidence: 0,
-      sample_size_label: "0 imp · 0 conv",
-      duration_label: "Scheduled 14d",
-      winner: "none",
+      sample_size_label: '0 imp · 0 conv',
+      duration_label: 'Scheduled 14d',
+      winner: 'none',
       recommendation:
-        "Draft experiment created. Launch to begin collecting performance and telemetry samples.",
+        'Draft experiment created. Launch to begin collecting performance and telemetry samples.',
       started_at: null,
       completed_at: null,
     };
 
     onSubmit(newItem);
-    setName("");
-    setHypothesis("");
+    setName('');
+    setHypothesis('');
     onClose();
   };
 
   const inputCls =
-    "w-full rounded-md border border-white/12 bg-bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
+    'w-full rounded-md border border-white/12 bg-bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent';
 
   return (
     <div
@@ -851,7 +891,8 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
               Create new experiment
             </h3>
             <p className="text-xs text-text-muted mt-0.5">
-              Define an A/B or incrementality test with clear hypothesis and metrics.
+              Define an A/B or incrementality test with clear hypothesis and
+              metrics.
             </p>
           </div>
           <button
@@ -860,8 +901,18 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
             className="rounded p-1 text-text-muted hover:text-text-primary"
             aria-label="Close"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -887,7 +938,9 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
               </label>
               <select
                 value={platform}
-                onChange={(e) => setPlatform(e.target.value as ExperimentPlatform)}
+                onChange={(e) =>
+                  setPlatform(e.target.value as ExperimentPlatform)
+                }
                 className={inputCls}
               >
                 <option value="meta">Meta Ads</option>
@@ -987,13 +1040,13 @@ function NewExperimentModal({ open, onClose, onSubmit }: NewExperimentModalProps
 
 export default function ExperimentsPage() {
   const [experiments, setExperiments] = useState<ExperimentItem[]>(
-    INITIAL_MOCK_EXPERIMENTS
+    INITIAL_MOCK_EXPERIMENTS,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [platformFilter, setPlatformFilter] = useState<string>('all');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [modalOpen, setModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -1006,38 +1059,53 @@ export default function ExperimentsPage() {
       const remoteTests = await getIncrementalityTests().catch(() => []);
       if (Array.isArray(remoteTests) && remoteTests.length > 0) {
         // Map backend incrementality tests into our unified experiment model
-        const remoteMapped: ExperimentItem[] = remoteTests.map((t: IncrementalityTest) => ({
-          id: `INC-${t.id}`,
-          name: `${t.platform.toUpperCase()} ${t.test_type.replace(/_/g, " ")} Test`,
-          hypothesis: `Incrementality verification for ${t.platform} across treated (${t.markets_treated?.join(", ") || "all"}) vs control (${t.markets_control?.join(", ") || "baseline"}).`,
-          platform: (t.platform.toLowerCase() as ExperimentPlatform) || "meta",
-          test_type: (t.test_type as ExperimentType) || "geo_holdout",
-          status:
-            t.status === "completed"
-              ? "conclusive"
-              : t.status === "running"
-                ? "running"
-                : "draft",
-          primary_metric: "iROAS / Lift",
-          control_name: `Control (${t.markets_control?.join(", ") || "Holdout"})`,
-          control_metric_value: `$${t.spend_control.toLocaleString()}`,
-          control_numeric: t.spend_control,
-          control_spend: t.spend_control,
-          control_conversions: t.conversions_control,
-          variant_name: `Treated (${t.markets_treated?.join(", ") || "Treated"})`,
-          variant_metric_value: `$${t.spend_treated.toLocaleString()}`,
-          variant_numeric: t.spend_treated,
-          variant_spend: t.spend_treated,
-          variant_conversions: t.conversions_treated,
-          lift_pct: t.lift_pct ?? (t.conversions_control > 0 ? Math.round(((t.conversions_treated - t.conversions_control) / t.conversions_control) * 100) : null),
-          confidence: t.status === "completed" ? 96.5 : 82.0,
-          sample_size_label: `${(t.spend_treated + t.spend_control).toLocaleString()} total spend`,
-          duration_label: t.completed_at ? "Completed" : "Running",
-          winner: t.status === "completed" && (t.lift_pct ?? 0) > 0 ? "variant" : "none",
-          recommendation: "Backend incrementality test synced with live attribution engine.",
-          started_at: t.started_at,
-          completed_at: t.completed_at,
-        }));
+        const remoteMapped: ExperimentItem[] = remoteTests.map(
+          (t: IncrementalityTest) => ({
+            id: `INC-${t.id}`,
+            name: `${t.platform.toUpperCase()} ${t.test_type.replace(/_/g, ' ')} Test`,
+            hypothesis: `Incrementality verification for ${t.platform} across treated (${t.markets_treated?.join(', ') || 'all'}) vs control (${t.markets_control?.join(', ') || 'baseline'}).`,
+            platform:
+              (t.platform.toLowerCase() as ExperimentPlatform) || 'meta',
+            test_type: (t.test_type as ExperimentType) || 'geo_holdout',
+            status:
+              t.status === 'completed'
+                ? 'conclusive'
+                : t.status === 'running'
+                  ? 'running'
+                  : 'draft',
+            primary_metric: 'iROAS / Lift',
+            control_name: `Control (${t.markets_control?.join(', ') || 'Holdout'})`,
+            control_metric_value: `$${t.spend_control.toLocaleString()}`,
+            control_numeric: t.spend_control,
+            control_spend: t.spend_control,
+            control_conversions: t.conversions_control,
+            variant_name: `Treated (${t.markets_treated?.join(', ') || 'Treated'})`,
+            variant_metric_value: `$${t.spend_treated.toLocaleString()}`,
+            variant_numeric: t.spend_treated,
+            variant_spend: t.spend_treated,
+            variant_conversions: t.conversions_treated,
+            lift_pct:
+              t.lift_pct ??
+              (t.conversions_control > 0
+                ? Math.round(
+                    ((t.conversions_treated - t.conversions_control) /
+                      t.conversions_control) *
+                      100,
+                  )
+                : null),
+            confidence: t.status === 'completed' ? 96.5 : 82.0,
+            sample_size_label: `${(t.spend_treated + t.spend_control).toLocaleString()} total spend`,
+            duration_label: t.completed_at ? 'Completed' : 'Running',
+            winner:
+              t.status === 'completed' && (t.lift_pct ?? 0) > 0
+                ? 'variant'
+                : 'none',
+            recommendation:
+              'Backend incrementality test synced with live attribution engine.',
+            started_at: t.started_at,
+            completed_at: t.completed_at,
+          }),
+        );
 
         setExperiments((prev) => {
           const ids = new Set(remoteMapped.map((r) => r.id));
@@ -1076,12 +1144,12 @@ export default function ExperimentsPage() {
         item.id === id
           ? {
               ...item,
-              status: "running",
-              duration_label: "Day 1 of 14",
+              status: 'running',
+              duration_label: 'Day 1 of 14',
               started_at: new Date().toISOString(),
             }
-          : item
-      )
+          : item,
+      ),
     );
     showToast(`Experiment ${id} launched and telemetry collection active.`);
   };
@@ -1092,13 +1160,13 @@ export default function ExperimentsPage() {
         item.id === id
           ? {
               ...item,
-              status: "conclusive",
-              winner: (item.lift_pct ?? 0) > 0 ? "variant" : "none",
-              duration_label: "Completed today",
+              status: 'conclusive',
+              winner: (item.lift_pct ?? 0) > 0 ? 'variant' : 'none',
+              duration_label: 'Completed today',
               completed_at: new Date().toISOString(),
             }
-          : item
-      )
+          : item,
+      ),
     );
     showToast(`Experiment ${id} concluded. Significance analysis finalized.`);
   };
@@ -1116,11 +1184,11 @@ export default function ExperimentsPage() {
   const filteredRows = useMemo(() => {
     return experiments.filter((exp) => {
       // Status filter
-      if (statusFilter !== "all" && exp.status !== statusFilter) {
+      if (statusFilter !== 'all' && exp.status !== statusFilter) {
         return false;
       }
       // Platform filter
-      if (platformFilter !== "all" && exp.platform !== platformFilter) {
+      if (platformFilter !== 'all' && exp.platform !== platformFilter) {
         return false;
       }
       // Search query
@@ -1144,13 +1212,22 @@ export default function ExperimentsPage() {
   }, [experiments, statusFilter, platformFilter, searchQuery]);
 
   // Sort helper
-  const { sorted: sortedRows, key: sortKey, dir: sortDir, toggle: toggleSort } =
-    useTableSort<ExperimentItem>(filteredRows, { key: "lift_pct", dir: "desc" });
+  const {
+    sorted: sortedRows,
+    key: sortKey,
+    dir: sortDir,
+    toggle: toggleSort,
+  } = useTableSort<ExperimentItem>(filteredRows, {
+    key: 'lift_pct',
+    dir: 'desc',
+  });
 
   // Counts for tabs
-  const runningCount = experiments.filter((e) => e.status === "running").length;
-  const conclusiveCount = experiments.filter((e) => e.status === "conclusive").length;
-  const draftCount = experiments.filter((e) => e.status === "draft").length;
+  const runningCount = experiments.filter((e) => e.status === 'running').length;
+  const conclusiveCount = experiments.filter(
+    (e) => e.status === 'conclusive',
+  ).length;
+  const draftCount = experiments.filter((e) => e.status === 'draft').length;
 
   return (
     <div className="space-y-8">
@@ -1181,7 +1258,9 @@ export default function ExperimentsPage() {
             Experiments & Incrementality
           </h2>
           <p className="mt-1 max-w-2xl text-sm leading-relaxed text-text-secondary">
-            Statistically rigorous A/B and incrementality testing across ad channels to validate creative, audience, and bidding hypotheses before full budget rollout.
+            Statistically rigorous A/B and incrementality testing across ad
+            channels to validate creative, audience, and bidding hypotheses
+            before full budget rollout.
           </p>
         </div>
 
@@ -1201,7 +1280,11 @@ export default function ExperimentsPage() {
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             New experiment
           </Button>
@@ -1255,20 +1338,20 @@ export default function ExperimentsPage() {
             {/* Status Tabs */}
             <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-bg-elevated p-1">
               {[
-                { id: "all", label: `All (${experiments.length})` },
-                { id: "running", label: `Running (${runningCount})` },
-                { id: "conclusive", label: `Conclusive (${conclusiveCount})` },
-                { id: "draft", label: `Drafts (${draftCount})` },
+                { id: 'all', label: `All (${experiments.length})` },
+                { id: 'running', label: `Running (${runningCount})` },
+                { id: 'conclusive', label: `Conclusive (${conclusiveCount})` },
+                { id: 'draft', label: `Drafts (${draftCount})` },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => setStatusFilter(tab.id)}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-fast",
+                    'rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-fast',
                     statusFilter === tab.id
-                      ? "bg-white/12 text-text-primary shadow-sm"
-                      : "text-text-secondary hover:bg-white/4 hover:text-text-primary"
+                      ? 'bg-white/12 text-text-primary shadow-sm'
+                      : 'text-text-secondary hover:bg-white/4 hover:text-text-primary',
                   )}
                 >
                   {tab.label}
@@ -1323,7 +1406,11 @@ export default function ExperimentsPage() {
       {/* Main Experiments Table */}
       <div className="rounded-xl border border-border bg-bg-surface overflow-hidden shadow-sm">
         {loading ? (
-          <div className="p-6 space-y-4" aria-busy="true" aria-label="Loading experiments">
+          <div
+            className="p-6 space-y-4"
+            aria-busy="true"
+            aria-label="Loading experiments"
+          >
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="flex items-center justify-between gap-4">
                 <Skeleton className="h-6 w-1/3" />
@@ -1340,51 +1427,51 @@ export default function ExperimentsPage() {
               <TableRow className="border-b border-border hover:bg-transparent">
                 <TableHead
                   sortable
-                  active={sortKey === "name"}
+                  active={sortKey === 'name'}
                   dir={sortDir}
-                  onSort={() => toggleSort("name")}
+                  onSort={() => toggleSort('name')}
                   className="w-[300px]"
                 >
                   Experiment & hypothesis
                 </TableHead>
                 <TableHead
                   sortable
-                  active={sortKey === "platform"}
+                  active={sortKey === 'platform'}
                   dir={sortDir}
-                  onSort={() => toggleSort("platform")}
+                  onSort={() => toggleSort('platform')}
                 >
                   Platform
                 </TableHead>
                 <TableHead
                   sortable
-                  active={sortKey === "test_type"}
+                  active={sortKey === 'test_type'}
                   dir={sortDir}
-                  onSort={() => toggleSort("test_type")}
+                  onSort={() => toggleSort('test_type')}
                 >
                   Type
                 </TableHead>
                 <TableHead
                   sortable
-                  active={sortKey === "primary_metric"}
+                  active={sortKey === 'primary_metric'}
                   dir={sortDir}
-                  onSort={() => toggleSort("primary_metric")}
+                  onSort={() => toggleSort('primary_metric')}
                 >
                   Metric
                 </TableHead>
                 <TableHead>Control vs Challenger</TableHead>
                 <TableHead
                   sortable
-                  active={sortKey === "lift_pct"}
+                  active={sortKey === 'lift_pct'}
                   dir={sortDir}
-                  onSort={() => toggleSort("lift_pct")}
+                  onSort={() => toggleSort('lift_pct')}
                 >
                   Lift & significance
                 </TableHead>
                 <TableHead
                   sortable
-                  active={sortKey === "status"}
+                  active={sortKey === 'status'}
                   dir={sortDir}
-                  onSort={() => toggleSort("status")}
+                  onSort={() => toggleSort('status')}
                 >
                   Status
                 </TableHead>
@@ -1414,19 +1501,23 @@ export default function ExperimentsPage() {
                     No experiments found
                   </p>
                   <p className="mt-1 max-w-sm text-xs leading-relaxed text-text-secondary">
-                    {searchQuery || statusFilter !== "all" || platformFilter !== "all"
-                      ? "No experiments match the selected filters. Try clearing your search query or status filter."
-                      : "Create your first A/B or incrementality test to start validating marketing hypotheses with statistical rigor."}
+                    {searchQuery ||
+                    statusFilter !== 'all' ||
+                    platformFilter !== 'all'
+                      ? 'No experiments match the selected filters. Try clearing your search query or status filter.'
+                      : 'Create your first A/B or incrementality test to start validating marketing hypotheses with statistical rigor.'}
                   </p>
                   <div className="mt-4">
-                    {searchQuery || statusFilter !== "all" || platformFilter !== "all" ? (
+                    {searchQuery ||
+                    statusFilter !== 'all' ||
+                    platformFilter !== 'all' ? (
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setSearchQuery("");
-                          setStatusFilter("all");
-                          setPlatformFilter("all");
+                          setSearchQuery('');
+                          setStatusFilter('all');
+                          setPlatformFilter('all');
                         }}
                       >
                         Reset filters

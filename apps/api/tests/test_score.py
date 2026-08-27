@@ -9,7 +9,7 @@ Gates:
   * an ad running ~10 days is not promoted to any tier (under the 30d floor)
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.discovery.schemas import AdRecord
 from app.discovery.score.winner_engine import score_ads
@@ -26,7 +26,7 @@ def _ad(ad_id: str, days_live: float) -> AdRecord:
         platform="meta",
         advertiser="Rival Co",
         ad_id=ad_id,
-        start_date=datetime.now(timezone.utc) - timedelta(days=days_live),
+        start_date=datetime.now(UTC) - timedelta(days=days_live),
         spend_estimate=5_000.0,
         impressions=250_000,
         text="Trusted by thousands of customers.",

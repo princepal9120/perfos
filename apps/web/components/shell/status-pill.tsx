@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import type * as React from 'react';
+import { cn } from '@/lib/utils';
 
-export type StatusMode = "mock" | "live";
+export type StatusMode = 'mock' | 'live';
 
 export interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Mode to display: 'mock' (default) or 'live' */
@@ -36,21 +36,21 @@ export function StatusPill({
   ...props
 }: StatusPillProps) {
   const isLive = Boolean(
-    live || mode === "live" || status === "live" || variant === "live"
+    live || mode === 'live' || status === 'live' || variant === 'live',
   );
-  const currentMode: StatusMode = isLive ? "live" : "mock";
+  const currentMode: StatusMode = isLive ? 'live' : 'mock';
 
-  const defaultLabel = currentMode === "live" ? "Live" : "Mock data";
+  const defaultLabel = currentMode === 'live' ? 'Live' : 'Mock data';
   const displayLabel = children ?? label ?? defaultLabel;
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium leading-4 tracking-tight select-none transition-colors",
-        currentMode === "live"
-          ? "border-blue-500/20 bg-blue-500/10 text-blue-400"
-          : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
-        className
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium leading-4 tracking-tight select-none transition-colors',
+        currentMode === 'live'
+          ? 'border-blue-500/20 bg-blue-500/10 text-blue-400'
+          : 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400',
+        className,
       )}
       {...props}
     >
@@ -61,15 +61,15 @@ export function StatusPill({
         {pulse && (
           <span
             className={cn(
-              "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
-              currentMode === "live" ? "bg-blue-400" : "bg-emerald-400"
+              'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
+              currentMode === 'live' ? 'bg-blue-400' : 'bg-emerald-400',
             )}
           />
         )}
         <span
           className={cn(
-            "h-1.5 w-1.5 rounded-full",
-            currentMode === "live" ? "bg-blue-400" : "bg-emerald-400"
+            'h-1.5 w-1.5 rounded-full',
+            currentMode === 'live' ? 'bg-blue-400' : 'bg-emerald-400',
           )}
         />
       </span>

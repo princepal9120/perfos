@@ -15,11 +15,11 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["PERSONA_MAP", "persona_fit"]
+__all__ = ["PERSONA_MAP", "persona_fit", "rank_by_persona"]
 
 # persona id -> channels where its winning ads are expected to run.
 PERSONA_MAP: dict[str, tuple[str, ...]] = {
-    "saas": ("google", "tiktok", "instagram", "linkedin", "x"),
+    "saas": ("google", "meta", "tiktok", "instagram", "linkedin", "x"),
     "dropship": ("meta", "tiktok"),
     "beauty": ("instagram", "tiktok", "snap"),
     "b2b": ("linkedin", "x"),
@@ -31,8 +31,20 @@ def persona_fit(ad: str | dict[str, Any] | Any, persona: str) -> float:
     channels = PERSONA_MAP.get(persona)
     if not channels or ad is None:
         return 0.0
-    if isinstance(ad, dict):
-        platform = ad.get("platform")
-    else:
-        platform = getattr(ad, "platform", None)
+    platform = ad.get("platform") if isinstance(ad, dict) else getattr(ad, "platform", None)
     return 1.0 if isinstance(platform, str) and platform in channels else 0.0
+
+
+def rank_by_persona(signals: list[Any], persona: str) -> list[Any]:
+    """Sort on-persona channels first, then by score.
+
+    Re-ranks rather than filters: a search must always return what the user
+    asked for, even when the winner runs off the persona's usual channels.
+    """
+    if persona not in PERSONA_MAP:
+        return list(signals)
+    return sorted(
+        signals,
+        key=lambda s: (persona_fit(s, persona), float(getattr(s, "score", 0.0) or 0.0)),
+        reverse=True,
+    )

@@ -1,21 +1,30 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { AnomalyList, type AnomalyItem } from "@/components/measurement/anomaly-list";
-import { CreativeTable, type CreativeRow } from "@/components/measurement/creative-table";
-import { IroasChart, type IroasChartItem } from "@/components/measurement/iroas-chart";
-import { OptimizerPlan } from "@/components/measurement/optimizer-plan";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import {
+  type AnomalyItem,
+  AnomalyList,
+} from '@/components/measurement/anomaly-list';
+import {
+  type CreativeRow,
+  CreativeTable,
+} from '@/components/measurement/creative-table';
+import {
+  IroasChart,
+  type IroasChartItem,
+} from '@/components/measurement/iroas-chart';
+import { OptimizerPlan } from '@/components/measurement/optimizer-plan';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Stat } from "@/components/ui/stat";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Stat } from '@/components/ui/stat';
 import {
   Table,
   TableBody,
@@ -23,39 +32,39 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
+  type Anomaly,
+  type CreativePerformance,
   createIncrementalityTest,
   getAnomalies,
   getCreatives,
   getIncrementalityTests,
   getIroas,
-  postReallocate,
-  runIncrementalityTest,
-  type Anomaly,
-  type CreativePerformance,
   type IncrementalityTest,
   type IroasRow,
   type OptimizerPlan as OptimizerPlanType,
-} from "@/lib/api";
-import { cn } from "@/lib/utils";
+  postReallocate,
+  runIncrementalityTest,
+} from '@/lib/api';
+import { cn } from '@/lib/utils';
 
-type TabKey = "iroas" | "creatives" | "anomalies" | "optimizer";
+type TabKey = 'iroas' | 'creatives' | 'anomalies' | 'optimizer';
 
 const PLATFORM_LABELS: Record<string, string> = {
-  google: "Google Ads",
-  meta: "Meta Ads",
-  shopify: "Shopify",
-  tiktok: "TikTok Ads",
-  linkedin: "LinkedIn Ads",
-  pinterest: "Pinterest Ads",
-  snapchat: "Snapchat Ads",
-  amazon: "Amazon Ads",
-  reddit: "Reddit Ads",
-  twitter: "Twitter Ads",
-  youtube: "YouTube Ads",
-  amazon_ads: "Amazon DSP",
-  x_ads: "X Ads",
+  google: 'Google Ads',
+  meta: 'Meta Ads',
+  shopify: 'Shopify',
+  tiktok: 'TikTok Ads',
+  linkedin: 'LinkedIn Ads',
+  pinterest: 'Pinterest Ads',
+  snapchat: 'Snapchat Ads',
+  amazon: 'Amazon Ads',
+  reddit: 'Reddit Ads',
+  twitter: 'Twitter Ads',
+  youtube: 'YouTube Ads',
+  amazon_ads: 'Amazon DSP',
+  x_ads: 'X Ads',
 };
 
 function formatPlatform(platform: string): string {
@@ -64,106 +73,109 @@ function formatPlatform(platform: string): string {
 
 // Fallback demo data for standalone execution
 const DEMO_IROAS: IroasRow[] = [
-  { platform: "meta", reported_roas: 3.45, iroas: 2.76, calibration: 0.8 },
-  { platform: "google", reported_roas: 4.12, iroas: 3.71, calibration: 0.9 },
-  { platform: "tiktok", reported_roas: 2.85, iroas: 1.71, calibration: 0.6 },
-  { platform: "youtube", reported_roas: 2.3, iroas: 1.84, calibration: 0.8 },
-  { platform: "pinterest", reported_roas: 1.95, iroas: 1.36, calibration: 0.7 },
-  { platform: "amazon_ads", reported_roas: 3.8, iroas: 3.42, calibration: 0.9 },
+  { platform: 'meta', reported_roas: 3.45, iroas: 2.76, calibration: 0.8 },
+  { platform: 'google', reported_roas: 4.12, iroas: 3.71, calibration: 0.9 },
+  { platform: 'tiktok', reported_roas: 2.85, iroas: 1.71, calibration: 0.6 },
+  { platform: 'youtube', reported_roas: 2.3, iroas: 1.84, calibration: 0.8 },
+  { platform: 'pinterest', reported_roas: 1.95, iroas: 1.36, calibration: 0.7 },
+  { platform: 'amazon_ads', reported_roas: 3.8, iroas: 3.42, calibration: 0.9 },
 ];
 
 const DEMO_CREATIVES: CreativeRow[] = [
   {
-    id: "cr_meta_01",
-    creative_id: "ugc_hook_unboxing_v2",
-    name: "UGC unboxing hook variant B",
-    platform: "meta",
+    id: 'cr_meta_01',
+    creative_id: 'ugc_hook_unboxing_v2',
+    name: 'UGC unboxing hook variant B',
+    platform: 'meta',
     spend: 18450,
     roas: 3.12,
     impressions: 482000,
     conversions: 576,
     hook_rate: 0.384,
     fatigue_score: 18,
-    status: "winning",
+    status: 'winning',
   },
   {
-    id: "cr_meta_02",
-    creative_id: "problem_agitation_hero",
-    name: "Problem-agitation 15s reel",
-    platform: "meta",
+    id: 'cr_meta_02',
+    creative_id: 'problem_agitation_hero',
+    name: 'Problem-agitation 15s reel',
+    platform: 'meta',
     spend: 14200,
     roas: 2.65,
     impressions: 395000,
     conversions: 376,
     hook_rate: 0.321,
     fatigue_score: 42,
-    status: "active",
+    status: 'active',
   },
   {
-    id: "cr_tiktok_01",
-    creative_id: "tiktok_stitch_review_04",
-    name: "Founder stitch honest review",
-    platform: "tiktok",
+    id: 'cr_tiktok_01',
+    creative_id: 'tiktok_stitch_review_04',
+    name: 'Founder stitch honest review',
+    platform: 'tiktok',
     spend: 12800,
     roas: 2.15,
     impressions: 540000,
     conversions: 275,
     hook_rate: 0.448,
     fatigue_score: 68,
-    status: "fatigued",
+    status: 'fatigued',
   },
   {
-    id: "cr_google_01",
-    creative_id: "pmax_lifestyle_bundle_3",
-    name: "Performance Max bundle asset group",
-    platform: "google",
+    id: 'cr_google_01',
+    creative_id: 'pmax_lifestyle_bundle_3',
+    name: 'Performance Max bundle asset group',
+    platform: 'google',
     spend: 22600,
     roas: 3.84,
     impressions: 310000,
     conversions: 868,
     hook_rate: 0.285,
     fatigue_score: 12,
-    status: "scaling",
+    status: 'scaling',
   },
   {
-    id: "cr_youtube_01",
-    creative_id: "yt_longform_breakdown_30s",
-    name: "30s product breakdown pre-roll",
-    platform: "youtube",
+    id: 'cr_youtube_01',
+    creative_id: 'yt_longform_breakdown_30s',
+    name: '30s product breakdown pre-roll',
+    platform: 'youtube',
     spend: 8900,
     roas: 1.92,
     impressions: 195000,
     conversions: 171,
     hook_rate: 0.245,
     fatigue_score: 25,
-    status: "active",
+    status: 'active',
   },
 ];
 
 const DEMO_ANOMALIES: AnomalyItem[] = [
   {
-    id: "an_01",
-    platform: "tiktok",
-    metric: "attribution_drop",
-    severity: "high",
+    id: 'an_01',
+    platform: 'tiktok',
+    metric: 'attribution_drop',
+    severity: 'high',
     detected_at: new Date(Date.now() - 1000 * 60 * 85).toISOString(),
-    detail: "Reported ROAS diverged -38% from Shopify server-side conversions over the last 6 hours.",
+    detail:
+      'Reported ROAS diverged -38% from Shopify server-side conversions over the last 6 hours.',
   },
   {
-    id: "an_02",
-    platform: "meta",
-    metric: "cpm_spike",
-    severity: "moderate",
+    id: 'an_02',
+    platform: 'meta',
+    metric: 'cpm_spike',
+    severity: 'moderate',
     detected_at: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
-    detail: "Blended CPM surged +24% across lookalike ad sets following catalog sync update.",
+    detail:
+      'Blended CPM surged +24% across lookalike ad sets following catalog sync update.',
   },
   {
-    id: "an_03",
-    platform: "google",
-    metric: "click_inflation",
-    severity: "low",
+    id: 'an_03',
+    platform: 'google',
+    metric: 'click_inflation',
+    severity: 'low',
     detected_at: new Date(Date.now() - 1000 * 60 * 720).toISOString(),
-    detail: "Non-converting search partner impressions increased +12% on branded search campaigns.",
+    detail:
+      'Non-converting search partner impressions increased +12% on branded search campaigns.',
   },
 ];
 
@@ -171,11 +183,11 @@ const DEMO_TESTS: IncrementalityTest[] = [
   {
     id: 1,
     workspace_id: 1,
-    platform: "tiktok",
-    test_type: "geo_holdout",
-    status: "completed",
-    markets_treated: ["CA", "TX", "FL"],
-    markets_control: ["NY", "IL", "PA"],
+    platform: 'tiktok',
+    test_type: 'geo_holdout',
+    status: 'completed',
+    markets_treated: ['CA', 'TX', 'FL'],
+    markets_control: ['NY', 'IL', 'PA'],
     spend_treated: 12400,
     spend_control: 0,
     conversions_treated: 342,
@@ -187,11 +199,11 @@ const DEMO_TESTS: IncrementalityTest[] = [
   {
     id: 2,
     workspace_id: 1,
-    platform: "meta",
-    test_type: "conversion_lift",
-    status: "running",
-    markets_treated: ["US_ALL"],
-    markets_control: ["US_HOLDOUT_10%"],
+    platform: 'meta',
+    test_type: 'conversion_lift',
+    status: 'running',
+    markets_treated: ['US_ALL'],
+    markets_control: ['US_HOLDOUT_10%'],
     spend_treated: 24500,
     spend_control: 0,
     conversions_treated: 680,
@@ -203,7 +215,7 @@ const DEMO_TESTS: IncrementalityTest[] = [
 ];
 
 export default function MeasurementPage() {
-  const [activeTab, setActiveTab] = React.useState<TabKey>("iroas");
+  const [activeTab, setActiveTab] = React.useState<TabKey>('iroas');
   const [iroasData, setIroasData] = React.useState<IroasRow[]>([]);
   const [creativesData, setCreativesData] = React.useState<CreativeRow[]>([]);
   const [anomaliesData, setAnomaliesData] = React.useState<AnomalyItem[]>([]);
@@ -219,20 +231,24 @@ export default function MeasurementPage() {
     setLoading(true);
     setError(null);
     try {
-      const [iroasRes, creativesRes, anomaliesRes, testsRes] = await Promise.allSettled([
-        getIroas(),
-        getCreatives(),
-        getAnomalies(),
-        getIncrementalityTests(),
-      ]);
+      const [iroasRes, creativesRes, anomaliesRes, testsRes] =
+        await Promise.allSettled([
+          getIroas(),
+          getCreatives(),
+          getAnomalies(),
+          getIncrementalityTests(),
+        ]);
 
       setIroasData(
-        iroasRes.status === "fulfilled" && iroasRes.value.length > 0
+        iroasRes.status === 'fulfilled' && iroasRes.value.length > 0
           ? iroasRes.value
-          : DEMO_IROAS
+          : DEMO_IROAS,
       );
 
-      if (creativesRes.status === "fulfilled" && creativesRes.value.length > 0) {
+      if (
+        creativesRes.status === 'fulfilled' &&
+        creativesRes.value.length > 0
+      ) {
         setCreativesData(
           creativesRes.value.map((c) => ({
             id: c.id,
@@ -245,19 +261,22 @@ export default function MeasurementPage() {
             impressions: c.impressions,
             fatigue_score: c.fatigue_score,
             hook_rate: c.hook_rate,
-          }))
+          })),
         );
       } else {
         setCreativesData(DEMO_CREATIVES);
       }
 
-      if (anomaliesRes.status === "fulfilled" && anomaliesRes.value.length > 0) {
+      if (
+        anomaliesRes.status === 'fulfilled' &&
+        anomaliesRes.value.length > 0
+      ) {
         setAnomaliesData(anomaliesRes.value);
       } else {
         setAnomaliesData(DEMO_ANOMALIES);
       }
 
-      if (testsRes.status === "fulfilled" && testsRes.value.length > 0) {
+      if (testsRes.status === 'fulfilled' && testsRes.value.length > 0) {
         setTestsData(testsRes.value);
       } else {
         setTestsData(DEMO_TESTS);
@@ -283,7 +302,7 @@ export default function MeasurementPage() {
     try {
       const result = await postReallocate();
       setPlan(result);
-      setActiveTab("optimizer");
+      setActiveTab('optimizer');
     } catch {
       // Mock fallback plan for offline demonstration
       setPlan({
@@ -291,28 +310,28 @@ export default function MeasurementPage() {
         total_recommended_spend: 76950,
         plan: [
           {
-            platform: "google",
+            platform: 'google',
             current_spend: 22600,
             recommended_spend: 28500,
             delta: 5900,
             expected_iroas: 3.71,
           },
           {
-            platform: "meta",
+            platform: 'meta',
             current_spend: 32650,
             recommended_spend: 32650,
             delta: 0,
             expected_iroas: 2.76,
           },
           {
-            platform: "tiktok",
+            platform: 'tiktok',
             current_spend: 12800,
             recommended_spend: 6900,
             delta: -5900,
             expected_iroas: 1.71,
           },
           {
-            platform: "youtube",
+            platform: 'youtube',
             current_spend: 8900,
             recommended_spend: 8900,
             delta: 0,
@@ -320,7 +339,7 @@ export default function MeasurementPage() {
           },
         ],
       });
-      setActiveTab("optimizer");
+      setActiveTab('optimizer');
     } finally {
       setOptimizerRunning(false);
     }
@@ -331,10 +350,10 @@ export default function MeasurementPage() {
     setError(null);
     try {
       const draft = await createIncrementalityTest({
-        platform: "tiktok",
-        test_type: "geo_holdout",
-        markets_treated: ["CA", "TX"],
-        markets_control: ["NY", "FL"],
+        platform: 'tiktok',
+        test_type: 'geo_holdout',
+        markets_treated: ['CA', 'TX'],
+        markets_control: ['NY', 'FL'],
       });
       await runIncrementalityTest(draft.id);
       await loadAll();
@@ -343,11 +362,11 @@ export default function MeasurementPage() {
       const newTest: IncrementalityTest = {
         id: Date.now(),
         workspace_id: 1,
-        platform: "tiktok",
-        test_type: "geo_holdout",
-        status: "running",
-        markets_treated: ["CA", "TX"],
-        markets_control: ["NY", "FL"],
+        platform: 'tiktok',
+        test_type: 'geo_holdout',
+        status: 'running',
+        markets_treated: ['CA', 'TX'],
+        markets_control: ['NY', 'FL'],
         spend_treated: 3500,
         spend_control: 0,
         conversions_treated: 94,
@@ -368,14 +387,14 @@ export default function MeasurementPage() {
 
   // Summary KPI values
   const blendedIroas = React.useMemo(() => {
-    if (!iroasData.length) return "2.54x";
+    if (!iroasData.length) return '2.54x';
     const sum = iroasData.reduce((acc, curr) => acc + curr.iroas, 0);
     return `${(sum / iroasData.length).toFixed(2)}x`;
   }, [iroasData]);
 
   const totalTrackedSpend = React.useMemo(() => {
     const sum = creativesData.reduce((acc, curr) => acc + curr.spend, 0);
-    return sum > 0 ? `$${Math.round(sum).toLocaleString()}` : "$76,950";
+    return sum > 0 ? `$${Math.round(sum).toLocaleString()}` : '$76,950';
   }, [creativesData]);
 
   return (
@@ -387,7 +406,8 @@ export default function MeasurementPage() {
             Unified measurement
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cross-channel iROAS calibration, creative fatigue tracking, attribution anomalies, and budget reallocation.
+            Cross-channel iROAS calibration, creative fatigue tracking,
+            attribution anomalies, and budget reallocation.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -404,7 +424,7 @@ export default function MeasurementPage() {
             onClick={() => void handleRunOptimizer()}
             disabled={optimizerRunning}
           >
-            {optimizerRunning ? "Optimizing…" : "Run optimizer"}
+            {optimizerRunning ? 'Optimizing…' : 'Run optimizer'}
           </Button>
         </div>
       </div>
@@ -441,7 +461,11 @@ export default function MeasurementPage() {
         <Stat
           label="Active anomalies"
           value={anomaliesData.length}
-          sub={anomaliesData.length > 0 ? "Flagged for attribution drift" : "All tracking healthy"}
+          sub={
+            anomaliesData.length > 0
+              ? 'Flagged for attribution drift'
+              : 'All tracking healthy'
+          }
         />
       </div>
 
@@ -450,50 +474,56 @@ export default function MeasurementPage() {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => setActiveTab("iroas")}
+            onClick={() => setActiveTab('iroas')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
-              activeTab === "iroas"
-                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
+              'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out',
+              activeTab === 'iroas'
+                ? 'border border-white/12 bg-white/8 text-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-white/3 hover:text-foreground',
             )}
           >
             <span>iROAS calibration</span>
-            <Badge variant={activeTab === "iroas" ? "default" : "secondary"} shape="square">
+            <Badge
+              variant={activeTab === 'iroas' ? 'default' : 'secondary'}
+              shape="square"
+            >
               {iroasData.length} channels
             </Badge>
           </button>
 
           <button
             type="button"
-            onClick={() => setActiveTab("creatives")}
+            onClick={() => setActiveTab('creatives')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
-              activeTab === "creatives"
-                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
+              'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out',
+              activeTab === 'creatives'
+                ? 'border border-white/12 bg-white/8 text-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-white/3 hover:text-foreground',
             )}
           >
             <span>Creatives</span>
-            <Badge variant={activeTab === "creatives" ? "default" : "secondary"} shape="square">
+            <Badge
+              variant={activeTab === 'creatives' ? 'default' : 'secondary'}
+              shape="square"
+            >
               {creativesData.length}
             </Badge>
           </button>
 
           <button
             type="button"
-            onClick={() => setActiveTab("anomalies")}
+            onClick={() => setActiveTab('anomalies')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
-              activeTab === "anomalies"
-                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
+              'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out',
+              activeTab === 'anomalies'
+                ? 'border border-white/12 bg-white/8 text-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-white/3 hover:text-foreground',
             )}
           >
             <span>Anomalies</span>
             {anomaliesData.length > 0 && (
               <Badge
-                variant={activeTab === "anomalies" ? "warning" : "secondary"}
+                variant={activeTab === 'anomalies' ? 'warning' : 'secondary'}
                 shape="square"
               >
                 {anomaliesData.length}
@@ -503,12 +533,12 @@ export default function MeasurementPage() {
 
           <button
             type="button"
-            onClick={() => setActiveTab("optimizer")}
+            onClick={() => setActiveTab('optimizer')}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out",
-              activeTab === "optimizer"
-                ? "border border-white/12 bg-white/8 text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-white/3 hover:text-foreground"
+              'flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-150 ease-out',
+              activeTab === 'optimizer'
+                ? 'border border-white/12 bg-white/8 text-foreground shadow-sm'
+                : 'text-muted-foreground hover:bg-white/3 hover:text-foreground',
             )}
           >
             <span>Optimizer</span>
@@ -524,7 +554,7 @@ export default function MeasurementPage() {
       {/* Tab Panels */}
       <div className="space-y-6">
         {/* TAB 1: iROAS */}
-        {activeTab === "iroas" && (
+        {activeTab === 'iroas' && (
           <div className="space-y-6">
             <IroasChart
               data={iroasData}
@@ -540,7 +570,8 @@ export default function MeasurementPage() {
                     Incrementality experiments
                   </CardTitle>
                   <CardDescription className="pt-1 text-xs text-muted-foreground">
-                    Geo holdouts and matched-market tests to isolate true marginal lift.
+                    Geo holdouts and matched-market tests to isolate true
+                    marginal lift.
                   </CardDescription>
                 </div>
                 <Button
@@ -549,7 +580,7 @@ export default function MeasurementPage() {
                   onClick={() => void handleLaunchTest()}
                   disabled={launchingTest}
                 >
-                  {launchingTest ? "Launching…" : "Launch test"}
+                  {launchingTest ? 'Launching…' : 'Launch test'}
                 </Button>
               </CardHeader>
               <CardContent className="p-0">
@@ -560,7 +591,9 @@ export default function MeasurementPage() {
                       <TableHead>Method</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Markets / Holdout</TableHead>
-                      <TableHead className="text-right">Incremental lift</TableHead>
+                      <TableHead className="text-right">
+                        Incremental lift
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -586,8 +619,12 @@ export default function MeasurementPage() {
                       ))
                     ) : testsData.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="py-8 text-center text-xs text-muted-foreground">
-                          No active incrementality experiments. Click &ldquo;Launch test&rdquo; to start a geo holdout.
+                        <TableCell
+                          colSpan={5}
+                          className="py-8 text-center text-xs text-muted-foreground"
+                        >
+                          No active incrementality experiments. Click
+                          &ldquo;Launch test&rdquo; to start a geo holdout.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -601,37 +638,41 @@ export default function MeasurementPage() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" shape="square">
-                              {t.test_type.replace(/_/g, " ")}
+                              {t.test_type.replace(/_/g, ' ')}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <Badge
                               variant={
-                                t.status === "completed"
-                                  ? "success"
-                                  : t.status === "running"
-                                  ? "warning"
-                                  : "secondary"
+                                t.status === 'completed'
+                                  ? 'success'
+                                  : t.status === 'running'
+                                    ? 'warning'
+                                    : 'secondary'
                               }
                             >
                               {t.status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">
-                            {t.markets_treated?.join(", ") ?? "Matched markets"}
+                            {t.markets_treated?.join(', ') ?? 'Matched markets'}
                           </TableCell>
                           <TableCell className="text-right font-semibold tabular-nums">
                             {t.lift_pct !== null ? (
                               <span
                                 className={cn(
-                                  t.lift_pct > 0 ? "text-emerald-400" : "text-red-400"
+                                  t.lift_pct > 0
+                                    ? 'text-emerald-400'
+                                    : 'text-red-400',
                                 )}
                               >
-                                {t.lift_pct > 0 ? "+" : ""}
+                                {t.lift_pct > 0 ? '+' : ''}
                                 {t.lift_pct.toFixed(1)}%
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">In progress</span>
+                              <span className="text-muted-foreground">
+                                In progress
+                              </span>
                             )}
                           </TableCell>
                         </TableRow>
@@ -645,12 +686,12 @@ export default function MeasurementPage() {
         )}
 
         {/* TAB 2: Creatives */}
-        {activeTab === "creatives" && (
+        {activeTab === 'creatives' && (
           <CreativeTable rows={creativesData} loading={loading} />
         )}
 
         {/* TAB 3: Anomalies */}
-        {activeTab === "anomalies" && (
+        {activeTab === 'anomalies' && (
           <AnomalyList
             items={anomaliesData}
             loading={loading}
@@ -659,7 +700,7 @@ export default function MeasurementPage() {
         )}
 
         {/* TAB 4: Optimizer */}
-        {activeTab === "optimizer" && (
+        {activeTab === 'optimizer' && (
           <OptimizerPlan
             plan={plan}
             running={optimizerRunning}

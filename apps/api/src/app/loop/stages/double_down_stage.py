@@ -29,7 +29,7 @@ __all__ = ["double_down_stage", "SCALE_THRESHOLD", "KILL_THRESHOLD", "SCALE", "K
 def _normalize_assets(tracking: Any) -> list[dict]:
     """Accept a bare asset dict, a list of assets, or {"assets": [...]}."""
     if isinstance(tracking, dict):
-        tracking = tracking["assets"] if "assets" in tracking else tracking
+        tracking = tracking.get("assets", tracking)
     if isinstance(tracking, dict):
         tracking = [tracking]
     if not isinstance(tracking, list):

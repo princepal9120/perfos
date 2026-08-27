@@ -95,7 +95,14 @@ def verify_workspace(api_key: str | None, workspace_id: str | None) -> bool:
     if not api_key or not workspace_id:
         return False
     env_key = _demo_api_key()
-    if env_key and hmac.compare_digest(api_key, env_key) and _workspace_exists(workspace_id) is not False:
+    from app.core.config import settings
+
+    if (
+        settings.MOCK_MODE
+        and env_key
+        and hmac.compare_digest(api_key, env_key)
+        and _workspace_exists(workspace_id) is not False
+    ):
         return True
     return bool(_db_key_matches(api_key, workspace_id))
 

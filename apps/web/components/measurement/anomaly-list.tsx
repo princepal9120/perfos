@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const PLATFORM_LABELS: Record<string, string> = {
-  google: "Google Ads",
-  meta: "Meta Ads",
+  google: 'Google Ads',
+  meta: 'Meta Ads',
 
-  tiktok: "TikTok Ads",
-  linkedin: "LinkedIn Ads",
-  reddit: "Reddit Ads",
-  x_ads: "X Ads",
+  tiktok: 'TikTok Ads',
+  linkedin: 'LinkedIn Ads',
+  reddit: 'Reddit Ads',
+  x_ads: 'X Ads',
 };
 
 export interface AnomalyItem {
   id?: string | number;
   platform: string;
   metric: string;
-  severity: "low" | "moderate" | "medium" | "high" | "critical" | string;
+  severity: 'low' | 'moderate' | 'medium' | 'high' | 'critical' | string;
   detected_at: string;
   detail: string;
 }
@@ -45,14 +45,14 @@ function formatPlatform(platform: string): string {
 
 function getSeverityBadge(severity: string) {
   const s = severity.toLowerCase();
-  if (s === "high" || s === "critical") {
+  if (s === 'high' || s === 'critical') {
     return (
       <Badge variant="destructive" shape="square">
         High severity
       </Badge>
     );
   }
-  if (s === "moderate" || s === "medium" || s === "warning") {
+  if (s === 'moderate' || s === 'medium' || s === 'warning') {
     return (
       <Badge variant="warning" shape="square">
         Moderate
@@ -70,11 +70,11 @@ function formatTimestamp(isoString: string): string {
   try {
     const date = new Date(isoString);
     if (isNaN(date.getTime())) return isoString;
-    return date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   } catch {
     return isoString;
@@ -121,17 +121,25 @@ function EmptyAnomalyState() {
           <path d="m9 12 2 2 4-4" />
         </svg>
       </div>
-      <h4 className="mt-3 text-sm font-semibold text-foreground">Tracking integrity clean</h4>
+      <h4 className="mt-3 text-sm font-semibold text-foreground">
+        Tracking integrity clean
+      </h4>
       <p className="mt-1 max-w-sm text-xs text-muted-foreground">
-        No active anomalies detected across channels. Platform attribution reconciles within expected bounds.
+        No active anomalies detected across channels. Platform attribution
+        reconciles within expected bounds.
       </p>
     </div>
   );
 }
 
-export function AnomalyList({ items, loading, onDismiss, className }: AnomalyListProps) {
+export function AnomalyList({
+  items,
+  loading,
+  onDismiss,
+  className,
+}: AnomalyListProps) {
   return (
-    <Card className={cn("border-border bg-card", className)}>
+    <Card className={cn('border-border bg-card', className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -145,7 +153,8 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
             )}
           </div>
           <CardDescription className="pt-1 text-xs text-muted-foreground">
-            Automated alerts for attribution spikes, tracking drop-offs, and platform over-reporting.
+            Automated alerts for attribution spikes, tracking drop-offs, and
+            platform over-reporting.
           </CardDescription>
         </div>
       </CardHeader>
@@ -157,7 +166,8 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
         ) : (
           <div className="divide-y divide-white/4">
             {items.map((item, index) => {
-              const itemId = item.id ?? `${item.platform}-${item.metric}-${index}`;
+              const itemId =
+                item.id ?? `${item.platform}-${item.metric}-${index}`;
               return (
                 <div
                   key={itemId}
@@ -170,7 +180,7 @@ export function AnomalyList({ items, loading, onDismiss, className }: AnomalyLis
                       </Badge>
                       {getSeverityBadge(item.severity)}
                       <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                        {item.metric.replace(/_/g, " ")}
+                        {item.metric.replace(/_/g, ' ')}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">

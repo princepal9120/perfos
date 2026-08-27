@@ -1,15 +1,27 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
-export type AdPlatform = "meta" | "tiktok" | "google" | "linkedin" | "x" | "reddit" | string;
-export type WinnerTier = "high_conf" | "winner" | "emerging" | "loser" | string;
-export type MediaType = "video" | "image" | "carousel" | string;
+export type AdPlatform =
+  | 'meta'
+  | 'tiktok'
+  | 'google'
+  | 'linkedin'
+  | 'x'
+  | 'reddit'
+  | string;
+export type WinnerTier = 'high_conf' | 'winner' | 'emerging' | 'loser' | string;
+export type MediaType = 'video' | 'image' | 'carousel' | string;
 
 export interface SpendRange {
   min?: number;
@@ -67,71 +79,77 @@ function formatCurrency(amount: number): string {
 }
 
 function getSpendDisplay(ad: WinningAd): string {
-  if (typeof ad.spendRange === "string" && ad.spendRange.trim()) {
+  if (typeof ad.spendRange === 'string' && ad.spendRange.trim()) {
     return ad.spendRange;
   }
-  if (typeof ad.estimatedSpend === "string" && ad.estimatedSpend.trim()) {
+  if (typeof ad.estimatedSpend === 'string' && ad.estimatedSpend.trim()) {
     return ad.estimatedSpend;
   }
-  if (ad.estimatedSpend && typeof ad.estimatedSpend === "object") {
+  if (ad.estimatedSpend && typeof ad.estimatedSpend === 'object') {
     if (ad.estimatedSpend.formatted) return ad.estimatedSpend.formatted;
-    if (typeof ad.estimatedSpend.min === "number" && typeof ad.estimatedSpend.max === "number") {
+    if (
+      typeof ad.estimatedSpend.min === 'number' &&
+      typeof ad.estimatedSpend.max === 'number'
+    ) {
       return `${formatCurrency(ad.estimatedSpend.min)} – ${formatCurrency(ad.estimatedSpend.max)}`;
     }
-    if (typeof ad.estimatedSpend.min === "number") {
+    if (typeof ad.estimatedSpend.min === 'number') {
       return `>${formatCurrency(ad.estimatedSpend.min)}`;
     }
   }
-  if (typeof ad.spendMin === "number" && typeof ad.spendMax === "number") {
+  if (typeof ad.spendMin === 'number' && typeof ad.spendMax === 'number') {
     return `${formatCurrency(ad.spendMin)} – ${formatCurrency(ad.spendMax)}`;
   }
-  if (typeof ad.spendMin === "number") {
+  if (typeof ad.spendMin === 'number') {
     return `>${formatCurrency(ad.spendMin)}`;
   }
-  return "$2.5k – $12k";
+  return '$2.5k – $12k';
 }
 
-function getScoreMeta(score?: number | null, tier?: string | null): {
-  badgeVariant: "success" | "default" | "warning" | "destructive" | "secondary";
+function getScoreMeta(
+  score?: number | null,
+  tier?: string | null,
+): {
+  badgeVariant: 'success' | 'default' | 'warning' | 'destructive' | 'secondary';
   label: string;
 } {
   const normalizedTier = tier?.toLowerCase();
-  const num = typeof score === "number" ? Math.round(score) : null;
+  const num = typeof score === 'number' ? Math.round(score) : null;
 
-  if (normalizedTier === "high_conf" || (num !== null && num >= 75)) {
-    return { badgeVariant: "success", label: "High confidence" };
+  if (normalizedTier === 'high_conf' || (num !== null && num >= 75)) {
+    return { badgeVariant: 'success', label: 'High confidence' };
   }
-  if (normalizedTier === "winner" || (num !== null && num >= 60)) {
-    return { badgeVariant: "default", label: "Proven winner" };
+  if (normalizedTier === 'winner' || (num !== null && num >= 60)) {
+    return { badgeVariant: 'default', label: 'Proven winner' };
   }
-  if (normalizedTier === "emerging" || (num !== null && num >= 45)) {
-    return { badgeVariant: "warning", label: "Emerging" };
+  if (normalizedTier === 'emerging' || (num !== null && num >= 45)) {
+    return { badgeVariant: 'warning', label: 'Emerging' };
   }
-  if (normalizedTier === "loser" || (num !== null && num < 45)) {
-    return { badgeVariant: "destructive", label: "Low signal" };
+  if (normalizedTier === 'loser' || (num !== null && num < 45)) {
+    return { badgeVariant: 'destructive', label: 'Low signal' };
   }
-  return { badgeVariant: "secondary", label: "Unscored" };
+  return { badgeVariant: 'secondary', label: 'Unscored' };
 }
 
 function getPlatformLabel(platform: string): string {
   const p = platform.toLowerCase();
   switch (p) {
-    case "meta":
-    case "facebook":
-    case "instagram":
-      return "Meta";
-    case "tiktok":
-      return "TikTok";
-    case "google":
-    case "youtube":
-      return "Google";
-    case "linkedin":
-      return "LinkedIn";
-    case "x":
-    case "twitter":
-      return "X";
-    case "reddit":
-      return "Reddit";
+    case 'meta':
+    case 'facebook':
+    case 'instagram':
+      return 'Meta';
+    case 'tiktok':
+      return 'TikTok';
+    case 'google':
+    case 'youtube':
+      return 'Google';
+    case 'linkedin':
+      return 'LinkedIn';
+    case 'x':
+    case 'twitter':
+      return 'X';
+    case 'reddit':
+      return 'Reddit';
     default:
       return platform.charAt(0).toUpperCase() + platform.slice(1);
   }
@@ -157,16 +175,17 @@ export function AdPreview({
     return <AdPreviewEmpty className={className} />;
   }
 
-  const isBookmarked = controlledBookmarked ?? ad.bookmarked ?? internalBookmarked;
+  const isBookmarked =
+    controlledBookmarked ?? ad.bookmarked ?? internalBookmarked;
   const runtime = ad.runtimeDays ?? ad.daysRunning ?? null;
   const scoreMeta = getScoreMeta(ad.score, ad.tier);
   const spendDisplay = getSpendDisplay(ad);
   const platformLabel = getPlatformLabel(ad.platform);
-  const advertiserName = ad.advertiser || "Verified competitor";
+  const advertiserName = ad.advertiser || 'Verified competitor';
   const headlineText = ad.headline || null;
-  const bodyText = ad.body || "No ad copy captured for this creative.";
-  const ctaLabel = ad.ctaText || "Learn more";
-  const mediaType = (ad.mediaType || "video").toLowerCase();
+  const bodyText = ad.body || 'No ad copy captured for this creative.';
+  const ctaLabel = ad.ctaText || 'Learn more';
+  const mediaType = (ad.mediaType || 'video').toLowerCase();
 
   const handleBookmarkToggle = () => {
     setInternalBookmarked(!isBookmarked);
@@ -176,8 +195,8 @@ export function AdPreview({
   return (
     <Card
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden border border-border bg-card shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/16 hover:bg-card focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40",
-        className
+        'group relative flex flex-col justify-between overflow-hidden border border-border bg-card shadow-sm transition-[border-color,box-shadow,background-color] duration-150 ease-out hover:border-white/16 hover:bg-card focus-within:border-border-hover focus-within:ring-2 focus-within:ring-blue-500/40',
+        className,
       )}
     >
       <div>
@@ -185,40 +204,51 @@ export function AdPreview({
         <CardHeader className="p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-              <Badge variant="outline" className="text-foreground border-border bg-white/3">
+              <Badge
+                variant="outline"
+                className="text-foreground border-border bg-white/3"
+              >
                 {platformLabel}
               </Badge>
               {runtime !== null && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium tabular-nums text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
+                  <span
+                    className="h-1.5 w-1.5 rounded-full bg-emerald-400"
+                    aria-hidden="true"
+                  />
                   {runtime}d active
                 </span>
               )}
             </div>
 
             <div className="flex items-center gap-1.5 shrink-0">
-              {typeof ad.score === "number" && (
-                <Badge variant={scoreMeta.badgeVariant} className="tabular-nums font-semibold">
+              {typeof ad.score === 'number' && (
+                <Badge
+                  variant={scoreMeta.badgeVariant}
+                  className="tabular-nums font-semibold"
+                >
                   {Math.round(ad.score)} · {scoreMeta.label}
                 </Badge>
               )}
               <button
                 type="button"
                 onClick={handleBookmarkToggle}
-                aria-label={isBookmarked ? "Remove bookmark" : "Save ad to swipe file"}
+                aria-label={
+                  isBookmarked ? 'Remove bookmark' : 'Save ad to swipe file'
+                }
                 className={cn(
-                  "inline-flex h-7 w-7 items-center justify-center rounded-md border text-xs transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
+                  'inline-flex h-7 w-7 items-center justify-center rounded-md border text-xs transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50',
                   isBookmarked
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                    : "border-border bg-white/3 text-muted-foreground hover:border-white/20 hover:text-foreground"
+                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
+                    : 'border-border bg-white/3 text-muted-foreground hover:border-white/20 hover:text-foreground',
                 )}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
-                  fill={isBookmarked ? "currentColor" : "none"}
+                  fill={isBookmarked ? 'currentColor' : 'none'}
                   stroke="currentColor"
-                  strokeWidth={isBookmarked ? "0" : "1.5"}
+                  strokeWidth={isBookmarked ? '0' : '1.5'}
                   className="h-3.5 w-3.5"
                   aria-hidden="true"
                 >
@@ -234,7 +264,7 @@ export function AdPreview({
             </h4>
             {ad.countries && ad.countries.length > 0 && (
               <span className="shrink-0 text-[11px] font-mono text-muted-foreground uppercase">
-                {ad.countries.slice(0, 3).join(", ")}
+                {ad.countries.slice(0, 3).join(', ')}
               </span>
             )}
           </div>
@@ -254,7 +284,7 @@ export function AdPreview({
           ) : (
             <div className="flex aspect-video w-full flex-col items-center justify-center p-4 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/4 text-zinc-300 shadow-inner">
-                {mediaType === "video" ? (
+                {mediaType === 'video' ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -314,8 +344,8 @@ export function AdPreview({
           <div className="space-y-1">
             <p
               className={cn(
-                "text-xs leading-relaxed text-zinc-300 transition-all",
-                !expanded && "line-clamp-3"
+                'text-xs leading-relaxed text-zinc-300 transition-all',
+                !expanded && 'line-clamp-3',
               )}
             >
               {bodyText}
@@ -326,13 +356,15 @@ export function AdPreview({
                 onClick={() => setExpanded(!expanded)}
                 className="text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors focus-visible:outline-none focus-visible:underline"
               >
-                {expanded ? "Show less" : "Show full copy"}
+                {expanded ? 'Show less' : 'Show full copy'}
               </button>
             )}
           </div>
 
           <div className="flex items-center justify-between pt-1 border-t border-white/4">
-            <span className="text-[11px] text-muted-foreground">CTA button</span>
+            <span className="text-[11px] text-muted-foreground">
+              CTA button
+            </span>
             <span className="inline-flex items-center rounded border border-border bg-white/2 px-2 py-0.5 text-[11px] font-medium text-zinc-300">
               {ctaLabel}
             </span>
@@ -344,14 +376,18 @@ export function AdPreview({
       <CardFooter className="flex flex-col gap-3 border-t border-border bg-white/1 p-4 pt-3">
         <div className="flex w-full items-center justify-between text-xs">
           <span className="text-muted-foreground">Est. ad spend</span>
-          <span className="font-medium text-foreground tabular-nums">{spendDisplay}</span>
+          <span className="font-medium text-foreground tabular-nums">
+            {spendDisplay}
+          </span>
         </div>
 
         <div className="grid w-full grid-cols-2 gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => (onSaveToBoard ? onSaveToBoard(ad) : onViewDetails?.(ad))}
+            onClick={() =>
+              onSaveToBoard ? onSaveToBoard(ad) : onViewDetails?.(ad)
+            }
             className="w-full text-xs"
           >
             Save to board
@@ -373,7 +409,12 @@ export function AdPreview({
 /** Skeleton layout matching AdPreview */
 export function AdPreviewSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn("flex flex-col justify-between border border-border bg-card p-4", className)}>
+    <Card
+      className={cn(
+        'flex flex-col justify-between border border-border bg-card p-4',
+        className,
+      )}
+    >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-5 w-20 rounded-full" />
@@ -407,7 +448,12 @@ export function AdPreviewEmpty({
   className?: string;
 }) {
   return (
-    <Card className={cn("flex flex-col items-center justify-center border border-dashed border-border bg-card p-8 text-center", className)}>
+    <Card
+      className={cn(
+        'flex flex-col items-center justify-center border border-dashed border-border bg-card p-8 text-center',
+        className,
+      )}
+    >
       <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/2 text-muted-foreground">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -427,10 +473,16 @@ export function AdPreviewEmpty({
         No winning ad selected
       </h4>
       <p className="mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
-        Select an ad from discovery or the swipe file table to preview its creative DNA, longevity, and spend.
+        Select an ad from discovery or the swipe file table to preview its
+        creative DNA, longevity, and spend.
       </p>
       {onSelectAction && (
-        <Button variant="outline" size="sm" onClick={onSelectAction} className="mt-4 text-xs">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onSelectAction}
+          className="mt-4 text-xs"
+        >
           Browse winners
         </Button>
       )}

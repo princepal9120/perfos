@@ -11,10 +11,11 @@ unusable rows are skipped, never fatal to the loop.
 
 from __future__ import annotations
 
+from datetime import UTC
 from typing import Any
 
 from app.discovery.schemas import AdRecord, WinnerSignal
-from app.discovery.score.persona_fit import PERSONA_MAP, persona_fit
+from app.discovery.score.persona_fit import rank_by_persona
 from app.discovery.score.winner_engine import score_ads
 
 __all__ = ["score_stage"]
@@ -38,24 +39,21 @@ def _as_record(ad: Any) -> AdRecord | None:
 def score_stage(ads: Any, persona: str = "saas") -> list[WinnerSignal]:
     """Score discovered ads into ranked ``WinnerSignal`` rows, best first.
 
-    Calls ``app.discovery.score.winner_engine.score_ads`` and, when ``persona``
-    is a known one, keeps only ads whose platform fits that persona's channel
-    mix. Unknown/empty personas return the full ranked field.
+    Calls ``app.discovery.score.winner_engine.score_ads``, then surfaces the
+    persona's own channels first. Nothing is dropped — an off-channel winner is
+    still a winner worth seeing.
     """
     records = [rec for ad in (ads or []) if (rec := _as_record(ad)) is not None]
     if not records:
         return []
 
-    ranked = score_ads(records)
-    if persona not in PERSONA_MAP:
-        return ranked
-    return [signal for signal in ranked if persona_fit(signal, persona) > 0.0]
+    return rank_by_persona(score_ads(records), persona)
 
 
 if __name__ == "__main__":
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def _ad(ad_id: str, platform: str) -> AdRecord:
         return AdRecord(
@@ -67,7 +65,7 @@ if __name__ == "__main__":
 
     # Known persona filters off-channel platforms.
     meta_only = [_ad("a1", "meta"), _ad("b1", "tiktok")]
-    out = score_stage(meta_only, "dropship")  # dropship -> meta/tiktok only
+    out = score_stage(meta_only, "dropship")  # dropship -> meta/tiktok first
     assert [s.ad_id for s in out] == ["a1", "b1"]  # tie on score -> platform tie-break
     assert all(isinstance(s, WinnerSignal) for s in out)
 

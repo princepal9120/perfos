@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
+import {
+  type BriefingPayload,
+  normalizeRecommendations,
+  parseBriefing,
+} from '@/components/overview/briefing';
+import { ChangeList } from '@/components/overview/change-list';
+import { KpiCards } from '@/components/overview/kpi-cards';
+import { Narrative } from '@/components/overview/narrative';
+import { RecommendationPreview } from '@/components/overview/recommendation-preview';
+import { Button } from '@/components/ui/button';
 import {
   generateRecommendations,
   getBriefing,
   getRecommendations,
-} from "@/lib/api";
-import {
-  normalizeRecommendations,
-  parseBriefing,
-  type BriefingPayload,
-} from "@/components/overview/briefing";
-import { KpiCards } from "@/components/overview/kpi-cards";
-import { ChangeList } from "@/components/overview/change-list";
-import { Narrative } from "@/components/overview/narrative";
-import { RecommendationPreview } from "@/components/overview/recommendation-preview";
-import { Button } from "@/components/ui/button";
+} from '@/lib/api';
 
-const today = new Date().toLocaleDateString("en-US", {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
+const today = new Date().toLocaleDateString('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
 });
 
 export default function OverviewPage() {
@@ -43,7 +43,7 @@ export default function OverviewPage() {
           : briefing.recommendations;
       setData({ ...briefing, recommendations: preview });
     } catch {
-      setError("Could not load the briefing. Make sure the API is running.");
+      setError('Could not load the briefing. Make sure the API is running.');
     } finally {
       setLoading(false);
     }
@@ -62,12 +62,18 @@ export default function OverviewPage() {
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Daily briefing
           </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">{today}</h2>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
+            {today}
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Demo DTC Brand &middot; reconciled against Shopify
           </p>
         </div>
-        <Button variant="outline" onClick={() => void load()} disabled={loading}>
+        <Button
+          variant="outline"
+          onClick={() => void load()}
+          disabled={loading}
+        >
           Refresh
         </Button>
       </div>
@@ -93,7 +99,9 @@ export default function OverviewPage() {
             </div>
           </div>
 
-          <RecommendationPreview recommendations={data?.recommendations ?? []} />
+          <RecommendationPreview
+            recommendations={data?.recommendations ?? []}
+          />
         </>
       )}
     </div>

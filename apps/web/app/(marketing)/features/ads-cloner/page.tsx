@@ -1,49 +1,66 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import { CloneIcon, SparklesIcon, CheckIcon, ZapIcon } from "@/components/marketing/icons";
+import Link from 'next/link';
+import { useState } from 'react';
+import {
+  CheckIcon,
+  CloneIcon,
+  SparklesIcon,
+  ZapIcon,
+} from '@/components/marketing/icons';
 
 const SAMPLE_COMPETITOR_ADS = [
   {
-    brand: "Linear",
-    title: "Keyboard-First Speed Teaser",
-    originalHeadline: "Built for speed. Never touch your mouse to assign an issue again.",
-    angle: "Extreme responsiveness & developer ergonomics",
-    network: "LinkedIn",
-    daysLive: 142
+    brand: 'Linear',
+    title: 'Keyboard-First Speed Teaser',
+    originalHeadline:
+      'Built for speed. Never touch your mouse to assign an issue again.',
+    angle: 'Extreme responsiveness & developer ergonomics',
+    network: 'LinkedIn',
+    daysLive: 142,
   },
   {
-    brand: "Notion",
-    title: "Sticky Note Matrix",
-    originalHeadline: "Why your team is drowning in 12 different tools when you only need one.",
-    angle: "Tool consolidation & mental simplicity",
-    network: "Meta",
-    daysLive: 98
+    brand: 'Notion',
+    title: 'Sticky Note Matrix',
+    originalHeadline:
+      'Why your team is drowning in 12 different tools when you only need one.',
+    angle: 'Tool consolidation & mental simplicity',
+    network: 'Meta',
+    daysLive: 98,
   },
   {
-    brand: "Supabase",
-    title: "Firebase Migration Warning",
-    originalHeadline: "Tired of unpredictable cloud bills at the end of the month? Switch to Postgres.",
-    angle: "Cost transparency & open source independence",
-    network: "YouTube",
-    daysLive: 180
-  }
+    brand: 'Supabase',
+    title: 'Firebase Migration Warning',
+    originalHeadline:
+      'Tired of unpredictable cloud bills at the end of the month? Switch to Postgres.',
+    angle: 'Cost transparency & open source independence',
+    network: 'YouTube',
+    daysLive: 180,
+  },
 ];
 
 export default function AdsClonerPage() {
-  const [targetUrl, setTargetUrl] = useState("https://facebook.com/ads/library/?id=883921092");
-  const [yourProduct, setYourProduct] = useState("PerfOS - Autonomous Ad Intelligence & MCP Platform");
+  const [targetUrl, setTargetUrl] = useState(
+    'https://facebook.com/ads/library/?id=883921092',
+  );
+  const [yourProduct, setYourProduct] = useState(
+    'PerfOS - Autonomous Ad Intelligence & MCP Platform',
+  );
   const [cloning, setCloning] = useState(false);
   const [step, setStep] = useState(1);
 
   const [remixResult, setRemixResult] = useState({
-    deconstructedHook: "Split screen comparing clunky legacy UI with 1-click modern workflow.",
-    deconstructedTone: "Urgent, developer-centric, high contrast.",
-    adaptedAngle: "Why growth engineers stopped configuring Meta Ads Manager manually in 2026.",
-    headlineVariationA: "Manage Meta, Google, and TikTok Ads directly from Claude or Cursor.",
-    headlineVariationB: "Clone winning competitor ads in 2 clicks without an agency.",
-    headlineVariationC: "Say goodbye to 15 manual dropdowns inside Ads Manager."
+    deconstructedHook:
+      'Split screen comparing clunky legacy UI with 1-click modern workflow.',
+    deconstructedTone: 'Urgent, developer-centric, high contrast.',
+    adaptedAngle:
+      'Why growth engineers stopped configuring Meta Ads Manager manually in 2026.',
+    headlineVariationA:
+      'Manage Meta, Google, and TikTok Ads directly from Claude or Cursor.',
+    headlineVariationB:
+      'Clone winning competitor ads in 2 clicks without an agency.',
+    headlineVariationC:
+      'Say goodbye to 15 manual dropdowns inside Ads Manager.',
   });
 
   const handleRunCloner = () => {
@@ -52,12 +69,16 @@ export default function AdsClonerPage() {
       setCloning(false);
       setStep(2);
       setRemixResult({
-        deconstructedHook: "Pain agitation: Lost engineering hours vs automated agent velocity.",
-        deconstructedTone: "Utilitarian, proof-first, technical confidence.",
+        deconstructedHook:
+          'Pain agitation: Lost engineering hours vs automated agent velocity.',
+        deconstructedTone: 'Utilitarian, proof-first, technical confidence.',
         adaptedAngle: `Why modern teams are switching to ${yourProduct.slice(0, 30)}...`,
-        headlineVariationA: "Eliminate manual ad configuration. Run everything via typed MCP tools.",
-        headlineVariationB: "Deploy competitor-tested winning hooks in under 3 minutes.",
-        headlineVariationC: "Automated ROAS optimization with zero manual spreadsheet exports."
+        headlineVariationA:
+          'Eliminate manual ad configuration. Run everything via typed MCP tools.',
+        headlineVariationB:
+          'Deploy competitor-tested winning hooks in under 3 minutes.',
+        headlineVariationC:
+          'Automated ROAS optimization with zero manual spreadsheet exports.',
       });
     }, 1200);
   };
@@ -67,13 +88,19 @@ export default function AdsClonerPage() {
       {/* Hero */}
       <div className="text-center max-w-4xl mx-auto space-y-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d86f82]/10 border border-[#d86f82]/20 text-[#a8455a] text-xs font-mono font-semibold">
-          <CloneIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Visual & Structural Angle Decompiler
+          <CloneIcon className="w-3.5 h-3.5 text-[#d86f82]" /> Visual &
+          Structural Angle Decompiler
         </div>
         <h1 className="text-4xl sm:text-6xl font-display font-bold text-zinc-950 tracking-tight leading-[1.08]">
-          Clone & Remix <span className="bg-gradient-to-r from-[#d86f82] via-[#c85c6f] to-[#a8455a] bg-clip-text text-transparent">Competitor Winning Ads</span>
+          Clone & Remix{' '}
+          <span className="bg-gradient-to-r from-[#d86f82] via-[#c85c6f] to-[#a8455a] bg-clip-text text-transparent">
+            Competitor Winning Ads
+          </span>
         </h1>
         <p className="text-zinc-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Paste any competitor ad library link, video, or image. Our multimodal engine deconstructs the psychological hook, copy rhythm, and visual hierarchy — then generates on-brand adaptations for your product.
+          Paste any competitor ad library link, video, or image. Our multimodal
+          engine deconstructs the psychological hook, copy rhythm, and visual
+          hierarchy — then generates on-brand adaptations for your product.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
           <Link
@@ -99,7 +126,9 @@ export default function AdsClonerPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs text-zinc-600 font-medium">Competitor Ad Library Link or Image URL:</label>
+              <label className="text-xs text-zinc-600 font-medium">
+                Competitor Ad Library Link or Image URL:
+              </label>
               <input
                 type="text"
                 value={targetUrl}
@@ -109,7 +138,9 @@ export default function AdsClonerPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-zinc-600 font-medium">Your Product Name & Value Proposition:</label>
+              <label className="text-xs text-zinc-600 font-medium">
+                Your Product Name & Value Proposition:
+              </label>
               <input
                 type="text"
                 value={yourProduct}
@@ -126,7 +157,9 @@ export default function AdsClonerPage() {
                 <button
                   key={i}
                   onClick={() => {
-                    setTargetUrl(`https://meta.com/ads/${ad.brand.toLowerCase()}`);
+                    setTargetUrl(
+                      `https://meta.com/ads/${ad.brand.toLowerCase()}`,
+                    );
                     handleRunCloner();
                   }}
                   className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-black/[0.06] text-[11px] font-medium"
@@ -147,7 +180,8 @@ export default function AdsClonerPage() {
                 </>
               ) : (
                 <>
-                  <span>Deconstruct & Remix</span> <CloneIcon className="w-3.5 h-3.5" />
+                  <span>Deconstruct & Remix</span>{' '}
+                  <CloneIcon className="w-3.5 h-3.5" />
                 </>
               )}
             </button>
@@ -160,7 +194,9 @@ export default function AdsClonerPage() {
             <span className="text-xs font-mono uppercase text-[#a8455a] font-semibold">
               2. Deconstructed Angle & Adapted Creative Set
             </span>
-            <span className="text-xs text-emerald-700 font-mono font-medium">✓ 100% Brand Token Compliant</span>
+            <span className="text-xs text-emerald-700 font-mono font-medium">
+              ✓ 100% Brand Token Compliant
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -172,12 +208,20 @@ export default function AdsClonerPage() {
 
               <div className="space-y-3 text-xs">
                 <div className="p-3 rounded-xl bg-white border border-black/[0.06] shadow-sm">
-                  <span className="text-muted-foreground block mb-1">Visual Hook Pattern:</span>
-                  <p className="text-zinc-900 font-medium">{remixResult.deconstructedHook}</p>
+                  <span className="text-muted-foreground block mb-1">
+                    Visual Hook Pattern:
+                  </span>
+                  <p className="text-zinc-900 font-medium">
+                    {remixResult.deconstructedHook}
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-white border border-black/[0.06] shadow-sm">
-                  <span className="text-muted-foreground block mb-1">Copy Psychology Tone:</span>
-                  <p className="text-zinc-900 font-medium">{remixResult.deconstructedTone}</p>
+                  <span className="text-muted-foreground block mb-1">
+                    Copy Psychology Tone:
+                  </span>
+                  <p className="text-zinc-900 font-medium">
+                    {remixResult.deconstructedTone}
+                  </p>
                 </div>
               </div>
             </div>
@@ -190,16 +234,28 @@ export default function AdsClonerPage() {
 
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 rounded-xl bg-white border border-[#d86f82]/20 space-y-1 shadow-sm">
-                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">Variant A · Direct Hook</span>
-                  <p className="text-zinc-900 font-semibold">{remixResult.headlineVariationA}</p>
+                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">
+                    Variant A · Direct Hook
+                  </span>
+                  <p className="text-zinc-900 font-semibold">
+                    {remixResult.headlineVariationA}
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-white border border-[#d86f82]/20 space-y-1 shadow-sm">
-                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">Variant B · Benefit Hook</span>
-                  <p className="text-zinc-900 font-semibold">{remixResult.headlineVariationB}</p>
+                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">
+                    Variant B · Benefit Hook
+                  </span>
+                  <p className="text-zinc-900 font-semibold">
+                    {remixResult.headlineVariationB}
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-white border border-[#d86f82]/20 space-y-1 shadow-sm">
-                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">Variant C · Pain Reliever</span>
-                  <p className="text-zinc-900 font-semibold">{remixResult.headlineVariationC}</p>
+                  <span className="text-[10px] text-[#a8455a] font-mono font-bold">
+                    Variant C · Pain Reliever
+                  </span>
+                  <p className="text-zinc-900 font-semibold">
+                    {remixResult.headlineVariationC}
+                  </p>
                 </div>
               </div>
             </div>
@@ -207,7 +263,9 @@ export default function AdsClonerPage() {
 
           <div className="p-4 rounded-xl bg-zinc-50 border border-black/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs text-zinc-700">
-              Staged: <strong className="text-zinc-950">3 remixed creative sets</strong> ready for instant publishing.
+              Staged:{' '}
+              <strong className="text-zinc-950">3 remixed creative sets</strong>{' '}
+              ready for instant publishing.
             </div>
             <div className="flex gap-2">
               <Link

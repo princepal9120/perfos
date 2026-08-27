@@ -1,8 +1,12 @@
-"use client";
+/* Hallmark · macrostructure: Workbench · tone: modern-minimal · anchor hue: daisy-black
+ * pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black
+ */
+'use client';
 
-import type { ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import StatusPill from "@/components/shell/status-pill";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { ReactNode } from 'react';
+import StatusPill from '@/components/shell/status-pill';
 
 export interface TopbarProps {
   onOpenCommand?: () => void;
@@ -28,20 +32,23 @@ function SearchIcon() {
 }
 
 export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
-  const pathname = usePathname() ?? "/";
+  const pathname = usePathname() ?? '/';
 
   const getTitle = () => {
-    if (pathname.includes("/settings")) return "Settings";
-    if (pathname.includes("/discovery")) return "Inspiration & Discovery";
-    if (pathname.includes("/creative")) return "Studio";
-    if (pathname.includes("/accounts")) return "Ad Accounts";
-    if (pathname.includes("/recommendations")) return "Draft Approval";
-    if (pathname.includes("/measurement")) return "Measurement & iROAS";
-    if (pathname.includes("/agents")) return "AI Agents";
-    if (pathname.includes("/loop")) return "Optimization Loop";
-    if (pathname.includes("/command-center")) return "Activity Feed";
-    if (pathname.includes("/chat")) return "Agent Chat";
-    return "Overview";
+    if (pathname.includes('/command-center') || pathname === '/chat')
+      return 'Central Command Center';
+    if (pathname.includes('/overview')) return 'Daily Briefing & Overview';
+    if (pathname.includes('/loop')) return 'Autonomous Growth Loop';
+    if (pathname.includes('/discovery')) return 'Inspiration & Spy Library';
+    if (pathname.includes('/creative')) return 'Creative Studio';
+    if (pathname.includes('/recommendations')) return 'Draft Approvals';
+    if (pathname.includes('/accounts')) return 'Ad Accounts';
+    if (pathname.includes('/measurement')) return 'Measurement & iROAS';
+    if (pathname.includes('/agents')) return 'AI Agents Fleet';
+    if (pathname.includes('/connected-apps')) return 'Connected Apps';
+    if (pathname.includes('/mcp')) return 'MCP Servers';
+    if (pathname.includes('/settings')) return 'Workspace Settings';
+    return 'Overview';
   };
 
   function handleOpenCommand() {
@@ -50,11 +57,11 @@ export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
       return;
     }
 
-    window.dispatchEvent(new CustomEvent("open-command-menu"));
+    window.dispatchEvent(new CustomEvent('open-command-menu'));
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-4 sm:px-6">
       <div className="flex min-w-0 items-center gap-2.5">
         <span className="truncate font-display text-sm font-semibold tracking-tight text-foreground">
           {getTitle()}
@@ -62,32 +69,40 @@ export function Topbar({ onOpenCommand, statusPill }: TopbarProps) {
         <span aria-hidden="true" className="text-zinc-600 text-xs">
           /
         </span>
-        <span className="hidden text-xs text-muted-foreground sm:inline">New project</span>
+        <span className="hidden text-xs text-muted-foreground sm:inline font-mono">
+          Demo DTC Brand
+        </span>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {pathname !== '/command-center' && (
+          <Link
+            href="/command-center"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
+          >
+            <span>⌘</span>
+            <span>Command Center</span>
+          </Link>
+        )}
+
         <button
           type="button"
           onClick={handleOpenCommand}
           aria-label="Open command menu"
-          className="group flex h-8 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-xs text-muted-foreground outline-none transition duration-150 ease-out hover:border-white/20 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-purple-500/50 active:scale-[0.98]"
+          className="group flex h-8 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-xs text-muted-foreground outline-none transition duration-150 ease-out hover:border-white/20 hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-primary active:scale-[0.98]"
         >
           <SearchIcon />
           <span className="hidden sm:inline">Search or jump to</span>
-          <kbd className="hidden rounded border border-border bg-muted px-1.5 py-0.5 font-sans text-[10px] text-muted-foreground sm:inline">
+          <kbd className="hidden rounded border border-border bg-surface-elevated px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline">
             ⌘K
           </kbd>
         </button>
 
         {statusPill ?? <StatusPill />}
 
-        <button
-          type="button"
-          aria-label="Open profile menu"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-purple-500/10 font-display text-xs font-semibold text-primary outline-none transition duration-150 ease-out hover:border-purple-400/60 hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-purple-500/60 active:scale-[0.98]"
-        >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/30 bg-primary/10 font-mono text-xs font-bold text-primary">
           P
-        </button>
+        </div>
       </div>
     </header>
   );

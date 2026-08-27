@@ -1,19 +1,23 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useCallback, useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  type LoopRunResult,
+  RunControls,
+} from '@/components/loop/run-controls';
+import { StageCard, type StageStatus } from '@/components/loop/stage-card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { StageCard, type StageStatus } from "@/components/loop/stage-card";
-import { RunControls, type LoopRunResult } from "@/components/loop/run-controls";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card';
+import { getLoopStatus, runLoop } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
 /* Stage definitions & initial mock state                             */
@@ -31,57 +35,57 @@ interface StageDef {
 
 const STAGES: readonly StageDef[] = [
   {
-    id: "find",
-    stageKey: "find",
-    stepNumber: "01",
-    label: "Find",
-    shortDesc: "Discover spy ads",
-    description: "Competitor ad library scraping across Meta and Google",
+    id: 'find',
+    stageKey: 'find',
+    stepNumber: '01',
+    label: 'Find',
+    shortDesc: 'Discover spy ads',
+    description: 'Competitor ad library scraping across Meta and Google',
     defaultCount: 42,
   },
   {
-    id: "score",
-    stageKey: "score",
-    stepNumber: "02",
-    label: "Score",
-    shortDesc: "Classify winners",
-    description: "Longevity, angle DNA, and predicted conversion ranking",
+    id: 'score',
+    stageKey: 'score',
+    stepNumber: '02',
+    label: 'Score',
+    shortDesc: 'Classify winners',
+    description: 'Longevity, angle DNA, and predicted conversion ranking',
     defaultCount: 18,
   },
   {
-    id: "create",
-    stageKey: "create",
-    stepNumber: "03",
-    label: "Create",
-    shortDesc: "Remix variants",
-    description: "Brief formulation and synthetic hook script generation",
+    id: 'create',
+    stageKey: 'create',
+    stepNumber: '03',
+    label: 'Create',
+    shortDesc: 'Remix variants',
+    description: 'Brief formulation and synthetic hook script generation',
     defaultCount: 6,
   },
   {
-    id: "launch",
-    stageKey: "launch",
-    stepNumber: "04",
-    label: "Launch",
-    shortDesc: "Deploy drafts",
-    description: "Draft-first deployment held at safety gate for approval",
+    id: 'launch',
+    stageKey: 'launch',
+    stepNumber: '04',
+    label: 'Launch',
+    shortDesc: 'Deploy drafts',
+    description: 'Draft-first deployment held at safety gate for approval',
     defaultCount: 6,
   },
   {
-    id: "track",
-    stageKey: "track",
-    stepNumber: "05",
-    label: "Track",
-    shortDesc: "Measure iROAS",
-    description: "Shopify truth reconciliation and geo-lift calibration",
+    id: 'track',
+    stageKey: 'track',
+    stepNumber: '05',
+    label: 'Track',
+    shortDesc: 'Measure iROAS',
+    description: 'Shopify truth reconciliation and geo-lift calibration',
     defaultCount: 6,
   },
   {
-    id: "double_down",
-    stageKey: "double-down",
-    stepNumber: "06",
-    label: "Double down",
-    shortDesc: "Scale or kill",
-    description: "Automated budget reallocation based on real margin",
+    id: 'double_down',
+    stageKey: 'double-down',
+    stepNumber: '06',
+    label: 'Double down',
+    shortDesc: 'Scale or kill',
+    description: 'Automated budget reallocation based on real margin',
     defaultCount: 3,
   },
 ];
@@ -92,73 +96,73 @@ interface AuditEntry {
   actor: string;
   action: string;
   target: string;
-  decision: "allow" | "paused" | "blocked" | "dry_run" | "executed";
+  decision: 'allow' | 'paused' | 'blocked' | 'dry_run' | 'executed';
   detail: string;
 }
 
 const INITIAL_AUDIT_LOG: AuditEntry[] = [
   {
-    id: "aud-007",
-    timestamp: "2026-08-26 11:38:08",
-    actor: "agent:double_down",
-    action: "double_down.budget_shift",
-    target: "scale_winners:3",
-    decision: "allow",
-    detail: "Emitted 3 budget scale proposals for top-performing UGC creatives",
+    id: 'aud-007',
+    timestamp: '2026-08-26 11:38:08',
+    actor: 'agent:double_down',
+    action: 'double_down.budget_shift',
+    target: 'scale_winners:3',
+    decision: 'allow',
+    detail: 'Emitted 3 budget scale proposals for top-performing UGC creatives',
   },
   {
-    id: "aud-006",
-    timestamp: "2026-08-26 11:38:07",
-    actor: "agent:track",
-    action: "track.iroas_reconcile",
-    target: "shopify_orders:30d",
-    decision: "allow",
-    detail: "Reconciled platform ROAS (3.4x) vs true incremental ROAS (2.28x)",
+    id: 'aud-006',
+    timestamp: '2026-08-26 11:38:07',
+    actor: 'agent:track',
+    action: 'track.iroas_reconcile',
+    target: 'shopify_orders:30d',
+    decision: 'allow',
+    detail: 'Reconciled platform ROAS (3.4x) vs true incremental ROAS (2.28x)',
   },
   {
-    id: "aud-005",
-    timestamp: "2026-08-26 11:38:06",
-    actor: "policy:safety_gate",
-    action: "launch.safety_gate_intercept",
-    target: "meta_campaign:draft_scale",
-    decision: "paused",
-    detail: "Paused 6 draft campaigns; awaiting manual operator confirmation",
+    id: 'aud-005',
+    timestamp: '2026-08-26 11:38:06',
+    actor: 'policy:safety_gate',
+    action: 'launch.safety_gate_intercept',
+    target: 'meta_campaign:draft_scale',
+    decision: 'paused',
+    detail: 'Paused 6 draft campaigns; awaiting manual operator confirmation',
   },
   {
-    id: "aud-004",
-    timestamp: "2026-08-26 11:38:05",
-    actor: "agent:create",
-    action: "create.clipgen_batch",
-    target: "assets:6_variants",
-    decision: "allow",
-    detail: "Generated 6 hook remixes with synthetic voiceover scripts",
+    id: 'aud-004',
+    timestamp: '2026-08-26 11:38:05',
+    actor: 'agent:create',
+    action: 'create.clipgen_batch',
+    target: 'assets:6_variants',
+    decision: 'allow',
+    detail: 'Generated 6 hook remixes with synthetic voiceover scripts',
   },
   {
-    id: "aud-003",
-    timestamp: "2026-08-26 11:38:04",
-    actor: "agent:score",
-    action: "score.tier_classification",
-    target: "winners:18",
-    decision: "allow",
-    detail: "Scored 18 Tier-1 winners based on 14+ day ad longevity",
+    id: 'aud-003',
+    timestamp: '2026-08-26 11:38:04',
+    actor: 'agent:score',
+    action: 'score.tier_classification',
+    target: 'winners:18',
+    decision: 'allow',
+    detail: 'Scored 18 Tier-1 winners based on 14+ day ad longevity',
   },
   {
-    id: "aud-002",
-    timestamp: "2026-08-26 11:38:03",
-    actor: "agent:find",
-    action: "discovery.find_stage",
-    target: "meta_ads_spy:100",
-    decision: "allow",
-    detail: "Fetched 42 candidate ads across active competitor domains",
+    id: 'aud-002',
+    timestamp: '2026-08-26 11:38:03',
+    actor: 'agent:find',
+    action: 'discovery.find_stage',
+    target: 'meta_ads_spy:100',
+    decision: 'allow',
+    detail: 'Fetched 42 candidate ads across active competitor domains',
   },
   {
-    id: "aud-001",
-    timestamp: "2026-08-26 11:38:02",
-    actor: "system:scheduler",
-    action: "loop.tick",
-    target: "all_stages",
-    decision: "dry_run",
-    detail: "Executed periodic dry-run cycle across Meta and Google pipelines",
+    id: 'aud-001',
+    timestamp: '2026-08-26 11:38:02',
+    actor: 'system:scheduler',
+    action: 'loop.tick',
+    target: 'all_stages',
+    decision: 'dry_run',
+    detail: 'Executed periodic dry-run cycle across Meta and Google pipelines',
   },
 ];
 
@@ -171,7 +175,7 @@ interface StageFlowItem {
   stepNumber: string;
   label: string;
   shortDesc: string;
-  status: "idle" | "running" | "ok" | "paused" | "error";
+  status: 'idle' | 'running' | 'ok' | 'paused' | 'error';
   count?: number;
 }
 
@@ -183,7 +187,7 @@ function StageFlow({
   className?: string;
 }) {
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn('w-full', className)}>
       <div className="flex items-center justify-between pb-3">
         <div>
           <h3 className="text-sm font-semibold tracking-tight text-foreground">
@@ -209,19 +213,20 @@ function StageFlow({
         <div className="flex min-w-[760px] items-stretch gap-2.5">
           {stages.map((stage, idx) => {
             const isLast = idx === stages.length - 1;
-            const isLaunch = stage.id === "launch";
+            const isLaunch = stage.id === 'launch';
 
             return (
               <React.Fragment key={stage.id}>
                 <div
                   className={cn(
-                    "group relative flex flex-1 flex-col justify-between rounded-lg border bg-card p-3.5 transition-all duration-150 ease-out",
-                    "hover:border-white/16 hover:bg-muted",
-                    stage.status === "running" && "border-blue-500/40 shadow-sm shadow-blue-500/10",
-                    stage.status === "paused" && "border-amber-500/30",
-                    stage.status === "ok" && "border-border",
-                    stage.status === "idle" && "border-border opacity-80",
-                    stage.status === "error" && "border-red-500/40"
+                    'group relative flex flex-1 flex-col justify-between rounded-lg border bg-card p-3.5 transition-all duration-150 ease-out',
+                    'hover:border-white/16 hover:bg-muted',
+                    stage.status === 'running' &&
+                      'border-blue-500/40 shadow-sm shadow-blue-500/10',
+                    stage.status === 'paused' && 'border-amber-500/30',
+                    stage.status === 'ok' && 'border-border',
+                    stage.status === 'idle' && 'border-border opacity-80',
+                    stage.status === 'error' && 'border-red-500/40',
                   )}
                 >
                   <div>
@@ -229,19 +234,20 @@ function StageFlow({
                       <span className="font-mono text-[11px] font-semibold tabular-nums text-muted-foreground group-hover:text-accent">
                         {stage.stepNumber}
                       </span>
-                      {stage.status === "running" ? (
+                      {stage.status === 'running' ? (
                         <Badge variant="default" shape="square">
                           Running
                         </Badge>
-                      ) : stage.status === "paused" || (isLaunch && stage.status === "ok") ? (
+                      ) : stage.status === 'paused' ||
+                        (isLaunch && stage.status === 'ok') ? (
                         <Badge variant="warning" shape="square">
                           Paused
                         </Badge>
-                      ) : stage.status === "ok" ? (
+                      ) : stage.status === 'ok' ? (
                         <Badge variant="success" shape="square">
                           OK
                         </Badge>
-                      ) : stage.status === "error" ? (
+                      ) : stage.status === 'error' ? (
                         <Badge variant="destructive" shape="square">
                           Error
                         </Badge>
@@ -265,7 +271,7 @@ function StageFlow({
                       Yield
                     </span>
                     <span className="font-mono text-xs font-medium tabular-nums text-foreground">
-                      {stage.count !== undefined ? stage.count : "—"}
+                      {stage.count !== undefined ? stage.count : '—'}
                     </span>
                   </div>
                 </div>
@@ -309,12 +315,12 @@ interface AuditLogProps {
 }
 
 function AuditLog({ entries, className }: AuditLogProps) {
-  const [filter, setFilter] = useState<string>("all");
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<string>('all');
+  const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
     return entries.filter((entry) => {
-      if (filter !== "all" && entry.decision !== filter) {
+      if (filter !== 'all' && entry.decision !== filter) {
         return false;
       }
       if (!query.trim()) return true;
@@ -329,7 +335,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
   }, [entries, filter, query]);
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card className={cn('overflow-hidden', className)}>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <CardTitle>Audit trail</CardTitle>
@@ -349,7 +355,7 @@ function AuditLog({ entries, className }: AuditLogProps) {
             />
             {query && (
               <button
-                onClick={() => setQuery("")}
+                onClick={() => setQuery('')}
                 aria-label="Clear filter"
                 className="absolute right-2 top-2 text-xs text-muted-foreground hover:text-zinc-300"
               >
@@ -361,20 +367,20 @@ function AuditLog({ entries, className }: AuditLogProps) {
           <div className="inline-flex rounded-md border border-border bg-background p-0.5 text-xs">
             {(
               [
-                { id: "all", label: "All" },
-                { id: "paused", label: "Paused" },
-                { id: "allow", label: "Allowed" },
-                { id: "dry_run", label: "Dry-run" },
+                { id: 'all', label: 'All' },
+                { id: 'paused', label: 'Paused' },
+                { id: 'allow', label: 'Allowed' },
+                { id: 'dry_run', label: 'Dry-run' },
               ] as const
             ).map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setFilter(tab.id)}
                 className={cn(
-                  "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+                  'rounded px-2.5 py-1 text-xs font-medium transition-colors',
                   filter === tab.id
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? 'bg-muted text-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {tab.label}
@@ -392,7 +398,9 @@ function AuditLog({ entries, className }: AuditLogProps) {
                 <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Timestamp
                 </th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Actor</th>
+                <th className="px-4 py-2.5 font-medium text-muted-foreground">
+                  Actor
+                </th>
                 <th className="px-4 py-2.5 font-medium text-muted-foreground">
                   Action
                 </th>
@@ -410,7 +418,10 @@ function AuditLog({ entries, className }: AuditLogProps) {
             <tbody className="divide-y divide-white/4">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-10 text-center text-muted-foreground"
+                  >
                     No matching audit trail events found.
                   </td>
                 </tr>
@@ -433,27 +444,27 @@ function AuditLog({ entries, className }: AuditLogProps) {
                       {entry.target}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
-                      {entry.decision === "allow" && (
+                      {entry.decision === 'allow' && (
                         <Badge variant="success" shape="square">
                           Allowed
                         </Badge>
                       )}
-                      {entry.decision === "paused" && (
+                      {entry.decision === 'paused' && (
                         <Badge variant="warning" shape="square">
                           Safety paused
                         </Badge>
                       )}
-                      {entry.decision === "blocked" && (
+                      {entry.decision === 'blocked' && (
                         <Badge variant="destructive" shape="square">
                           Blocked
                         </Badge>
                       )}
-                      {entry.decision === "dry_run" && (
+                      {entry.decision === 'dry_run' && (
                         <Badge variant="secondary" shape="square">
                           Dry-run
                         </Badge>
                       )}
-                      {entry.decision === "executed" && (
+                      {entry.decision === 'executed' && (
                         <Badge variant="default" shape="square">
                           Executed
                         </Badge>
@@ -508,7 +519,7 @@ function LastRunViewer({
         {result && (
           <div className="flex items-center gap-2">
             <Badge variant="neutral" shape="square">
-              {result.dry_run ? "dry-run" : "live"}
+              {result.dry_run ? 'dry-run' : 'live'}
             </Badge>
             <Button
               variant="outline"
@@ -516,7 +527,7 @@ function LastRunViewer({
               onClick={handleCopy}
               className="h-7 px-2.5 text-xs text-zinc-300 hover:text-foreground"
             >
-              {copied ? "Copied" : "Copy JSON"}
+              {copied ? 'Copied' : 'Copy JSON'}
             </Button>
           </div>
         )}
@@ -558,7 +569,7 @@ function LastRunViewer({
               disabled={running}
               className="mt-4"
             >
-              {running ? "Running cycle…" : "Execute dry-run now"}
+              {running ? 'Running cycle…' : 'Execute dry-run now'}
             </Button>
           </div>
         ) : (
@@ -581,56 +592,58 @@ export default function LoopPage() {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<LoopRunResult | null>(null);
-  const [auditEntries, setAuditEntries] = useState<AuditEntry[]>(INITIAL_AUDIT_LOG);
+  const [auditEntries, setAuditEntries] =
+    useState<AuditEntry[]>(INITIAL_AUDIT_LOG);
+  const [query, setQuery] = useState('');
+
+  // Show the previous run on load so the page isn't blank before the first click.
+  React.useEffect(() => {
+    getLoopStatus()
+      .then((s) => {
+        if (s.summary) setResult(s.summary as unknown as LoopRunResult);
+      })
+      .catch(() => {
+        /* no prior run, or API down — the run button surfaces the error */
+      });
+  }, []);
 
   // Execute dry-run directly
   const runLoopDryRun = useCallback(async () => {
     setRunning(true);
     setError(null);
     try {
-      const res = await fetch("/api/loop", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dry_run: true }),
-      });
-      const data: unknown = await res.json().catch(() => null);
-      if (!res.ok) {
-        throw new Error(
-          data && typeof data === "object" && "detail" in data
-            ? String((data as { detail: unknown }).detail)
-            : `Loop failed with status ${res.status}`
-        );
-      }
-
-      const payload = (data && typeof data === "object" ? data : {}) as LoopRunResult;
+      const payload = (await runLoop({
+        dry_run: true,
+        query: query.trim() || undefined,
+      })) as unknown as LoopRunResult;
       setResult(payload);
 
       // Prepend fresh audit record
-      const nowStr = new Date().toISOString().replace("T", " ").slice(0, 19);
+      const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
       const newEntry: AuditEntry = {
         id: `aud-${Date.now()}`,
         timestamp: nowStr,
-        actor: "user:operator",
-        action: "loop.execute_dry_run",
-        target: "all_stages",
-        decision: "dry_run",
+        actor: 'user:operator',
+        action: 'loop.execute_dry_run',
+        target: 'all_stages',
+        decision: 'dry_run',
         detail: `Completed full 6-stage dry-run. ${
-          payload.stages && typeof payload.stages === "object"
+          payload.stages && typeof payload.stages === 'object'
             ? Object.entries(payload.stages)
                 .map(([k, v]) => `${k}:${v}`)
-                .join(" ")
-            : "All stages verified"
+                .join(' ')
+            : 'All stages verified'
         }`,
       };
       setAuditEntries((prev) => [newEntry, ...prev]);
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : "Loop failed. Is the API running?"
+        e instanceof Error ? e.message : 'Loop failed. Is the API running?',
       );
     } finally {
       setRunning(false);
     }
-  }, []);
+  }, [query]);
 
   // Handler when RunControls completes
   const handleRunComplete = useCallback((resPayload: LoopRunResult) => {
@@ -638,37 +651,41 @@ export default function LoopPage() {
     setError(null);
 
     const isDryRun = resPayload.dry_run !== false;
-    const nowStr = new Date().toISOString().replace("T", " ").slice(0, 19);
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
     const newEntry: AuditEntry = {
       id: `aud-${Date.now()}`,
       timestamp: nowStr,
-      actor: "user:operator",
-      action: isDryRun ? "loop.execute_dry_run" : "loop.execute_live",
-      target: "all_stages",
-      decision: isDryRun ? "dry_run" : "allow",
-      detail: `Orchestrator completed ${isDryRun ? "dry-run" : "live run"}. Launch paused at safety gate.`,
+      actor: 'user:operator',
+      action: isDryRun ? 'loop.execute_dry_run' : 'loop.execute_live',
+      target: 'all_stages',
+      decision: isDryRun ? 'dry_run' : 'allow',
+      detail: `Orchestrator completed ${isDryRun ? 'dry-run' : 'live run'}. Launch paused at safety gate.`,
     };
     setAuditEntries((prev) => [newEntry, ...prev]);
   }, []);
 
   // Compute stage statuses and counts
   const stageFlowItems = useMemo<StageFlowItem[]>(() => {
-    const stageCounts = (result?.stages as Record<string, number> | undefined) ?? {};
+    const stageCounts =
+      (result?.stages as Record<string, number> | undefined) ?? {};
 
     return STAGES.map((stg) => {
-      let count = stageCounts[stg.stageKey] ?? stageCounts[stg.id] ?? (result ? 0 : stg.defaultCount);
-      let status: StageFlowItem["status"] = "idle";
+      const count =
+        stageCounts[stg.stageKey] ??
+        stageCounts[stg.id] ??
+        (result ? 0 : stg.defaultCount);
+      let status: StageFlowItem['status'] = 'idle';
 
       if (running) {
-        status = "running";
+        status = 'running';
       } else if (result) {
-        if (stg.id === "launch") {
-          status = "paused";
+        if (stg.id === 'launch') {
+          status = 'paused';
         } else {
-          status = "ok";
+          status = 'ok';
         }
       } else {
-        status = stg.id === "launch" ? "paused" : "ok";
+        status = stg.id === 'launch' ? 'paused' : 'ok';
       }
 
       return {
@@ -682,20 +699,26 @@ export default function LoopPage() {
     });
   }, [result, running]);
 
-  const stageCardStatuses = useMemo<Record<string, { count: number; status: StageStatus }>>(() => {
-    const stageCounts = (result?.stages as Record<string, number> | undefined) ?? {};
+  const stageCardStatuses = useMemo<
+    Record<string, { count: number; status: StageStatus }>
+  >(() => {
+    const stageCounts =
+      (result?.stages as Record<string, number> | undefined) ?? {};
 
     const map: Record<string, { count: number; status: StageStatus }> = {};
     for (const stg of STAGES) {
-      const count = stageCounts[stg.stageKey] ?? stageCounts[stg.id] ?? (result ? 0 : stg.defaultCount);
-      let status: StageStatus = "done";
+      const count =
+        stageCounts[stg.stageKey] ??
+        stageCounts[stg.id] ??
+        (result ? 0 : stg.defaultCount);
+      let status: StageStatus = 'done';
 
       if (running) {
-        status = "active";
+        status = 'active';
       } else if (result) {
-        status = "done";
+        status = 'done';
       } else {
-        status = "done";
+        status = 'done';
       }
 
       map[stg.id] = { count, status };
@@ -717,12 +740,22 @@ export default function LoopPage() {
             </Badge>
           </div>
           <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
-            Find &rarr; score &rarr; create &rarr; launch &rarr; track &rarr; double down.
-            Every external platform write is gated by safety policies and stays paused until human confirmation.
+            Find &rarr; score &rarr; create &rarr; launch &rarr; track &rarr;
+            double down. Every external platform write is gated by safety
+            policies and stays paused until human confirmation.
           </p>
         </div>
 
-        <RunControls onComplete={handleRunComplete} />
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Competitor to spy (optional)…"
+            aria-label="Competitor to spy"
+            className="h-8 w-60 rounded-md border border-border bg-white/4 px-2 text-xs text-zinc-300 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          />
+          <RunControls onComplete={handleRunComplete} query={query} />
+        </div>
       </div>
 
       {/* Safety Gate Banner */}
@@ -748,11 +781,16 @@ export default function LoopPage() {
               Safety gate active
             </p>
             <p className="text-[11px] text-muted-foreground">
-              Draft campaigns and budget changes remain paused until manually approved. Zero unexpected live spend.
+              Draft campaigns and budget changes remain paused until manually
+              approved. Zero unexpected live spend.
             </p>
           </div>
         </div>
-        <Badge variant="secondary" shape="square" className="hidden sm:inline-flex">
+        <Badge
+          variant="secondary"
+          shape="square"
+          className="hidden sm:inline-flex"
+        >
           Policy enforcement: strict
         </Badge>
       </div>
@@ -785,7 +823,7 @@ export default function LoopPage() {
           {STAGES.map((stage) => {
             const cardData = stageCardStatuses[stage.id] ?? {
               count: stage.defaultCount,
-              status: "done",
+              status: 'done',
             };
 
             return (

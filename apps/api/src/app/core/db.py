@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -55,3 +55,25 @@ def init_db() -> None:
     import app.models  # noqa: F401  (registers ORM mappings on Base.metadata)
 
     Base.metadata.create_all(bind=engine)
+    _additive_sqlite_columns()
+
+
+def _additive_sqlite_columns() -> None:
+    """Apply the small, backwards-compatible schema additions without Alembic.
+
+    PerfOS ships with SQLite for local operation. ``create_all`` does not alter
+    existing tables, so the two correlation columns on the legacy audit table
+    need an additive migration when an existing demo database is upgraded.
+    """
+    if engine.dialect.name != "sqlite":
+        return
+    table = Base.metadata.tables.get("audit_logs")
+    if table is None:
+        return
+    with engine.begin() as conn:
+        existing = {column[1] for column in inspect(conn).get_columns("audit_logs")}
+        for column_name in ("command_id", "correlation_id"):
+            if column_name not in existing:
+                conn.exec_driver_sql(
+                    f'ALTER TABLE audit_logs ADD COLUMN "{column_name}" VARCHAR(64)'
+                )

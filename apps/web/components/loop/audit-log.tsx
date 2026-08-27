@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export type AuditDecision =
-  | "approved"
-  | "rejected"
-  | "paused"
-  | "auto_applied"
-  | "flagged"
-  | "overridden"
-  | "pending"
+  | 'approved'
+  | 'rejected'
+  | 'paused'
+  | 'auto_applied'
+  | 'flagged'
+  | 'overridden'
+  | 'pending'
   | (string & {});
 
 export interface AuditEntry {
@@ -23,8 +23,15 @@ export interface AuditEntry {
   target: string;
   decision: AuditDecision;
   detail?: string;
-  platform?: "meta" | "google" | "tiktok" | "linkedin" | "x" | string;
-  stage?: "find" | "score" | "create" | "launch" | "track" | "double_down" | string;
+  platform?: 'meta' | 'google' | 'tiktok' | 'linkedin' | 'x' | string;
+  stage?:
+    | 'find'
+    | 'score'
+    | 'create'
+    | 'launch'
+    | 'track'
+    | 'double_down'
+    | string;
   metadata?: Record<string, unknown>;
 }
 
@@ -49,127 +56,140 @@ export interface AuditLogProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const DEFAULT_ENTRIES: AuditEntry[] = [
   {
-    id: "aud_01",
-    timestamp: "2026-08-26 14:18:02",
-    actor: "Safety Policy",
-    action: "Pause budget scale +30%",
-    target: "Meta / Retargeting Q3 High-Intent",
-    decision: "paused",
-    detail: "Budget change exceeded single-step ceiling (max +20% allowed per 24h window).",
-    platform: "meta",
-    stage: "double_down",
+    id: 'aud_01',
+    timestamp: '2026-08-26 14:18:02',
+    actor: 'Safety Policy',
+    action: 'Pause budget scale +30%',
+    target: 'Meta / Retargeting Q3 High-Intent',
+    decision: 'paused',
+    detail:
+      'Budget change exceeded single-step ceiling (max +20% allowed per 24h window).',
+    platform: 'meta',
+    stage: 'double_down',
   },
   {
-    id: "aud_02",
-    timestamp: "2026-08-26 13:45:19",
-    actor: "Sarah Chen",
-    action: "Approve creative draft batch",
-    target: "Google / PMax Asset Group Alpha",
-    decision: "approved",
-    detail: "Human operator approved 4 generated headline variants and 2 video assets.",
-    platform: "google",
-    stage: "launch",
+    id: 'aud_02',
+    timestamp: '2026-08-26 13:45:19',
+    actor: 'Sarah Chen',
+    action: 'Approve creative draft batch',
+    target: 'Google / PMax Asset Group Alpha',
+    decision: 'approved',
+    detail:
+      'Human operator approved 4 generated headline variants and 2 video assets.',
+    platform: 'google',
+    stage: 'launch',
   },
   {
-    id: "aud_03",
-    timestamp: "2026-08-26 12:02:44",
-    actor: "Loop Agent",
-    action: "Kill low-ROAS variation #03",
-    target: "TikTok / Spark Ads Prospecting",
-    decision: "auto_applied",
-    detail: "CPA reached $48.20 vs $22.00 benchmark after 1,200 impressions.",
-    platform: "tiktok",
-    stage: "double_down",
+    id: 'aud_03',
+    timestamp: '2026-08-26 12:02:44',
+    actor: 'Loop Agent',
+    action: 'Kill low-ROAS variation #03',
+    target: 'TikTok / Spark Ads Prospecting',
+    decision: 'auto_applied',
+    detail: 'CPA reached $48.20 vs $22.00 benchmark after 1,200 impressions.',
+    platform: 'tiktok',
+    stage: 'double_down',
   },
   {
-    id: "aud_04",
-    timestamp: "2026-08-26 10:30:11",
-    actor: "Optimizer Bot",
-    action: "Increase bid cap to $4.20",
-    target: "Google / Search Brand Exact",
-    decision: "approved",
-    detail: "Impression share dropped below 85% with target ROAS > 4.5x.",
-    platform: "google",
-    stage: "track",
+    id: 'aud_04',
+    timestamp: '2026-08-26 10:30:11',
+    actor: 'Optimizer Bot',
+    action: 'Increase bid cap to $4.20',
+    target: 'Google / Search Brand Exact',
+    decision: 'approved',
+    detail: 'Impression share dropped below 85% with target ROAS > 4.5x.',
+    platform: 'google',
+    stage: 'track',
   },
   {
-    id: "aud_05",
-    timestamp: "2026-08-26 09:15:38",
-    actor: "Safety Gate",
-    action: "Reject unverified external URL",
-    target: "Meta / Advantage+ Catalog",
-    decision: "rejected",
-    detail: "Destination URL failed domain whitelist verification check.",
-    platform: "meta",
-    stage: "launch",
+    id: 'aud_05',
+    timestamp: '2026-08-26 09:15:38',
+    actor: 'Safety Gate',
+    action: 'Reject unverified external URL',
+    target: 'Meta / Advantage+ Catalog',
+    decision: 'rejected',
+    detail: 'Destination URL failed domain whitelist verification check.',
+    platform: 'meta',
+    stage: 'launch',
   },
   {
-    id: "aud_06",
-    timestamp: "2026-08-26 08:00:00",
-    actor: "Loop Scheduler",
-    action: "Execute find & score stages",
-    target: "Competitor Swipe Index",
-    decision: "auto_applied",
-    detail: "Scored 142 discovered creative candidates; queued top 8 for draft generation.",
-    platform: "meta",
-    stage: "find",
+    id: 'aud_06',
+    timestamp: '2026-08-26 08:00:00',
+    actor: 'Loop Scheduler',
+    action: 'Execute find & score stages',
+    target: 'Competitor Swipe Index',
+    decision: 'auto_applied',
+    detail:
+      'Scored 142 discovered creative candidates; queued top 8 for draft generation.',
+    platform: 'meta',
+    stage: 'find',
   },
 ];
 
 function formatTimestamp(ts: string | number | Date): string {
   if (ts instanceof Date) {
-    return ts.toISOString().replace("T", " ").substring(0, 19);
+    return ts.toISOString().replace('T', ' ').substring(0, 19);
   }
-  if (typeof ts === "number") {
+  if (typeof ts === 'number') {
     const d = new Date(ts);
-    return isNaN(d.getTime()) ? String(ts) : d.toISOString().replace("T", " ").substring(0, 19);
+    return isNaN(d.getTime())
+      ? String(ts)
+      : d.toISOString().replace('T', ' ').substring(0, 19);
   }
   return String(ts);
 }
 
 function getDecisionMeta(decision: string): {
-  variant: "success" | "destructive" | "warning" | "default" | "secondary" | "neutral";
+  variant:
+    | 'success'
+    | 'destructive'
+    | 'warning'
+    | 'default'
+    | 'secondary'
+    | 'neutral';
   label: string;
 } {
-  const norm = decision.toLowerCase().replace(/[\s_-]+/g, "");
+  const norm = decision.toLowerCase().replace(/[\s_-]+/g, '');
   switch (norm) {
-    case "approved":
-    case "approve":
-    case "accepted":
-    case "pass":
-    case "passed":
-      return { variant: "success", label: "Approved" };
-    case "rejected":
-    case "reject":
-    case "denied":
-    case "killed":
-    case "blocked":
-    case "failed":
-      return { variant: "destructive", label: "Rejected" };
-    case "paused":
-    case "pause":
-    case "flagged":
-    case "escalated":
-    case "reviewrequired":
-      return { variant: "warning", label: "Paused" };
-    case "autoapplied":
-    case "applied":
-    case "executed":
-    case "active":
-    case "running":
-      return { variant: "default", label: "Auto-applied" };
-    case "pending":
-    case "queued":
-    case "waiting":
-    case "dryrun":
-      return { variant: "secondary", label: "Pending" };
-    case "overridden":
-    case "override":
-      return { variant: "warning", label: "Overridden" };
+    case 'approved':
+    case 'approve':
+    case 'accepted':
+    case 'pass':
+    case 'passed':
+      return { variant: 'success', label: 'Approved' };
+    case 'rejected':
+    case 'reject':
+    case 'denied':
+    case 'killed':
+    case 'blocked':
+    case 'failed':
+      return { variant: 'destructive', label: 'Rejected' };
+    case 'paused':
+    case 'pause':
+    case 'flagged':
+    case 'escalated':
+    case 'reviewrequired':
+      return { variant: 'warning', label: 'Paused' };
+    case 'autoapplied':
+    case 'applied':
+    case 'executed':
+    case 'active':
+    case 'running':
+      return { variant: 'default', label: 'Auto-applied' };
+    case 'pending':
+    case 'queued':
+    case 'waiting':
+    case 'dryrun':
+      return { variant: 'secondary', label: 'Pending' };
+    case 'overridden':
+    case 'override':
+      return { variant: 'warning', label: 'Overridden' };
     default:
       return {
-        variant: "neutral",
-        label: decision.charAt(0).toUpperCase() + decision.slice(1).replace(/_/g, " "),
+        variant: 'neutral',
+        label:
+          decision.charAt(0).toUpperCase() +
+          decision.slice(1).replace(/_/g, ' '),
       };
   }
 }
@@ -181,8 +201,8 @@ export function AuditLogSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card overflow-hidden",
-        className
+        'rounded-xl border border-border bg-card overflow-hidden',
+        className,
       )}
     >
       <div className="flex flex-col gap-1 p-5 border-b border-border">
@@ -223,8 +243,8 @@ export function AuditLogEmpty({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-white/1 px-6 py-12 text-center",
-        className
+        'flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-white/1 px-6 py-12 text-center',
+        className,
       )}
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/3 text-muted-foreground">
@@ -248,7 +268,7 @@ export function AuditLogEmpty({
       </h4>
       <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
         {message ||
-          "Actions taken by loop agents and human operators will be recorded here with timestamped decision records."}
+          'Actions taken by loop agents and human operators will be recorded here with timestamped decision records.'}
       </p>
       {onReset && (
         <button
@@ -272,8 +292,8 @@ export function AuditLog({
   entries,
   items,
   loading = false,
-  title = "Loop audit log",
-  description = "Chronological record of automated loop executions and safety gate decisions",
+  title = 'Loop audit log',
+  description = 'Chronological record of automated loop executions and safety gate decisions',
   showFilters = true,
   emptyMessage,
   onEntryClick,
@@ -282,17 +302,17 @@ export function AuditLog({
 }: AuditLogProps) {
   const data = entries ?? items ?? DEFAULT_ENTRIES;
 
-  const [search, setSearch] = React.useState("");
-  const [selectedDecision, setSelectedDecision] = React.useState<string>("all");
+  const [search, setSearch] = React.useState('');
+  const [selectedDecision, setSelectedDecision] = React.useState<string>('all');
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   const filteredEntries = React.useMemo(() => {
     return data.filter((entry) => {
       const matchesDecision =
-        selectedDecision === "all" ||
+        selectedDecision === 'all' ||
         entry.decision.toLowerCase() === selectedDecision.toLowerCase() ||
-        (selectedDecision === "auto_applied" &&
-          entry.decision.toLowerCase().includes("auto"));
+        (selectedDecision === 'auto_applied' &&
+          entry.decision.toLowerCase().includes('auto'));
 
       if (!matchesDecision) return false;
 
@@ -319,18 +339,18 @@ export function AuditLog({
   };
 
   const decisionFilters = [
-    { key: "all", label: "All" },
-    { key: "approved", label: "Approved" },
-    { key: "auto_applied", label: "Auto-applied" },
-    { key: "paused", label: "Paused" },
-    { key: "rejected", label: "Rejected" },
+    { key: 'all', label: 'All' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'auto_applied', label: 'Auto-applied' },
+    { key: 'paused', label: 'Paused' },
+    { key: 'rejected', label: 'Rejected' },
   ];
 
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card overflow-hidden",
-        className
+        'rounded-xl border border-border bg-card overflow-hidden',
+        className,
       )}
       {...props}
     >
@@ -349,7 +369,8 @@ export function AuditLog({
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono tabular-nums">
             <span>
-              {filteredEntries.length} {filteredEntries.length === 1 ? "entry" : "entries"}
+              {filteredEntries.length}{' '}
+              {filteredEntries.length === 1 ? 'entry' : 'entries'}
             </span>
           </div>
         </div>
@@ -366,11 +387,11 @@ export function AuditLog({
                     type="button"
                     onClick={() => setSelectedDecision(f.key)}
                     className={cn(
-                      "rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150 ease-out",
-                      "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500",
+                      'rounded-md px-2.5 py-1 text-xs font-medium transition-colors duration-150 ease-out',
+                      'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500',
                       isActive
-                        ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
-                        : "bg-white/3 text-muted-foreground border border-border hover:bg-white/6 hover:text-foreground"
+                        ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+                        : 'bg-white/3 text-muted-foreground border border-border hover:bg-white/6 hover:text-foreground',
                     )}
                   >
                     {f.label}
@@ -391,7 +412,7 @@ export function AuditLog({
               {search && (
                 <button
                   type="button"
-                  onClick={() => setSearch("")}
+                  onClick={() => setSearch('')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-zinc-300"
                   aria-label="Clear search"
                 >
@@ -408,15 +429,15 @@ export function AuditLog({
         <div className="p-5">
           <AuditLogEmpty
             message={
-              search || selectedDecision !== "all"
-                ? "No audit records match your active search or decision filter."
+              search || selectedDecision !== 'all'
+                ? 'No audit records match your active search or decision filter.'
                 : emptyMessage
             }
             onReset={
-              search || selectedDecision !== "all"
+              search || selectedDecision !== 'all'
                 ? () => {
-                    setSearch("");
-                    setSelectedDecision("all");
+                    setSearch('');
+                    setSelectedDecision('all');
                   }
                 : undefined
             }
@@ -441,22 +462,25 @@ export function AuditLog({
             const formattedTime = formatTimestamp(entry.timestamp);
 
             return (
-              <div key={rowId} className="transition-colors duration-150 ease-out">
+              <div
+                key={rowId}
+                className="transition-colors duration-150 ease-out"
+              >
                 <div
                   role="button"
                   tabIndex={0}
                   onClick={() => toggleExpand(rowId, entry)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
+                    if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
                       toggleExpand(rowId, entry);
                     }
                   }}
                   className={cn(
-                    "group flex flex-col sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-start sm:items-center gap-2 sm:gap-4 px-4 py-3 cursor-pointer",
-                    "hover:bg-white/4 transition-colors duration-150 ease-out",
-                    "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50",
-                    isExpanded && "bg-white/2"
+                    'group flex flex-col sm:grid sm:grid-cols-[140px_130px_1fr_1fr_100px] items-start sm:items-center gap-2 sm:gap-4 px-4 py-3 cursor-pointer',
+                    'hover:bg-white/4 transition-colors duration-150 ease-out',
+                    'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50',
+                    isExpanded && 'bg-white/2',
                   )}
                   aria-expanded={isExpanded}
                 >
@@ -512,12 +536,15 @@ export function AuditLog({
                     <div className="flex flex-wrap items-center gap-4 text-[11px] text-muted-foreground font-mono pt-1">
                       {entry.stage && (
                         <span>
-                          Stage: <span className="text-muted-foreground">{entry.stage}</span>
+                          Stage:{' '}
+                          <span className="text-muted-foreground">
+                            {entry.stage}
+                          </span>
                         </span>
                       )}
                       {entry.platform && (
                         <span>
-                          Platform:{" "}
+                          Platform:{' '}
                           <span className="text-muted-foreground uppercase">
                             {entry.platform}
                           </span>
@@ -525,7 +552,10 @@ export function AuditLog({
                       )}
                       {entry.id && (
                         <span>
-                          ID: <span className="text-muted-foreground">{entry.id}</span>
+                          ID:{' '}
+                          <span className="text-muted-foreground">
+                            {entry.id}
+                          </span>
                         </span>
                       )}
                     </div>

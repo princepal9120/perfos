@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -18,13 +18,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
+  type AdAccount,
   connectAccount,
   getAccounts,
-  type AdAccount,
   type Platform,
-} from "@/lib/api";
+} from '@/lib/api';
 
 type Connector = {
   id: Platform;
@@ -35,43 +35,45 @@ type Connector = {
 
 const CONNECTORS: Connector[] = [
   {
-    id: "meta",
-    name: "Meta ads",
-    monogram: "M",
-    description: "Facebook and Instagram campaigns — spend and claimed conversions.",
+    id: 'meta',
+    name: 'Meta ads',
+    monogram: 'M',
+    description:
+      'Facebook and Instagram campaigns — spend and claimed conversions.',
   },
   {
-    id: "google",
-    name: "Google ads",
-    monogram: "G",
-    description: "Search, Shopping and Performance Max, with claimed conversions.",
+    id: 'google',
+    name: 'Google ads',
+    monogram: 'G',
+    description:
+      'Search, Shopping and Performance Max, with claimed conversions.',
   },
   {
-    id: "tiktok",
-    name: "TikTok ads",
-    monogram: "T",
-    description: "Short-form video campaigns and claimed conversions.",
+    id: 'tiktok',
+    name: 'TikTok ads',
+    monogram: 'T',
+    description: 'Short-form video campaigns and claimed conversions.',
   },
   {
-    id: "linkedin",
-    name: "LinkedIn ads",
-    monogram: "in",
-    description: "B2B campaigns, lead gen forms and audience reach.",
+    id: 'linkedin',
+    name: 'LinkedIn ads',
+    monogram: 'in',
+    description: 'B2B campaigns, lead gen forms and audience reach.',
   },
   {
-    id: "twitter",
-    name: "X ads",
-    monogram: "X",
-    description: "Timeline takeovers and engagement-driven campaigns.",
+    id: 'twitter',
+    name: 'X ads',
+    monogram: 'X',
+    description: 'Timeline takeovers and engagement-driven campaigns.',
   },
 ];
 
-function StatusBadge({ status }: { status: AdAccount["status"] }) {
-  const active = status === "active";
+function StatusBadge({ status }: { status: AdAccount['status'] }) {
+  const active = status === 'active';
   return (
-    <Badge variant={active ? "success" : "warning"} className="gap-1.5">
+    <Badge variant={active ? 'success' : 'warning'} className="gap-1.5">
       <span
-        className={`h-1.5 w-1.5 rounded-full ${active ? "bg-success" : "bg-warning"}`}
+        className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-success' : 'bg-warning'}`}
         aria-hidden="true"
       />
       {status}
@@ -83,7 +85,7 @@ function formatDate(iso: string) {
   const d = new Date(iso);
   return Number.isNaN(d.getTime())
     ? iso
-    : d.toLocaleDateString(undefined, { dateStyle: "medium" });
+    : d.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 export default function AccountsPage() {
@@ -100,7 +102,7 @@ export default function AccountsPage() {
       })
       .catch(() => {
         if (!cancelled)
-          setError("Could not load accounts. Check that the API is running.");
+          setError('Could not load accounts. Check that the API is running.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -110,18 +112,23 @@ export default function AccountsPage() {
     };
   }, []);
 
-  const handleConnect = useCallback(async (platform: Platform, label: string) => {
-    setConnecting(platform);
-    setError(null);
-    try {
-      const created = await connectAccount({ platform });
-      setAccounts((prev) => [...prev, created]);
-    } catch {
-      setError(`Could not connect ${label}. Make sure the API is up and try again.`);
-    } finally {
-      setConnecting(null);
-    }
-  }, []);
+  const handleConnect = useCallback(
+    async (platform: Platform, label: string) => {
+      setConnecting(platform);
+      setError(null);
+      try {
+        const created = await connectAccount({ platform });
+        setAccounts((prev) => [...prev, created]);
+      } catch {
+        setError(
+          `Could not connect ${label}. Make sure the API is up and try again.`,
+        );
+      } finally {
+        setConnecting(null);
+      }
+    },
+    [],
+  );
 
   const countByPlatform = accounts.reduce<Record<string, number>>((acc, a) => {
     acc[a.platform] = (acc[a.platform] ?? 0) + 1;
@@ -139,8 +146,8 @@ export default function AccountsPage() {
         </h1>
         <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
           Connect an ad platform to pull campaign spend and claimed conversions.
-          PerfOS reconciles those claims against actual revenue before any budget
-          moves.
+          PerfOS reconciles those claims against actual revenue before any
+          budget moves.
         </p>
       </div>
 
@@ -213,8 +220,8 @@ export default function AccountsPage() {
                       <p className="w-full text-xs text-muted-foreground">
                         <span className="font-medium tabular-nums text-muted-foreground">
                           {count}
-                        </span>{" "}
-                        {count === 1 ? "account" : "accounts"} syncing
+                        </span>{' '}
+                        {count === 1 ? 'account' : 'accounts'} syncing
                       </p>
                     ) : (
                       <Button
@@ -223,7 +230,7 @@ export default function AccountsPage() {
                         disabled={connecting !== null}
                         className="w-full"
                       >
-                        {busy ? "Connecting…" : "Connect"}
+                        {busy ? 'Connecting…' : 'Connect'}
                       </Button>
                     )}
                   </CardFooter>
@@ -241,12 +248,18 @@ export default function AccountsPage() {
             Connected accounts
           </h2>
           {!loading && (
-            <span className="text-xs tabular-nums text-muted-foreground">{accounts.length}</span>
+            <span className="text-xs tabular-nums text-muted-foreground">
+              {accounts.length}
+            </span>
           )}
         </div>
 
         {loading ? (
-          <div className="space-y-2" aria-busy="true" aria-label="Loading accounts">
+          <div
+            className="space-y-2"
+            aria-busy="true"
+            aria-label="Loading accounts"
+          >
             {[0, 1, 2].map((i) => (
               <Skeleton key={i} className="h-12 w-full" />
             ))}
@@ -268,8 +281,8 @@ export default function AccountsPage() {
               />
             </svg>
             <p className="mt-3 text-sm text-muted-foreground">
-              No accounts yet. Connect a platform above to pull its campaigns into
-              PerfOS.
+              No accounts yet. Connect a platform above to pull its campaigns
+              into PerfOS.
             </p>
             {firstOpen && (
               <Button
@@ -280,7 +293,7 @@ export default function AccountsPage() {
                 className="mt-4"
               >
                 {connecting === firstOpen.id
-                  ? "Connecting…"
+                  ? 'Connecting…'
                   : `Connect ${firstOpen.name}`}
               </Button>
             )}
@@ -299,7 +312,9 @@ export default function AccountsPage() {
               </TableHeader>
               <TableBody>
                 {accounts.map((account) => {
-                  const meta = CONNECTORS.find((c) => c.id === account.platform);
+                  const meta = CONNECTORS.find(
+                    (c) => c.id === account.platform,
+                  );
                   return (
                     <TableRow key={account.id}>
                       <TableCell className="whitespace-nowrap px-4 py-3 text-foreground">
@@ -309,7 +324,7 @@ export default function AccountsPage() {
                         {account.name}
                       </TableCell>
                       <TableCell className="whitespace-nowrap px-4 py-3 font-mono text-xs tabular-nums text-muted-foreground">
-                        {account.platform_account_id ?? "—"}
+                        {account.platform_account_id ?? '—'}
                       </TableCell>
                       <TableCell className="px-4 py-3">
                         <StatusBadge status={account.status} />

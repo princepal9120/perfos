@@ -16,4 +16,4 @@ async def test_extra_tools_registered():
     async with Client(mcp) as client:
         tools = await client.list_tools()
     names = {t.name for t in tools}
-    assert EXTRA_TOOLS <= names
+    assert names >= EXTRA_TOOLS

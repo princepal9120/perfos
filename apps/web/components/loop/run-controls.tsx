@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { runLoop } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 export interface LoopRunResult {
   status?: string;
@@ -15,14 +11,21 @@ export interface LoopRunResult {
   [key: string]: unknown;
 }
 
+export interface RunOptions {
+  /** Competitor or keyword to spy live. Omitted means the keyless fixture set. */
+  query?: string;
+}
+
 interface RunControlsProps {
   /** Called with the parsed response after any run finishes successfully. */
   onComplete?: (result: LoopRunResult) => void;
+  /** Competitor or keyword forwarded to the loop's find stage. */
+  query?: string;
   className?: string;
 }
 
 interface RunState {
-  mode: "dry_run" | "live";
+  mode: 'dry_run' | 'live';
   running: boolean;
 }
 
@@ -31,77 +34,80 @@ interface RunState {
  * requires confirmation because it can reach connected ad platforms (launch
  * still pauses at the safety gate).
  */
-export function RunControls({ onComplete, className }: RunControlsProps) {
+export function RunControls({
+  onComplete,
+  query,
+  className,
+}: RunControlsProps) {
   const [run, setRun] = useState<RunState | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRun, setLastRun] = useState<{
-    mode: "dry_run" | "live";
+    mode: 'dry_run' | 'live';
     seconds: number;
   } | null>(null);
   const startedAt = useRef<number>(0);
 
   const execute = useCallback(
-    async (mode: "dry_run" | "live") => {
+    async (mode: 'dry_run' | 'live') => {
       setRun({ mode, running: true });
       setError(null);
       startedAt.current = performance.now();
       try {
-        const res = await fetch("/api/loop", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dry_run: mode === "dry_run" }),
+        const data = await runLoop({
+          dry_run: mode === 'dry_run',
+          query: query?.trim() || undefined,
         });
-        const data: unknown = await res.json().catch(() => null);
-        if (!res.ok) {
-          throw new Error(
-            data && typeof data === "object" && "detail" in data
-              ? String((data as { detail: unknown }).detail)
-              : `Loop failed with status ${res.status}`
-          );
-        }
-        setLastRun({ mode, seconds: (performance.now() - startedAt.current) / 1000 });
-        onComplete?.((data && typeof data === "object" ? data : {}) as LoopRunResult);
+        setLastRun({
+          mode,
+          seconds: (performance.now() - startedAt.current) / 1000,
+        });
+        onComplete?.(data as unknown as LoopRunResult);
       } catch (e) {
         setError(
-          e instanceof Error ? e.message : "Loop failed. Is the API running?"
+          e instanceof Error ? e.message : 'Loop failed. Is the API running?',
         );
       } finally {
         setRun(null);
       }
     },
-    [onComplete]
+    [onComplete, query],
   );
 
   return (
-    <div className={cn("flex flex-col items-start gap-2 sm:items-end", className)}>
+    <div
+      className={cn('flex flex-col items-start gap-2 sm:items-end', className)}
+    >
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          onClick={() => void execute("dry_run")}
+          onClick={() => void execute('dry_run')}
           disabled={!!run}
         >
-          {run?.mode === "dry_run" ? <Spinner /> : null}
-          {run?.mode === "dry_run" ? "Running dry-run…" : "Dry-run"}
+          {run?.mode === 'dry_run' ? <Spinner /> : null}
+          {run?.mode === 'dry_run' ? 'Running dry-run…' : 'Dry-run'}
         </Button>
         <Button
           onClick={() => setConfirmOpen(true)}
           disabled={!!run}
           className="bg-accent text-foreground dark:text-white hover:bg-accent-hover active:bg-accent-hover"
         >
-          {run?.mode === "live" ? <Spinner /> : null}
-          {run?.mode === "live" ? "Running loop…" : "Run loop"}
+          {run?.mode === 'live' ? <Spinner /> : null}
+          {run?.mode === 'live' ? 'Running loop…' : 'Run loop'}
         </Button>
       </div>
 
       {error && (
-        <p role="alert" className="max-w-sm text-xs leading-relaxed text-red-400">
+        <p
+          role="alert"
+          className="max-w-sm text-xs leading-relaxed text-red-400"
+        >
           {error}
         </p>
       )}
       {!error && lastRun && (
         <p className="max-w-sm text-xs tabular-nums text-muted-foreground">
-          Last run: {lastRun.mode === "dry_run" ? "dry-run" : "live"} finished
+          Last run: {lastRun.mode === 'dry_run' ? 'dry-run' : 'live'} finished
           in {lastRun.seconds.toFixed(1)}s
         </p>
       )}
@@ -111,7 +117,7 @@ export function RunControls({ onComplete, className }: RunControlsProps) {
           onCancel={() => setConfirmOpen(false)}
           onConfirm={() => {
             setConfirmOpen(false);
-            void execute("live");
+            void execute('live');
           }}
           busy={!!run}
         />
@@ -143,7 +149,7 @@ function ConfirmRunDialog({
   useEffect(() => {
     cancelRef.current?.focus();
     const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prevOverflow;
     };
@@ -151,10 +157,10 @@ function ConfirmRunDialog({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
+      if (e.key === 'Escape') onCancel();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [onCancel]);
 
   return (
@@ -172,16 +178,27 @@ function ConfirmRunDialog({
         aria-describedby="run-loop-confirm-desc"
         className="relative w-full max-w-md rounded-xl border border-border bg-muted p-6 shadow-lg shadow-black/40"
       >
-        <h2 id="run-loop-confirm-title" className="text-base font-semibold tracking-tight text-foreground">
+        <h2
+          id="run-loop-confirm-title"
+          className="text-base font-semibold tracking-tight text-foreground"
+        >
           Run the loop on live accounts?
         </h2>
-        <p id="run-loop-confirm-desc" className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <p
+          id="run-loop-confirm-desc"
+          className="mt-2 text-sm leading-relaxed text-muted-foreground"
+        >
           This runs find &rarr; score &rarr; create &rarr; launch &rarr; track
           &rarr; double down against your connected ad platforms. Launch stays
           paused at the safety gate until you approve each action.
         </p>
         <div className="mt-5 flex justify-end gap-2">
-          <Button ref={cancelRef} variant="ghost" onClick={onCancel} disabled={busy}>
+          <Button
+            ref={cancelRef}
+            variant="ghost"
+            onClick={onCancel}
+            disabled={busy}
+          >
             Cancel
           </Button>
           <Button
@@ -190,7 +207,7 @@ function ConfirmRunDialog({
             className="bg-accent text-foreground dark:text-white hover:bg-accent-hover active:bg-accent-hover"
           >
             {busy ? <Spinner /> : null}
-            {busy ? "Starting…" : "Run now"}
+            {busy ? 'Starting…' : 'Run now'}
           </Button>
         </div>
       </div>

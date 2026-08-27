@@ -1,9 +1,9 @@
-"""LOOP find stage -- spy competitors via ``app.discovery.cli.run_discovery``.
+"""LOOP find stage -- spy competitors via the shared discovery pipeline.
 
 Thin LOOP wrapper over the FIND pipeline (find -> score -> store): one
 persona + channel selection in, scored competitor ``AdRecord`` rows out.
-Mock-safe by default -- all heavy lifting stays inside the discovery package;
-this stage only normalizes whatever shape ``run_discovery`` returns
+Live only when a query is supplied; fixtures otherwise. This stage only
+normalizes whatever shape ``run_discovery`` returns
 (bare list, {"ads": [...]}, {"winners": [...]} / top-winners dict) into
 a flat ``list[AdRecord]`` for downstream LOOP stages.
 """
@@ -32,6 +32,23 @@ def _extract_rows(result: Any) -> list[Any]:
     return result if isinstance(result, list) else []
 
 
+def _run_sync(coro: Any) -> Any:
+    """Await ``coro`` from sync code, whether or not a loop is already running.
+
+    find_stage is sync but the orchestrator calls it from inside an event loop,
+    so a plain asyncio.run() would raise; offload to a thread in that case.
+    """
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        return pool.submit(asyncio.run, coro).result()
+
+
 def _to_ad_record(row: Any) -> AdRecord | None:
     """Coerce one raw winner/ad row into an ``AdRecord``; None if unusable."""
     if not isinstance(row, dict):
@@ -42,20 +59,26 @@ def _to_ad_record(row: Any) -> AdRecord | None:
         return None
 
 
-def find_stage(persona: str = "saas", channels: list[str] | None = None) -> list[AdRecord]:
+def find_stage(
+    persona: str = "saas",
+    channels: list[str] | None = None,
+    query: str | None = None,
+    workspace_id: int = 0,
+) -> list[AdRecord]:
     """Run one FIND pass for ``persona`` on ``channels`` and return its ads.
 
-    Calls ``app.discovery.cli.run_discovery(persona, channels)`` (find ->
-    score -> store chain) and flattens the returned top-winners payload
-    into ``list[AdRecord]``. Unusable rows are skipped, not fatal.
-    """
-    # Lazy import: discovery.cli may be landing in a sibling build step.
-    from app.discovery.cli import run_discovery
+    With a ``query`` this runs the live ad-library search; without one the same
+    collectors serve fixtures. Unusable rows are skipped, not fatal.
 
+    Deliberately shares ``routers.discovery.run_discovery`` with the API, CLI,
+    and MCP surfaces — the older ``discovery.cli`` chain only ever supported the
+    saas persona and raised on the rest.
+    """
+    from app.routers.discovery import run_discovery
+
+    result = _run_sync(run_discovery(persona, query, channels, workspace_id=workspace_id))
     return [
-        ad
-        for row in _extract_rows(run_discovery(persona=persona, channels=channels))
-        if (ad := _to_ad_record(row)) is not None
+        ad for row in _extract_rows(result) if (ad := _to_ad_record(row)) is not None
     ]
 
 

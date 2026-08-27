@@ -11,6 +11,7 @@ HTTP (mounted on FastAPI at /mcp when API runs):
 Env:
     PERFOS_API_URL=http://localhost:8000
     PERFOS_API_TOKEN=
+    PERFOS_API_KEY=perfos-demo-key
     PERFOS_WORKSPACE_ID=1
 """
 
@@ -23,15 +24,23 @@ from typing import Any
 import httpx
 from fastmcp import FastMCP
 
+from app.agent_contract import build_agent_contract
+
 DEFAULT_API_URL = os.environ.get("PERFOS_API_URL", "http://127.0.0.1:8000")
 DEFAULT_WORKSPACE_ID = os.environ.get("PERFOS_WORKSPACE_ID", "1")
 API_TOKEN = os.environ.get("PERFOS_API_TOKEN", "")
+# Measurement routes are workspace-scoped; the demo key matches the backend default.
+API_KEY = os.environ.get("PERFOS_API_KEY", "perfos-demo-key")
+# A live ad-library search drives a headless browser: 15-40s, well past the default.
+LIVE_TIMEOUT = 300.0
 
 mcp = FastMCP(
     "perfos-mcp",
     instructions=(
-        "PerfOS measurement tools: reconcile platform revenue vs bank truth, "
-        "attribution, iROAS, creatives, anomalies, incrementality, and budget optimize."
+        "PerfOS ad tools. Measurement: reconcile platform revenue vs bank truth, "
+        "attribution, iROAS, creatives, anomalies, incrementality, budget optimize. "
+        "Lifecycle: ads_search (spy on competitor ad libraries), ads_winners, "
+        "ads_clone, ads_generate, ads_loop_run."
     ),
 )
 
@@ -47,17 +56,18 @@ async def api_request(
     params: dict[str, Any] | None = None,
     body: dict[str, Any] | None = None,
     workspace_id: str | None = None,
+    timeout: float = 30.0,
 ) -> Any:
     """Call PerfOS REST API (/api/...)."""
     url = f"{DEFAULT_API_URL.rstrip('/')}/api{endpoint}"
-    headers: dict[str, str] = {"Accept": "application/json"}
+    headers: dict[str, str] = {"Accept": "application/json", "X-API-Key": API_KEY}
     if API_TOKEN:
         headers["Authorization"] = f"Bearer {API_TOKEN}"
     ws = _ws(workspace_id)
     if ws:
         headers["X-Workspace-Id"] = ws
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=timeout) as client:
         resp = await client.request(method, url, params=params, json=body, headers=headers)
         if resp.status_code >= 400:
             raise RuntimeError(f"API {resp.status_code}: {resp.text[:500]}")
@@ -186,6 +196,92 @@ async def generate_recommendations(workspace_id: str | None = None) -> Any:
         workspace_id=_ws(workspace_id),
     )
 
+
+@mcp.tool
+async def platform_capabilities(workspace_id: str | None = None) -> Any:
+    """Discover every supported PerfOS REST, CLI, and MCP capability and its safety level."""
+    return build_agent_contract(_ws(workspace_id))
+
+
+@mcp.tool
+async def ads_search(
+    query: str,
+    persona: str = "saas",
+    channels: list[str] | None = None,
+    country: str = "US",
+    limit: int = 30,
+) -> Any:
+    """Search public ad libraries for a competitor's live ads and score them.
+
+    Meta is collected live from the public Ad Library; other channels return
+    deterministic fixtures until their keys are connected.
+    """
+    return await api_request(
+        "/discovery",
+        method="POST",
+        body={
+            "query": query,
+            "persona": persona,
+            "channels": channels,
+            "country": country,
+            "limit": limit,
+        },
+        timeout=LIVE_TIMEOUT,
+    )
+
+
+@mcp.tool
+async def ads_winners(limit: int = 20) -> Any:
+    """Top scored competitor winners discovered so far, best first."""
+    return await api_request("/winners", params={"limit": limit})
+
+
+@mcp.tool
+async def ads_clone(ad_id: str, generate: bool = False) -> Any:
+    """Clone one discovered winner into your own hook variants (and optional clips)."""
+    return await api_request(
+        "/clone", method="POST", body={"ad_id": ad_id, "generate": generate}
+    )
+
+
+@mcp.tool
+async def ads_generate(persona: str = "saas") -> Any:
+    """Generate creative assets from the top discovered winners."""
+    return await api_request("/create", method="POST", body={"persona": persona})
+
+
+@mcp.tool
+async def ads_assets() -> Any:
+    """List every creative asset the CREATE stage has produced."""
+    return await api_request("/assets")
+
+
+@mcp.tool
+async def ads_loop_run(
+    persona: str = "saas", dry_run: bool = True, query: str | None = None
+) -> Any:
+    """Run one full lifecycle: find -> score -> create -> launch -> track -> double-down.
+
+    Launch stays draft/paused behind the policy gate; ``dry_run=False`` still
+    requires human approval before anything reaches a live ad account.
+    """
+    return await api_request(
+        "/loop",
+        method="POST",
+        body={"persona": persona, "dry_run": dry_run, "query": query},
+        timeout=LIVE_TIMEOUT,
+    )
+
+
+@mcp.tool
+async def ads_loop_status() -> Any:
+    """State of the most recent lifecycle run."""
+    return await api_request("/loop/status")
+
+
+# Register the lifecycle-native tools on the production server too. Previously
+# this side effect only happened in tests that imported mcp_server_extra.
+from app import mcp_server_extra as _mcp_server_extra  # noqa: E402,F401
 
 # ASGI app for mounting on FastAPI (streamable HTTP at /mcp).
 mcp_http_app = mcp.http_app(path="/")

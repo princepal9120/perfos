@@ -6,8 +6,8 @@ produce a live launch (every draft starts paused; humans approve).
 
 from app.loop.safety_gate import (
     DRAFT_PAUSED,
-    REJECTED,
     READY_TO_LAUNCH,
+    REJECTED,
     approve_draft,
     build_launch_rec,
     gate_launch,

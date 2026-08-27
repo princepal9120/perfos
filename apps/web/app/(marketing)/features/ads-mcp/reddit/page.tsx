@@ -1,18 +1,22 @@
-"use client";
-import Link from "next/link";
+'use client';
+import Link from 'next/link';
 
 export default function RedditAdsMcpPage() {
   return (
     <div className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
       <div className="text-center space-y-4">
-        <Link href="/features/ads-mcp" className="text-xs text-primary hover:underline">
+        <Link
+          href="/features/ads-mcp"
+          className="text-xs text-primary hover:underline"
+        >
           ← Back to All Ads MCPs
         </Link>
         <h1 className="text-4xl sm:text-5xl font-display font-bold text-foreground dark:text-white tracking-tight">
           Reddit Ads MCP Connector
         </h1>
         <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-          Subreddit community targeting intelligence, post creative management, and discussion placements.
+          Subreddit community targeting intelligence, post creative management,
+          and discussion placements.
         </p>
       </div>
 

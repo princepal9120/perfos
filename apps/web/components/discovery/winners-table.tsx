@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -13,8 +13,8 @@ import {
   TableHeader,
   TableRow,
   useTableSort,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 export interface ScoredCompetitorAd {
   id?: string | number;
@@ -76,70 +76,73 @@ export interface NormalizedRow extends Record<string, unknown> {
 
 const DEFAULT_WINNERS: ScoredCompetitorAd[] = [
   {
-    id: "win-1",
-    platform: "meta",
-    advertiser: "HexClad Cookware",
-    hook: "Gordon Ramsay explains why hybrid stainless steel is the only cookware in his home kitchen.",
+    id: 'win-1',
+    platform: 'meta',
+    advertiser: 'HexClad Cookware',
+    hook: 'Gordon Ramsay explains why hybrid stainless steel is the only cookware in his home kitchen.',
     score: 96,
     runtimeDays: 84,
     delta: 24.8,
-    tier: "top_performer",
+    tier: 'top_performer',
   },
   {
-    id: "win-2",
-    platform: "tiktok",
-    advertiser: "Gymshark",
-    hook: "POV: You finally tested the squat-proof leggings with 300lbs on the barbell.",
+    id: 'win-2',
+    platform: 'tiktok',
+    advertiser: 'Gymshark',
+    hook: 'POV: You finally tested the squat-proof leggings with 300lbs on the barbell.',
     score: 93,
     runtimeDays: 52,
     delta: 18.2,
-    tier: "viral_winner",
+    tier: 'viral_winner',
   },
   {
-    id: "win-3",
-    platform: "meta",
-    advertiser: "Athletic Greens",
-    hook: "Why 80+ top health researchers take AG1 before their morning coffee.",
+    id: 'win-3',
+    platform: 'meta',
+    advertiser: 'Athletic Greens',
+    hook: 'Why 80+ top health researchers take AG1 before their morning coffee.',
     score: 91,
     runtimeDays: 120,
     delta: 14.5,
-    tier: "evergreen",
+    tier: 'evergreen',
   },
   {
-    id: "win-4",
-    platform: "youtube",
-    advertiser: "Ridge Wallet",
-    hook: "Your bulky leather wallet is ruining your posture (and RFID security).",
+    id: 'win-4',
+    platform: 'youtube',
+    advertiser: 'Ridge Wallet',
+    hook: 'Your bulky leather wallet is ruining your posture (and RFID security).',
     score: 88,
     runtimeDays: 68,
     delta: 11.0,
-    tier: "scaler",
+    tier: 'scaler',
   },
   {
-    id: "win-5",
-    platform: "google",
-    advertiser: "Huel Nutrition",
-    hook: "Complete nutrition in under 60 seconds: 40g plant protein, 27 vitamins, zero prep.",
+    id: 'win-5',
+    platform: 'google',
+    advertiser: 'Huel Nutrition',
+    hook: 'Complete nutrition in under 60 seconds: 40g plant protein, 27 vitamins, zero prep.',
     score: 85,
     runtimeDays: 45,
     delta: 8.4,
-    tier: "consistent",
+    tier: 'consistent',
   },
   {
-    id: "win-6",
-    platform: "linkedin",
-    advertiser: "Linear App",
-    hook: "The issue tracking tool software engineering teams actually look forward to opening.",
+    id: 'win-6',
+    platform: 'linkedin',
+    advertiser: 'Linear App',
+    hook: 'The issue tracking tool software engineering teams actually look forward to opening.',
     score: 82,
     runtimeDays: 38,
     delta: 6.2,
-    tier: "niche_winner",
+    tier: 'niche_winner',
   },
 ];
 
-function normalizeRow(item: Record<string, unknown>, index: number): NormalizedRow {
+function normalizeRow(
+  item: Record<string, unknown>,
+  index: number,
+): NormalizedRow {
   const platform = String(
-    item.platform ?? item.channel ?? item.network ?? item.source ?? "meta"
+    item.platform ?? item.channel ?? item.network ?? item.source ?? 'meta',
   ).toLowerCase();
 
   const advertiser = String(
@@ -148,7 +151,7 @@ function normalizeRow(item: Record<string, unknown>, index: number): NormalizedR
       item.advertiser_name ??
       item.brand ??
       item.company ??
-      "Unknown advertiser"
+      'Unknown advertiser',
   );
 
   const hook = String(
@@ -158,10 +161,12 @@ function normalizeRow(item: Record<string, unknown>, index: number): NormalizedR
       item.copy ??
       item.title ??
       item.text ??
-      "Proven high-converting hook variation"
+      'Proven high-converting hook variation',
   );
 
-  const scoreNum = Number(item.score ?? item.performance_score ?? item.rating ?? 0);
+  const scoreNum = Number(
+    item.score ?? item.performance_score ?? item.rating ?? 0,
+  );
   const score = Number.isFinite(scoreNum) ? scoreNum : 0;
 
   const runtimeNum = Number(
@@ -172,20 +177,18 @@ function normalizeRow(item: Record<string, unknown>, index: number): NormalizedR
       item.days_active ??
       item.durationDays ??
       item.duration_days ??
-      0
+      0,
   );
   const runtimeDays = Number.isFinite(runtimeNum) ? runtimeNum : 0;
 
   const deltaNum = Number(
-    item.delta ??
-      item.deltaPercent ??
-      item.delta_percent ??
-      item.change ??
-      0
+    item.delta ?? item.deltaPercent ?? item.delta_percent ?? item.change ?? 0,
   );
   const delta = Number.isFinite(deltaNum) ? deltaNum : 0;
 
-  const id = String(item.id ?? item.ad_id ?? item.uuid ?? `ad-${platform}-${index}`);
+  const id = String(
+    item.id ?? item.ad_id ?? item.uuid ?? `ad-${platform}-${index}`,
+  );
 
   return {
     id,
@@ -201,21 +204,22 @@ function normalizeRow(item: Record<string, unknown>, index: number): NormalizedR
 
 function formatPlatform(platform: string): string {
   const p = platform.toLowerCase();
-  if (p.includes("meta") || p.includes("facebook") || p.includes("instagram")) return "Meta";
-  if (p.includes("tiktok")) return "TikTok";
-  if (p.includes("google")) return "Google";
-  if (p.includes("youtube")) return "YouTube";
-  if (p.includes("linkedin")) return "LinkedIn";
-  if (p.includes("twitter") || p === "x") return "X";
-  if (p.includes("reddit")) return "Reddit";
-  if (p.includes("pinterest")) return "Pinterest";
+  if (p.includes('meta') || p.includes('facebook') || p.includes('instagram'))
+    return 'Meta';
+  if (p.includes('tiktok')) return 'TikTok';
+  if (p.includes('google')) return 'Google';
+  if (p.includes('youtube')) return 'YouTube';
+  if (p.includes('linkedin')) return 'LinkedIn';
+  if (p.includes('twitter') || p === 'x') return 'X';
+  if (p.includes('reddit')) return 'Reddit';
+  if (p.includes('pinterest')) return 'Pinterest';
   return platform.charAt(0).toUpperCase() + platform.slice(1);
 }
 
 function formatDelta(delta: number): string {
   if (delta > 0) return `+${delta.toFixed(1)}%`;
   if (delta < 0) return `${delta.toFixed(1)}%`;
-  return "0.0%";
+  return '0.0%';
 }
 
 function TableSkeletonRows({ count = 5 }: { count?: number }) {
@@ -268,22 +272,22 @@ export function WinnersTable({
       propList !== undefined
         ? (propList as readonly Record<string, unknown>[])
         : loading
-        ? []
-        : DEFAULT_WINNERS;
+          ? []
+          : DEFAULT_WINNERS;
 
     return raw.map((item, idx) => normalizeRow(item, idx));
   }, [propList, loading]);
 
   const { sorted, key, dir, toggle } = useTableSort<NormalizedRow>(normalized, {
-    key: "score",
-    dir: "desc",
+    key: 'score',
+    dir: 'desc',
   });
 
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border-subtle bg-bg-surface",
-        className
+        'overflow-hidden rounded-lg border border-border-subtle bg-bg-surface',
+        className,
       )}
     >
       <Table>
@@ -291,54 +295,54 @@ export function WinnersTable({
           <TableRow className="border-b border-border-subtle bg-white/2">
             <TableHead
               sortable
-              active={key === "platform"}
+              active={key === 'platform'}
               dir={dir}
-              onSort={() => toggle("platform")}
+              onSort={() => toggle('platform')}
               className="px-4"
             >
               Platform
             </TableHead>
             <TableHead
               sortable
-              active={key === "advertiser"}
+              active={key === 'advertiser'}
               dir={dir}
-              onSort={() => toggle("advertiser")}
+              onSort={() => toggle('advertiser')}
               className="px-4"
             >
               Advertiser
             </TableHead>
             <TableHead
               sortable
-              active={key === "hook"}
+              active={key === 'hook'}
               dir={dir}
-              onSort={() => toggle("hook")}
+              onSort={() => toggle('hook')}
               className="px-4"
             >
               Hook
             </TableHead>
             <TableHead
               sortable
-              active={key === "score"}
+              active={key === 'score'}
               dir={dir}
-              onSort={() => toggle("score")}
+              onSort={() => toggle('score')}
               className="px-4"
             >
               Score
             </TableHead>
             <TableHead
               sortable
-              active={key === "runtimeDays"}
+              active={key === 'runtimeDays'}
               dir={dir}
-              onSort={() => toggle("runtimeDays")}
+              onSort={() => toggle('runtimeDays')}
               className="px-4"
             >
               Runtime days
             </TableHead>
             <TableHead
               sortable
-              active={key === "delta"}
+              active={key === 'delta'}
               dir={dir}
-              onSort={() => toggle("delta")}
+              onSort={() => toggle('delta')}
               className="px-4"
             >
               Delta
@@ -371,8 +375,8 @@ export function WinnersTable({
                 No winning ads found
               </p>
               <p className="mt-1 max-w-sm text-xs leading-relaxed text-text-muted">
-                Run a discovery scan across Meta, TikTok, and Google ad libraries to
-                surface top-performing competitor creative.
+                Run a discovery scan across Meta, TikTok, and Google ad
+                libraries to surface top-performing competitor creative.
               </p>
               {onEmptyAction && (
                 <Button
@@ -381,7 +385,7 @@ export function WinnersTable({
                   onClick={onEmptyAction}
                   className="mt-4"
                 >
-                  {emptyActionLabel ?? "Run discovery scan"}
+                  {emptyActionLabel ?? 'Run discovery scan'}
                 </Button>
               )}
             </TableEmpty>
@@ -391,8 +395,8 @@ export function WinnersTable({
                 key={row.id}
                 onClick={onSelectAd ? () => onSelectAd(row.raw) : undefined}
                 className={cn(
-                  "border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/4",
-                  onSelectAd && "cursor-pointer"
+                  'border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/4',
+                  onSelectAd && 'cursor-pointer',
                 )}
               >
                 {/* Platform */}
@@ -432,13 +436,15 @@ export function WinnersTable({
                   <div className="inline-flex items-baseline gap-1">
                     <span
                       className={cn(
-                        "text-sm font-semibold tabular-nums",
-                        row.score >= 90 ? "text-blue-400" : "text-foreground"
+                        'text-sm font-semibold tabular-nums',
+                        row.score >= 90 ? 'text-blue-400' : 'text-foreground',
                       )}
                     >
                       {Math.round(row.score)}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">/100</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      /100
+                    </span>
                   </div>
                 </TableCell>
 
@@ -451,7 +457,9 @@ export function WinnersTable({
                 <TableCell className="whitespace-nowrap px-4 py-3.5 align-middle">
                   <Badge
                     shape="square"
-                    variant={row.delta > 0 ? "up" : row.delta < 0 ? "down" : "neutral"}
+                    variant={
+                      row.delta > 0 ? 'up' : row.delta < 0 ? 'down' : 'neutral'
+                    }
                   >
                     {formatDelta(row.delta)}
                   </Badge>

@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.discovery.find.public_library_collector import collect_public_ads
+
 PLATFORM = "tiktok"
 
 # Deterministic fixtures in the canonical collector row schema.
@@ -20,6 +22,7 @@ _MOCK_ADS: list[dict[str, Any]] = [
         "advertiser": "Acme Labs",
         "ad_id": "TT-GOOG-001",
         "creative_url": "https://cdn.example.com/acme/demo-cut.mp4",
+        "landing_url": "https://acmelabs.example.com/roas-report",
         "spend_estimate": 9800.0,
         "impressions": 620000,
         "start_date": "2026-06-15",
@@ -32,6 +35,7 @@ _MOCK_ADS: list[dict[str, Any]] = [
         "advertiser": "Nimbus Skin",
         "ad_id": "TT-NIMB-002",
         "creative_url": "https://cdn.example.com/nimbus/glass-hero.jpg",
+        "landing_url": "https://nimbusskin.example.com/glass-skin",
         "spend_estimate": 3600.0,
         "impressions": 240000,
         "start_date": "2026-05-28",
@@ -44,6 +48,7 @@ _MOCK_ADS: list[dict[str, Any]] = [
         "advertiser": "Ledgerly",
         "ad_id": "TT-LEDG-003",
         "creative_url": "https://cdn.example.com/ledgerly/dashboard.jpg",
+        "landing_url": "https://ledgerly.example.com/attribution",
         "spend_estimate": 15400.0,
         "impressions": 890000,
         "start_date": "2026-07-08",
@@ -74,5 +79,6 @@ async def collect_tiktok_ads(
     Mock mode: deterministic fixtures filtered by ``filters["query"]``
     (substring) and capped at ``page_size``.
     """
-    hits = [a for a in _MOCK_ADS if _matches(a, filters)]
-    return hits[: max(page_size, 0)]
+    return await collect_public_ads(
+        PLATFORM, page_size=page_size, filters=filters, fallback=_MOCK_ADS
+    )

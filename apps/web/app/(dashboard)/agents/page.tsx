@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -18,33 +18,33 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
+  type AgentProvider,
   apiPost,
+  type ConnectedAgent,
   getAgents,
   registerAgent,
   setWorkspaceId,
-  type AgentProvider,
-  type ConnectedAgent,
-} from "@/lib/api";
+} from '@/lib/api';
 
 const PROVIDERS: { id: AgentProvider; label: string; dotClass: string }[] = [
-  { id: "chatgpt", label: "ChatGPT", dotClass: "bg-emerald-500" },
-  { id: "claude", label: "Claude", dotClass: "bg-orange-500" },
-  { id: "opencode", label: "opencode", dotClass: "bg-accent-blue" },
-  { id: "openai", label: "OpenAI API", dotClass: "bg-sky-400" },
-  { id: "anthropic", label: "Anthropic API", dotClass: "bg-rose-400" },
+  { id: 'chatgpt', label: 'ChatGPT', dotClass: 'bg-emerald-500' },
+  { id: 'claude', label: 'Claude', dotClass: 'bg-orange-500' },
+  { id: 'opencode', label: 'opencode', dotClass: 'bg-accent-blue' },
+  { id: 'openai', label: 'OpenAI API', dotClass: 'bg-sky-400' },
+  { id: 'anthropic', label: 'Anthropic API', dotClass: 'bg-rose-400' },
 ];
 
 const inputCls =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 
 function ProviderChip({ provider }: { provider: string }) {
   const meta = PROVIDERS.find((p) => p.id === provider);
   return (
     <span className="inline-flex items-center gap-2 font-medium">
       <span
-        className={`h-2 w-2 shrink-0 rounded-full ${meta?.dotClass ?? "bg-muted-foreground"}`}
+        className={`h-2 w-2 shrink-0 rounded-full ${meta?.dotClass ?? 'bg-muted-foreground'}`}
         aria-hidden="true"
       />
       {meta?.label ?? provider}
@@ -54,18 +54,18 @@ function ProviderChip({ provider }: { provider: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const variant =
-    status === "connected" || status === "active"
-      ? "success"
-      : status === "paused"
-        ? "warning"
-        : status === "error"
-          ? "destructive"
-          : "secondary";
+    status === 'connected' || status === 'active'
+      ? 'success'
+      : status === 'paused'
+        ? 'warning'
+        : status === 'error'
+          ? 'destructive'
+          : 'secondary';
   return <Badge variant={variant}>{status}</Badge>;
 }
 
 function fmtLastRun(value: string | null) {
-  if (!value) return "never";
+  if (!value) return 'never';
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? value : d.toLocaleString();
 }
@@ -74,15 +74,15 @@ export default function AgentsPage() {
   const [agents, setAgents] = useState<ConnectedAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<AgentProvider>("chatgpt");
-  const [name, setName] = useState("");
-  const [config, setConfig] = useState("{}");
+  const [provider, setProvider] = useState<AgentProvider>('chatgpt');
+  const [name, setName] = useState('');
+  const [config, setConfig] = useState('{}');
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.localStorage.getItem("perfos_workspace_id");
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('perfos_workspace_id');
       setWorkspaceId(stored ? Number(stored) || 1 : 1);
     }
   }, []);
@@ -93,7 +93,7 @@ export default function AgentsPage() {
       setAgents(Array.isArray(data) ? data : []);
       setError(null);
     } catch {
-      setError("Could not load agents. Is the API running in mock mode?");
+      setError('Could not load agents. Is the API running in mock mode?');
     } finally {
       setLoading(false);
     }
@@ -107,29 +107,29 @@ export default function AgentsPage() {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      setError("Agent name is required.");
+      setError('Agent name is required.');
       return;
     }
     let configJson: Record<string, unknown>;
     try {
       configJson = config.trim() ? JSON.parse(config) : {};
     } catch {
-      setError("Config must be valid JSON.");
+      setError('Config must be valid JSON.');
       return;
     }
-    if (typeof configJson !== "object" || Array.isArray(configJson)) {
-      setError("Config must be a JSON object.");
+    if (typeof configJson !== 'object' || Array.isArray(configJson)) {
+      setError('Config must be a JSON object.');
       return;
     }
     setSaving(true);
     setError(null);
     try {
       await registerAgent({ provider, name: trimmed, config_json: configJson });
-      setName("");
-      setConfig("{}");
+      setName('');
+      setConfig('{}');
       await load();
     } catch {
-      setError("Failed to register agent. Check that the backend is up.");
+      setError('Failed to register agent. Check that the backend is up.');
     } finally {
       setSaving(false);
     }
@@ -180,7 +180,10 @@ export default function AgentsPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="agent-provider" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="agent-provider"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Provider
                 </label>
                 <select
@@ -197,7 +200,10 @@ export default function AgentsPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="agent-name" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="agent-name"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Name
                 </label>
                 <input
@@ -209,7 +215,10 @@ export default function AgentsPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="agent-config" className="text-xs font-medium text-muted-foreground">
+                <label
+                  htmlFor="agent-config"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Config (JSON)
                 </label>
                 <textarea
@@ -224,7 +233,7 @@ export default function AgentsPage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={saving} className="w-full">
-                {saving ? "Connecting…" : "Connect agent"}
+                {saving ? 'Connecting…' : 'Connect agent'}
               </Button>
             </CardFooter>
           </form>
@@ -234,7 +243,11 @@ export default function AgentsPage() {
       <section aria-label="Connected agents" className="mt-8">
         <h3 className="text-sm font-semibold">Connected agents</h3>
         {loading ? (
-          <div className="mt-3 space-y-2" aria-busy="true" aria-label="Loading agents">
+          <div
+            className="mt-3 space-y-2"
+            aria-busy="true"
+            aria-label="Loading agents"
+          >
             {[0, 1, 2].map((i) => (
               <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
             ))}
@@ -259,7 +272,9 @@ export default function AgentsPage() {
               <TableBody>
                 {agents.map((a) => (
                   <TableRow key={a.id}>
-                    <TableCell className="px-4 py-3 font-medium">{a.name}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium">
+                      {a.name}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3">
                       <ProviderChip provider={a.provider} />
                     </TableCell>
@@ -276,7 +291,7 @@ export default function AgentsPage() {
                         onClick={() => handleDispatch(a)}
                         disabled={busyId === a.id}
                       >
-                        {busyId === a.id ? "Dispatching…" : "Dispatch"}
+                        {busyId === a.id ? 'Dispatching…' : 'Dispatch'}
                       </Button>
                     </TableCell>
                   </TableRow>

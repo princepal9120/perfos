@@ -25,10 +25,7 @@ __all__ = ["create_stage"]
 def _field(winner: Any, *names: str) -> str | None:
     """Read the first present field off a dict or duck-typed winner object."""
     for name in names:
-        if isinstance(winner, dict):
-            value = winner.get(name)
-        else:
-            value = getattr(winner, name, None)
+        value = winner.get(name) if isinstance(winner, dict) else getattr(winner, name, None)
         if value:
             return str(value)
     return None

@@ -98,10 +98,7 @@ class GenerationResult(BaseModel):
 def _get(src: object, *names: str, default: str = "") -> str:
     """Read the first present field off a dict or duck-typed brief object."""
     for name in names:
-        if isinstance(src, dict):
-            val = src.get(name)
-        else:
-            val = getattr(src, name, None)
+        val = src.get(name) if isinstance(src, dict) else getattr(src, name, None)
         if isinstance(val, str) and val.strip():
             return val.strip()
     return default

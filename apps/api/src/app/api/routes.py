@@ -1,9 +1,8 @@
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal, TypeAlias
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import text
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -13,7 +12,7 @@ from app.attribution.reconcile import reconcile as run_reconcile
 from app.core.db import get_db
 from app.core.deps import get_current_workspace
 from app.core.security import create_token as sign_token
-from app.core.security import decrypt_secret, encrypt_secret, verify_workspace
+from app.core.security import decrypt_secret, verify_workspace
 from app.models import (
     AdAccount,
     Approval,
@@ -770,6 +769,14 @@ class ToolCallRequest(BaseModel):
     params: dict = {}
 
 
+@router.get("/capabilities")
+def agent_capabilities(workspace_id: WorkspaceId) -> dict:
+    """Describe the supported REST, CLI, and MCP surfaces without exposing secrets."""
+    from app.agent_contract import build_agent_contract
+
+    return build_agent_contract(workspace_id)
+
+
 @router.get("/pipeline")
 def run_full_pipeline(db: DbDep, workspace_id: WorkspaceId) -> dict:
     """Run reconcile -> analysis -> recommend and gather stack statuses."""
@@ -865,14 +872,6 @@ class IncrementalityCreate(BaseModel):
     test_type: TEST_TYPES = "geo_holdout"
     markets_treated: list[str] = []
     markets_control: list[str] = []
-    spend_treated: float = 0.0
-    spend_control: float = 0.0
-    conversions_treated: float = 0.0
-    conversions_control: float = 0.0
-    spend_treated: float = 0.0
-    spend_control: float = 0.0
-    conversions_treated: float = 0.0
-    conversions_control: float = 0.0
     spend_treated: float = 0.0
     spend_control: float = 0.0
     conversions_treated: float = 0.0

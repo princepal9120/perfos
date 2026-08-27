@@ -95,10 +95,10 @@ if __name__ == "__main__":  # minimal runnable self-check
     )
     lines = remix_hook(w)
     assert len(lines) == 3, lines
-    assert len({l.casefold() for l in lines}) == 3
-    assert any(l.startswith("What if ") for l in lines)
-    assert any("Stop scrolling" in l for l in lines)
-    assert any("Shop the routine." in l for l in lines)
+    assert len({line.casefold() for line in lines}) == 3
+    assert any(line.startswith("What if ") for line in lines)
+    assert any("Stop scrolling" in line for line in lines)
+    assert any("Shop the routine." in line for line in lines)
 
     assert remix_hook(
         w.model_copy(update={"hook": None})

@@ -1,6 +1,5 @@
 """FIND collectors — meta_collector + tiktok_collector mock-mode tests."""
 
-from typing import Any
 
 import pytest
 
@@ -38,7 +37,7 @@ async def test_collector_returns_at_least_one_ad(collect) -> None:
 @pytest.mark.asyncio
 async def test_ads_have_required_schema_keys(collect) -> None:
     for ad in await collect():
-        assert REQUIRED_KEYS <= set(ad), f"missing keys: {REQUIRED_KEYS - set(ad)}"
+        assert set(ad) >= REQUIRED_KEYS, f"missing keys: {REQUIRED_KEYS - set(ad)}"
 
 
 @pytest.mark.parametrize("collect", COLLECTORS)
@@ -54,7 +53,9 @@ async def test_rows_are_well_formed(collect, request) -> None:
 
 @pytest.mark.parametrize("collect", COLLECTORS)
 @pytest.mark.asyncio
-async def test_query_filter_and_page_size(collect) -> None:
+async def test_query_filter_and_page_size(collect, monkeypatch) -> None:
+    # A query normally triggers the live ad-library scrape; pin this to fixtures.
+    monkeypatch.setenv("PERFOS_LIVE_DISCOVERY", "0")
     filtered = await collect(filters={"query": "nimbus"})
     assert len(filtered) >= 1
     assert all("nimbus" in f'{a["advertiser"]} {a["text"]}'.lower() for a in filtered)

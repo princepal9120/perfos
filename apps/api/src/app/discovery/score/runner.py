@@ -21,8 +21,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from app.discovery.score import angles, persona_fit
-from app.discovery.score import winner_engine
+from app.discovery.score import angles, persona_fit, winner_engine
 from app.discovery.store import WinnerSignal, WinnerStore
 
 __all__ = ["run_score"]

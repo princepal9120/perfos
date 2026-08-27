@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { PerfOSLogo } from "@/components/marketing/icons";
-import { useState, useEffect } from "react";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { PerfOSLogo } from '@/components/marketing/icons';
 
 export function MarketingNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -11,13 +11,18 @@ export function MarketingNavbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <header
-      className={"fixed top-0 left-0 right-0 z-50 transition-colors duration-150 " + (scrolled ? "bg-[#08080a]/95 backdrop-blur-md border-b border-white/10" : "bg-transparent border-b border-transparent")}
+      className={
+        'fixed top-0 left-0 right-0 z-50 transition-colors duration-150 ' +
+        (scrolled
+          ? 'bg-[#08080a]/95 backdrop-blur-md border-b border-white/10'
+          : 'bg-transparent border-b border-transparent')
+      }
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
@@ -50,22 +55,32 @@ export function MarketingNavbar() {
           {/* Features Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setActiveDropdown("features")}
+            onMouseEnter={() => setActiveDropdown('features')}
             onMouseLeave={() => setActiveDropdown(null)}
           >
             <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-400 hover:text-white rounded-md transition-colors hover:bg-white/5 cursor-pointer">
               <span>Features</span>
               <svg
-                className={"w-3.5 h-3.5 transition-transform duration-150 " + (activeDropdown === "features" ? "rotate-180 text-[#d86f82]" : "text-zinc-500")}
+                className={
+                  'w-3.5 h-3.5 transition-transform duration-150 ' +
+                  (activeDropdown === 'features'
+                    ? 'rotate-180 text-[#d86f82]'
+                    : 'text-zinc-500')
+                }
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
-            {activeDropdown === "features" && (
+            {activeDropdown === 'features' && (
               <div className="absolute top-full left-0 w-[460px] p-3 mt-1 bg-[#121318] border border-white/10 rounded-xl shadow-2xl grid grid-cols-2 gap-2">
                 <Link
                   href="/features/ad-library"
@@ -78,7 +93,8 @@ export function MarketingNavbar() {
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Track &amp; spy on 500k+ competitor ads across 7 major networks.
+                    Track &amp; spy on 500k+ competitor ads across 7 major
+                    networks.
                   </p>
                 </Link>
 
@@ -108,7 +124,8 @@ export function MarketingNavbar() {
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Clone top-performing competitor creatives and remix for your brand.
+                    Clone top-performing competitor creatives and remix for your
+                    brand.
                   </p>
                 </Link>
 
@@ -133,7 +150,7 @@ export function MarketingNavbar() {
           {/* Ads MCP Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setActiveDropdown("mcp")}
+            onMouseEnter={() => setActiveDropdown('mcp')}
             onMouseLeave={() => setActiveDropdown(null)}
           >
             <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-zinc-400 hover:text-white rounded-md transition-colors hover:bg-white/5 cursor-pointer">
@@ -143,7 +160,7 @@ export function MarketingNavbar() {
               </span>
             </button>
 
-            {activeDropdown === "mcp" && (
+            {activeDropdown === 'mcp' && (
               <div className="absolute top-full left-0 w-[420px] p-3 mt-1 bg-[#121318] border border-white/10 rounded-xl shadow-2xl">
                 <div className="mb-2 pb-2 border-b border-white/10 flex items-center justify-between">
                   <span className="text-xs font-mono uppercase text-zinc-500 font-medium">
@@ -220,11 +237,26 @@ export function MarketingNavbar() {
           className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5"
           aria-label="Toggle Navigation"
         >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>

@@ -1,8 +1,8 @@
 """Tests for app.discovery.score.dna_diff (pure functions, mock-safe)."""
 
 from app.discovery.score.dna_diff import (
-    dna_similarity,
     diff_winner_vs_ads,
+    dna_similarity,
     extract_dna,
 )
 

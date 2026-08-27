@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -19,35 +19,35 @@ import {
   TableHeader,
   TableRow,
   useTableSort,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 const PLATFORM_LABELS: Record<string, string> = {
-  google: "Google Ads",
-  meta: "Meta Ads",
-  shopify: "Shopify",
-  tiktok: "TikTok Ads",
-  linkedin: "LinkedIn Ads",
-  pinterest: "Pinterest Ads",
-  snapchat: "Snapchat Ads",
-  amazon: "Amazon Ads",
-  reddit: "Reddit Ads",
-  twitter: "Twitter Ads",
-  youtube: "YouTube Ads",
-  amazon_ads: "Amazon DSP",
-  x_ads: "X Ads",
+  google: 'Google Ads',
+  meta: 'Meta Ads',
+  shopify: 'Shopify',
+  tiktok: 'TikTok Ads',
+  linkedin: 'LinkedIn Ads',
+  pinterest: 'Pinterest Ads',
+  snapchat: 'Snapchat Ads',
+  amazon: 'Amazon Ads',
+  reddit: 'Reddit Ads',
+  twitter: 'Twitter Ads',
+  youtube: 'YouTube Ads',
+  amazon_ads: 'Amazon DSP',
+  x_ads: 'X Ads',
 };
 
 export type CreativeStatus =
-  | "active"
-  | "paused"
-  | "fatigued"
-  | "testing"
-  | "winning"
-  | "scaling"
-  | "learning"
-  | "stopped"
-  | "archived"
+  | 'active'
+  | 'paused'
+  | 'fatigued'
+  | 'testing'
+  | 'winning'
+  | 'scaling'
+  | 'learning'
+  | 'stopped'
+  | 'archived'
   | (string & {});
 
 export interface CreativeRow {
@@ -89,36 +89,40 @@ export interface CreativeTableProps {
 }
 
 function formatPlatform(platform: string): string {
-  const key = platform?.toLowerCase().trim() ?? "";
+  const key = platform?.toLowerCase().trim() ?? '';
   return PLATFORM_LABELS[key] ?? platform;
 }
 
 function formatUsd(amount: number): string {
-  if (typeof amount !== "number" || isNaN(amount)) return "$0";
+  if (typeof amount !== 'number' || isNaN(amount)) return '$0';
   return `$${Math.round(amount).toLocaleString()}`;
 }
 
 function formatStatus(status?: string, fatigueScore?: number) {
   if (status) {
     const s = status.toLowerCase().trim();
-    if (s === "active" || s === "scaling" || s === "winning") {
+    if (s === 'active' || s === 'scaling' || s === 'winning') {
       return (
         <Badge variant="success" shape="square">
-          {s === "winning" ? "Winning" : s === "scaling" ? "Scaling" : "Active"}
+          {s === 'winning' ? 'Winning' : s === 'scaling' ? 'Scaling' : 'Active'}
         </Badge>
       );
     }
-    if (s === "warning" || s === "fatigued" || s === "learning") {
+    if (s === 'warning' || s === 'fatigued' || s === 'learning') {
       return (
         <Badge variant="warning" shape="square">
-          {s === "fatigued" ? "Fatigued" : s === "learning" ? "Learning" : "Warning"}
+          {s === 'fatigued'
+            ? 'Fatigued'
+            : s === 'learning'
+              ? 'Learning'
+              : 'Warning'}
         </Badge>
       );
     }
-    if (s === "paused" || s === "killed" || s === "stopped") {
+    if (s === 'paused' || s === 'killed' || s === 'stopped') {
       return (
         <Badge variant="secondary" shape="square">
-          {s === "killed" ? "Killed" : s === "stopped" ? "Stopped" : "Paused"}
+          {s === 'killed' ? 'Killed' : s === 'stopped' ? 'Stopped' : 'Paused'}
         </Badge>
       );
     }
@@ -129,7 +133,7 @@ function formatStatus(status?: string, fatigueScore?: number) {
     );
   }
 
-  if (typeof fatigueScore === "number") {
+  if (typeof fatigueScore === 'number') {
     if (fatigueScore >= 70) {
       return (
         <Badge variant="destructive" shape="square">
@@ -163,35 +167,36 @@ export function CreativeTable({
   rows,
   loading = false,
   error = null,
-  title = "Creative performance",
-  description = "Cross-channel ad creatives ranked by spend, return on ad spend, and creative status.",
+  title = 'Creative performance',
+  description = 'Cross-channel ad creatives ranked by spend, return on ad spend, and creative status.',
   className,
   onCreativeClick,
 }: CreativeTableProps) {
   const normalizedRows = React.useMemo(() => {
     const data = creatives ?? rows ?? [];
     return data.map((r, index) => {
-      const spend = typeof r.spend === "number" ? r.spend : 0;
-      const conversions = typeof r.conversions === "number" ? r.conversions : 0;
+      const spend = typeof r.spend === 'number' ? r.spend : 0;
+      const conversions = typeof r.conversions === 'number' ? r.conversions : 0;
       const roas =
-        typeof r.roas === "number"
+        typeof r.roas === 'number'
           ? r.roas
           : spend > 0 && conversions > 0
-          ? (conversions * 45) / spend
-          : 0;
+            ? (conversions * 45) / spend
+            : 0;
 
       return {
         id: String(r.id ?? r.creative_id ?? `creative-${index}`),
         creative_id: r.creative_id,
         name: r.name ?? r.creative_id ?? `Creative #${index + 1}`,
-        platform: r.platform || "other",
+        platform: r.platform || 'other',
         spend,
         roas,
-        impressions: typeof r.impressions === "number" ? r.impressions : 0,
+        impressions: typeof r.impressions === 'number' ? r.impressions : 0,
         conversions,
-        fatigue_score: typeof r.fatigue_score === "number" ? r.fatigue_score : 0,
-        hook_rate: typeof r.hook_rate === "number" ? r.hook_rate : 0,
-        status: r.status ?? "active",
+        fatigue_score:
+          typeof r.fatigue_score === 'number' ? r.fatigue_score : 0,
+        hook_rate: typeof r.hook_rate === 'number' ? r.hook_rate : 0,
+        status: r.status ?? 'active',
         media_type: r.media_type,
         raw: r,
       };
@@ -199,12 +204,12 @@ export function CreativeTable({
   }, [creatives, rows]);
 
   const { sorted, key, dir, toggle } = useTableSort(normalizedRows, {
-    key: "spend",
-    dir: "desc",
+    key: 'spend',
+    dir: 'desc',
   });
 
   return (
-    <Card className={cn("border-border bg-card", className)}>
+    <Card className={cn('border-border bg-card', className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
         <div>
           <CardTitle className="font-display text-base text-foreground">
@@ -229,44 +234,44 @@ export function CreativeTable({
             <TableRow className="border-b border-border bg-white/1">
               <TableHead
                 sortable
-                active={key === "name"}
+                active={key === 'name'}
                 dir={dir}
-                onSort={() => toggle("name")}
+                onSort={() => toggle('name')}
               >
                 Creative
               </TableHead>
               <TableHead
                 sortable
-                active={key === "platform"}
+                active={key === 'platform'}
                 dir={dir}
-                onSort={() => toggle("platform")}
+                onSort={() => toggle('platform')}
               >
                 Platform
               </TableHead>
               <TableHead
                 className="text-right"
                 sortable
-                active={key === "spend"}
+                active={key === 'spend'}
                 dir={dir}
-                onSort={() => toggle("spend")}
+                onSort={() => toggle('spend')}
               >
                 Spend
               </TableHead>
               <TableHead
                 className="text-right"
                 sortable
-                active={key === "roas"}
+                active={key === 'roas'}
                 dir={dir}
-                onSort={() => toggle("roas")}
+                onSort={() => toggle('roas')}
               >
                 ROAS
               </TableHead>
               <TableHead
                 className="text-right"
                 sortable
-                active={key === "status"}
+                active={key === 'status'}
                 dir={dir}
-                onSort={() => toggle("status")}
+                onSort={() => toggle('status')}
               >
                 Status
               </TableHead>
@@ -322,7 +327,8 @@ export function CreativeTable({
                   No creatives found
                 </p>
                 <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                  Creative metrics sync automatically once ad channels are linked and active.
+                  Creative metrics sync automatically once ad channels are
+                  linked and active.
                 </p>
               </TableEmpty>
             ) : (
@@ -331,8 +337,8 @@ export function CreativeTable({
                   key={row.id}
                   onClick={() => onCreativeClick?.(row.raw)}
                   className={cn(
-                    "border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/3",
-                    onCreativeClick && "cursor-pointer"
+                    'border-b border-white/4 transition-colors duration-150 ease-out hover:bg-white/3',
+                    onCreativeClick && 'cursor-pointer',
                   )}
                 >
                   <TableCell className="font-medium text-foreground">
@@ -364,7 +370,9 @@ export function CreativeTable({
                             <span aria-hidden="true">&bull;</span>
                           )}
                           {row.conversions > 0 && (
-                            <span>{row.conversions.toLocaleString()} conv.</span>
+                            <span>
+                              {row.conversions.toLocaleString()} conv.
+                            </span>
                           )}
                         </div>
                       </div>
@@ -381,15 +389,15 @@ export function CreativeTable({
                   <TableCell className="text-right tabular-nums">
                     <span
                       className={cn(
-                        "font-semibold",
+                        'font-semibold',
                         row.roas >= 3.0
-                          ? "text-emerald-400"
+                          ? 'text-emerald-400'
                           : row.roas >= 1.8
-                          ? "text-blue-400"
-                          : "text-muted-foreground"
+                            ? 'text-blue-400'
+                            : 'text-muted-foreground',
                       )}
                     >
-                      {row.roas > 0 ? `${row.roas.toFixed(2)}x` : "—"}
+                      {row.roas > 0 ? `${row.roas.toFixed(2)}x` : '—'}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">

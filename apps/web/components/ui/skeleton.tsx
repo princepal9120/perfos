@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 /**
  * Keyframes live here (not tailwind.config/globals.css) so this component is
@@ -13,10 +13,13 @@ const SHIMMER_CSS = `
   .ui-shimmer-band { animation: none !important; }
 }`;
 
-function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("relative overflow-hidden rounded-md bg-muted", className)}
+      className={cn('relative overflow-hidden rounded-md bg-muted', className)}
       {...props}
     >
       <style dangerouslySetInnerHTML={{ __html: SHIMMER_CSS }} />
@@ -37,11 +40,11 @@ function SkeletonText({
   className?: string;
 }) {
   return (
-    <div className={cn("space-y-2", className)} aria-hidden="true">
+    <div className={cn('space-y-2', className)} aria-hidden="true">
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
           key={i}
-          className={cn("h-3 w-full", i === lines - 1 && "w-2/3")}
+          className={cn('h-3 w-full', i === lines - 1 && 'w-2/3')}
         />
       ))}
     </div>

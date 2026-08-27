@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 import pytest
 from pydantic import ValidationError
 
-from app.discovery.find.schemas import Advertiser, CreativeAsset, SpyAd
+from app.discovery.find.schemas import CreativeAsset, SpyAd
 
 
 def _spy_ad(**overrides):

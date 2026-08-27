@@ -1,11 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export function Narrative({ narrative }: { narrative: string | null }) {
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle>What happened</CardTitle>
-        <CardDescription>Deterministic summary from reconciled data</CardDescription>
+        <CardDescription>
+          Deterministic summary from reconciled data
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {narrative ? (

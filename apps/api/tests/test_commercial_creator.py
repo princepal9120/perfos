@@ -16,7 +16,6 @@ from app.create.commercial_creator import (
     generate_commercial,
 )
 
-
 # --------------------------------------------------------------- pure functions
 
 def test_estimate_matches_documented_cost_band():

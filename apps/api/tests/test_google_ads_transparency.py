@@ -3,10 +3,10 @@
 import pytest
 
 from app.discovery.find.google_ads_transparency import (
-    SOURCE_PLATFORM,
     _MOCK_RECORDS,
-    normalize_transparency_record,
+    SOURCE_PLATFORM,
     normalize_transparency_ad,
+    normalize_transparency_record,
     search_ads,
 )
 

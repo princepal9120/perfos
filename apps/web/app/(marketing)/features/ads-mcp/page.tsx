@@ -1,31 +1,65 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 
 const PLATFORMS = [
-  { name: "Meta Ads MCP", slug: "meta", color: "bg-blue-500", desc: "Inspect campaigns, fetch ad insights, update creative sets, and adjust ad set daily budgets via Claude/Cursor." },
-  { name: "Google Ads MCP", slug: "google", color: "bg-amber-500", desc: "Manage Search, Performance Max, and YouTube campaigns with direct keyword and bidding tool endpoints." },
-  { name: "TikTok Ads MCP", slug: "tiktok", color: "bg-rose-500", desc: "Query trending Spark ad hooks, inspect audience demographics, and push short-form video variations." },
-  { name: "LinkedIn Ads MCP", slug: "linkedin", color: "bg-sky-500", desc: "B2B title targeting, lead gen form optimization, and company audience segmentation directly in your IDE." },
-  { name: "Reddit Ads MCP", slug: "reddit", color: "bg-orange-500", desc: "Subreddit targeting intelligence, post creative management, and conversation placement controls." },
-  { name: "X Ads MCP", slug: "x", color: "bg-zinc-300", desc: "Promoted tweet management, follower lookalikes, and keyword interest targeting for tech audiences." }
+  {
+    name: 'Meta Ads MCP',
+    slug: 'meta',
+    color: 'bg-blue-500',
+    desc: 'Inspect campaigns, fetch ad insights, update creative sets, and adjust ad set daily budgets via Claude/Cursor.',
+  },
+  {
+    name: 'Google Ads MCP',
+    slug: 'google',
+    color: 'bg-amber-500',
+    desc: 'Manage Search, Performance Max, and YouTube campaigns with direct keyword and bidding tool endpoints.',
+  },
+  {
+    name: 'TikTok Ads MCP',
+    slug: 'tiktok',
+    color: 'bg-rose-500',
+    desc: 'Query trending Spark ad hooks, inspect audience demographics, and push short-form video variations.',
+  },
+  {
+    name: 'LinkedIn Ads MCP',
+    slug: 'linkedin',
+    color: 'bg-sky-500',
+    desc: 'B2B title targeting, lead gen form optimization, and company audience segmentation directly in your IDE.',
+  },
+  {
+    name: 'Reddit Ads MCP',
+    slug: 'reddit',
+    color: 'bg-orange-500',
+    desc: 'Subreddit targeting intelligence, post creative management, and conversation placement controls.',
+  },
+  {
+    name: 'X Ads MCP',
+    slug: 'x',
+    color: 'bg-zinc-300',
+    desc: 'Promoted tweet management, follower lookalikes, and keyword interest targeting for tech audiences.',
+  },
 ];
 
 export default function AdsMcpPage() {
   const [copied, setCopied] = useState(false);
 
-  const mcpConfigJson = JSON.stringify({
-    mcpServers: {
-      adkit: {
-        command: "npx",
-        args: ["-y", "@adkit/mcp-server"],
-        env: {
-          ADKIT_API_KEY: "adk_live_your_secret_key_here"
-        }
-      }
-    }
-  }, null, 2);
+  const mcpConfigJson = JSON.stringify(
+    {
+      mcpServers: {
+        adkit: {
+          command: 'npx',
+          args: ['-y', '@adkit/mcp-server'],
+          env: {
+            ADKIT_API_KEY: 'adk_live_your_secret_key_here',
+          },
+        },
+      },
+    },
+    null,
+    2,
+  );
 
   const copyConfig = () => {
     navigator.clipboard.writeText(mcpConfigJson);
@@ -40,10 +74,15 @@ export default function AdsMcpPage() {
           Standard Model Context Protocol
         </span>
         <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight">
-          Manage your Ads from any <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">AI Agent</span>
+          Manage your Ads from any{' '}
+          <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">
+            AI Agent
+          </span>
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg">
-          Connect Meta, Google, TikTok, LinkedIn, and Reddit directly to Claude Code, Cursor, ChatGPT, and Codex. One unified MCP configuration for your entire growth stack.
+          Connect Meta, Google, TikTok, LinkedIn, and Reddit directly to Claude
+          Code, Cursor, ChatGPT, and Codex. One unified MCP configuration for
+          your entire growth stack.
         </p>
         <div className="flex justify-center gap-4 pt-2">
           <Link
@@ -65,13 +104,15 @@ export default function AdsMcpPage() {
       <div className="max-w-3xl mx-auto p-6 rounded-2xl bg-card border border-border space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-primary font-bold">claude_desktop_config.json / .cursor/mcp.json</span>
+            <span className="text-xs font-mono text-primary font-bold">
+              claude_desktop_config.json / .cursor/mcp.json
+            </span>
           </div>
           <button
             onClick={copyConfig}
             className="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/6 hover:bg-white/12 text-foreground border border-border transition-colors"
           >
-            {copied ? "✓ Copied!" : "📋 Copy MCP JSON"}
+            {copied ? '✓ Copied!' : '📋 Copy MCP JSON'}
           </button>
         </div>
         <pre className="p-4 rounded-xl bg-black/60 font-mono text-xs text-primary overflow-x-auto">

@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   approveRecommendation,
   generateRecommendations,
   getRecommendations,
-  rejectRecommendation,
   type Recommendation,
   type Risk,
-} from "@/lib/api";
+  rejectRecommendation,
+} from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // Types & Interfaces
 // ---------------------------------------------------------------------------
 
-type RecStatus = "pending" | "approved" | "rejected" | "executed" | "failed";
+type RecStatus = 'pending' | 'approved' | 'rejected' | 'executed' | 'failed';
 
 interface ExtendedRecommendation extends Recommendation {
-  platform?: "meta" | "google" | "tiktok" | "shopify" | "linkedin" | "multi";
+  platform?: 'meta' | 'google' | 'tiktok' | 'shopify' | 'linkedin' | 'multi';
   spend_delta?: string;
   roas_delta?: string;
   projected_monthly_value?: string;
@@ -49,39 +49,40 @@ const MOCK_RECOMMENDATIONS: ExtendedRecommendation[] = [
   {
     id: 101,
     workspace_id: 1,
-    type: "budget_shift",
-    platform: "meta",
+    type: 'budget_shift',
+    platform: 'meta',
     reason:
-      "Meta 7-day click-through ROAS dropped to 1.12x from audience saturation, while Google Search Brand and Core Non-Brand campaigns are capped at 94% impression share with marginal iROAS of 3.42x.",
+      'Meta 7-day click-through ROAS dropped to 1.12x from audience saturation, while Google Search Brand and Core Non-Brand campaigns are capped at 94% impression share with marginal iROAS of 3.42x.',
     expected_impact:
-      "+$3,400/wk net revenue (+0.48 blended iROAS); projected CAC reduction from $48.20 to $39.80",
-    spend_delta: "-$850/day Meta, +$850/day Google",
-    roas_delta: "+0.48x",
-    projected_monthly_value: "+$13,600",
+      '+$3,400/wk net revenue (+0.48 blended iROAS); projected CAC reduction from $48.20 to $39.80',
+    spend_delta: '-$850/day Meta, +$850/day Google',
+    roas_delta: '+0.48x',
+    projected_monthly_value: '+$13,600',
     confidence: 0.94,
-    risk: "low",
-    status: "pending",
+    risk: 'low',
+    status: 'pending',
     created_at: new Date(Date.now() - 1000 * 60 * 42).toISOString(),
     evidence_json: {
-      source_campaign: "Meta - Prospecting & Retargeting Broad (US)",
-      target_campaign: "Google Search - High Intent Core Non-Brand",
+      source_campaign: 'Meta - Prospecting & Retargeting Broad (US)',
+      target_campaign: 'Google Search - High Intent Core Non-Brand',
       current_meta_marginal_iroas: 1.12,
       google_marginal_iroas: 3.42,
-      lost_impression_share_budget: "38.2%",
-      attribution_window: "7d_click_1d_view",
+      lost_impression_share_budget: '38.2%',
+      attribution_window: '7d_click_1d_view',
       lookback_days: 14,
     },
     proposed_changes_json: {
-      action: "reallocate_daily_budget",
+      action: 'reallocate_daily_budget',
       meta_current_daily_budget: 1750,
       meta_recommended_daily_budget: 900,
       google_current_daily_budget: 1200,
       google_recommended_daily_budget: 2050,
       net_spend_change: 0,
-      execution_mode: "direct_api_sync",
+      execution_mode: 'direct_api_sync',
     },
     rollback_json: {
-      trigger_condition: "Blended MER drops below 2.40x over rolling 48-hour window",
+      trigger_condition:
+        'Blended MER drops below 2.40x over rolling 48-hour window',
       auto_revert: true,
       checkpoint_hours: 48,
       previous_budgets: { meta_daily: 1750, google_daily: 1200 },
@@ -90,36 +91,36 @@ const MOCK_RECOMMENDATIONS: ExtendedRecommendation[] = [
   {
     id: 102,
     workspace_id: 1,
-    type: "scale_creative",
-    platform: "tiktok",
+    type: 'scale_creative',
+    platform: 'tiktok',
     reason:
       'Creative variant "Founder Story v3" (ID #TK-8831) achieved 4.2% hook rate (vs 1.8% account benchmark) and 3.18x iROAS with $4.2k spend over the last 5 days.',
     expected_impact:
-      "+$6,800/wk incremental revenue with projected 2.85x marginal ROAS across US smart discovery",
-    spend_delta: "+$240/day (+40%)",
-    roas_delta: "+0.32x",
-    projected_monthly_value: "+$27,200",
+      '+$6,800/wk incremental revenue with projected 2.85x marginal ROAS across US smart discovery',
+    spend_delta: '+$240/day (+40%)',
+    roas_delta: '+0.32x',
+    projected_monthly_value: '+$27,200',
     confidence: 0.91,
-    risk: "medium",
-    status: "pending",
+    risk: 'medium',
+    status: 'pending',
     created_at: new Date(Date.now() - 1000 * 60 * 115).toISOString(),
     evidence_json: {
-      creative_id: "TK-8831-UGC-FOUNDER-V3",
-      hook_rate_3s: "4.21% (benchmark: 1.80%)",
-      hold_rate_6s: "32.4%",
+      creative_id: 'TK-8831-UGC-FOUNDER-V3',
+      hook_rate_3s: '4.21% (benchmark: 1.80%)',
+      hold_rate_6s: '32.4%',
       conversions_5d: 148,
-      cost_per_acquisition: "$28.40 (target: $42.00)",
-      engagement_lift: "+84% vs account median",
+      cost_per_acquisition: '$28.40 (target: $42.00)',
+      engagement_lift: '+84% vs account median',
     },
     proposed_changes_json: {
-      action: "scale_adgroup_budget",
-      target_adgroup: "TikTok - US Smart+ UGC Creators",
+      action: 'scale_adgroup_budget',
+      target_adgroup: 'TikTok - US Smart+ UGC Creators',
       current_daily_budget: 600,
       recommended_daily_budget: 840,
-      pacing: "accelerated_dayparting",
+      pacing: 'accelerated_dayparting',
     },
     rollback_json: {
-      trigger_condition: "CPA exceeds $38.00 on rolling 72-hour window",
+      trigger_condition: 'CPA exceeds $38.00 on rolling 72-hour window',
       auto_revert: true,
       max_loss_cap_usd: 500,
     },
@@ -127,68 +128,69 @@ const MOCK_RECOMMENDATIONS: ExtendedRecommendation[] = [
   {
     id: 103,
     workspace_id: 1,
-    type: "pause_decay",
-    platform: "meta",
+    type: 'pause_decay',
+    platform: 'meta',
     reason:
       'Frequency on "Meta - DABA Catalog Dynamic" reached 5.8 per user over 14 days; CPM increased +62% and first-time buyer conversion rate fell -44%.',
     expected_impact:
-      "Save $1,450/wk in wasted spend; redirect budget into top-performing static winner assets",
-    spend_delta: "-$210/day",
-    roas_delta: "+0.22x blended",
-    projected_monthly_value: "+$5,800 saved",
+      'Save $1,450/wk in wasted spend; redirect budget into top-performing static winner assets',
+    spend_delta: '-$210/day',
+    roas_delta: '+0.22x blended',
+    projected_monthly_value: '+$5,800 saved',
     confidence: 0.96,
-    risk: "low",
-    status: "pending",
+    risk: 'low',
+    status: 'pending',
     created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
     evidence_json: {
-      adset_id: "META-DABA-CATALOG-9021",
+      adset_id: 'META-DABA-CATALOG-9021',
       frequency_14d: 5.82,
-      cpm_trend_7d: "+62.4%",
-      fatigue_score: "8.4 / 10",
-      wasted_spend_last_3d: "$620.00",
-      creative_exhaustion_rate: "78%",
+      cpm_trend_7d: '+62.4%',
+      fatigue_score: '8.4 / 10',
+      wasted_spend_last_3d: '$620.00',
+      creative_exhaustion_rate: '78%',
     },
     proposed_changes_json: {
-      action: "pause_adset",
-      target_adset: "Meta - DABA Catalog Dynamic",
-      reallocate_budget_to: "Meta - ASC Static Winners (Batch 4)",
+      action: 'pause_adset',
+      target_adset: 'Meta - DABA Catalog Dynamic',
+      reallocate_budget_to: 'Meta - ASC Static Winners (Batch 4)',
     },
     rollback_json: {
-      trigger_condition: "Manual review or dynamic catalog feed creative refresh",
+      trigger_condition:
+        'Manual review or dynamic catalog feed creative refresh',
       auto_revert: false,
     },
   },
   {
     id: 104,
     workspace_id: 1,
-    type: "bid_cap_adjust",
-    platform: "google",
+    type: 'bid_cap_adjust',
+    platform: 'google',
     reason:
-      "Demand Gen YouTube Shorts campaign is bidding aggressively above marginal revenue yield on weekend inventory; lowering tCPA forces algorithm toward high-propensity lookalikes.",
+      'Demand Gen YouTube Shorts campaign is bidding aggressively above marginal revenue yield on weekend inventory; lowering tCPA forces algorithm toward high-propensity lookalikes.',
     expected_impact:
-      "+$1,850/wk efficiency gain; +14.2% conversions at equivalent overall weekly spend",
-    spend_delta: "$0 net (bid cap only)",
-    roas_delta: "+0.35x",
-    projected_monthly_value: "+$7,400",
+      '+$1,850/wk efficiency gain; +14.2% conversions at equivalent overall weekly spend',
+    spend_delta: '$0 net (bid cap only)',
+    roas_delta: '+0.35x',
+    projected_monthly_value: '+$7,400',
     confidence: 0.88,
-    risk: "medium",
-    status: "pending",
+    risk: 'medium',
+    status: 'pending',
     created_at: new Date(Date.now() - 1000 * 60 * 320).toISOString(),
     evidence_json: {
-      campaign_name: "Google Demand Gen - Shorts Video Lookalikes 2%",
-      current_target_cpa: "$54.00",
-      recommended_target_cpa: "$42.00",
-      recent_realized_cpa: "$49.10",
-      smart_bidding_model: "Response Curve v4",
+      campaign_name: 'Google Demand Gen - Shorts Video Lookalikes 2%',
+      current_target_cpa: '$54.00',
+      recommended_target_cpa: '$42.00',
+      recent_realized_cpa: '$49.10',
+      smart_bidding_model: 'Response Curve v4',
     },
     proposed_changes_json: {
-      action: "update_bidding_strategy",
-      bidding_type: "Target CPA",
+      action: 'update_bidding_strategy',
+      bidding_type: 'Target CPA',
       new_tcpa_usd: 42.0,
-      bid_strategy_id: "DEMAND_GEN_SMART_CPA_01",
+      bid_strategy_id: 'DEMAND_GEN_SMART_CPA_01',
     },
     rollback_json: {
-      trigger_condition: "Impression volume drops >30% within 48 hours",
+      trigger_condition: 'Impression volume drops >30% within 48 hours',
       fallback_tcpa_usd: 48.0,
       auto_revert: true,
     },
@@ -196,66 +198,70 @@ const MOCK_RECOMMENDATIONS: ExtendedRecommendation[] = [
   {
     id: 105,
     workspace_id: 1,
-    type: "placement_prune",
-    platform: "meta",
+    type: 'placement_prune',
+    platform: 'meta',
     reason:
-      "Audience Network placement generated 22,400 clicks with 89% bounce rate and 0 attributed conversions, consuming 11.2% of Advantage+ campaign budget.",
+      'Audience Network placement generated 22,400 clicks with 89% bounce rate and 0 attributed conversions, consuming 11.2% of Advantage+ campaign budget.',
     expected_impact:
-      "Eliminate $720/wk click fraud / accidental tap spend; direct budget into Instagram Reels",
-    spend_delta: "-$105/day redirected",
-    roas_delta: "+0.18x",
-    projected_monthly_value: "+$2,880 saved",
+      'Eliminate $720/wk click fraud / accidental tap spend; direct budget into Instagram Reels',
+    spend_delta: '-$105/day redirected',
+    roas_delta: '+0.18x',
+    projected_monthly_value: '+$2,880 saved',
     confidence: 0.98,
-    risk: "low",
-    status: "approved",
+    risk: 'low',
+    status: 'approved',
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
     evidence_json: {
-      placement: "Meta Audience Network (Rewarding / Interstitial)",
+      placement: 'Meta Audience Network (Rewarding / Interstitial)',
       clicks_30d: 22400,
-      bounce_rate: "89.4%",
+      bounce_rate: '89.4%',
       assisted_conversions: 0,
-      budget_drain_pct: "11.2%",
+      budget_drain_pct: '11.2%',
     },
     proposed_changes_json: {
-      action: "exclude_placement",
-      excluded_placements: ["Audience Network (all sub-placements)"],
-      target_campaign: "Meta - Advantage+ Shopping Core",
+      action: 'exclude_placement',
+      excluded_placements: ['Audience Network (all sub-placements)'],
+      target_campaign: 'Meta - Advantage+ Shopping Core',
     },
     rollback_json: {
-      trigger_condition: "Total unique reach declines >15% over 7 days",
+      trigger_condition: 'Total unique reach declines >15% over 7 days',
       auto_revert: true,
     },
   },
   {
     id: 106,
     workspace_id: 1,
-    type: "audience_expand",
-    platform: "linkedin",
+    type: 'audience_expand',
+    platform: 'linkedin',
     reason:
-      "High-value B2B pipeline velocity slowed; 420 Tier-1 enterprise accounts showing active buying intent signals on G2 are unreached on paid social.",
+      'High-value B2B pipeline velocity slowed; 420 Tier-1 enterprise accounts showing active buying intent signals on G2 are unreached on paid social.',
     expected_impact:
-      "Estimated 18-24 qualified pipeline opportunities in next 30 days with $350k+ pipeline value",
-    spend_delta: "+$350/day",
-    roas_delta: "+2.40x pipeline ROAS",
-    projected_monthly_value: "+$38,000 pipeline",
+      'Estimated 18-24 qualified pipeline opportunities in next 30 days with $350k+ pipeline value',
+    spend_delta: '+$350/day',
+    roas_delta: '+2.40x pipeline ROAS',
+    projected_monthly_value: '+$38,000 pipeline',
     confidence: 0.85,
-    risk: "high",
-    status: "rejected",
+    risk: 'high',
+    status: 'rejected',
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     evidence_json: {
       matched_accounts_count: 420,
-      intent_source: "G2 + 6sense high intent segment",
-      projected_cpm: "$68.00",
-      decision_maker_titles: ["VP Marketing", "Head of Growth", "Director of Media"],
+      intent_source: 'G2 + 6sense high intent segment',
+      projected_cpm: '$68.00',
+      decision_maker_titles: [
+        'VP Marketing',
+        'Head of Growth',
+        'Director of Media',
+      ],
     },
     proposed_changes_json: {
-      action: "create_campaign",
-      campaign_name: "LinkedIn - ABM Tier 1 High Intent ICP",
+      action: 'create_campaign',
+      campaign_name: 'LinkedIn - ABM Tier 1 High Intent ICP',
       initial_daily_budget: 350,
-      format: "Single Image Sponsored Content + Document Ad",
+      format: 'Single Image Sponsored Content + Document Ad',
     },
     rollback_json: {
-      trigger_condition: "Cost per qualified lead exceeds $350 after 14 days",
+      trigger_condition: 'Cost per qualified lead exceeds $350 after 14 days',
       auto_revert: false,
     },
   },
@@ -266,7 +272,7 @@ const MOCK_RECOMMENDATIONS: ExtendedRecommendation[] = [
 // ---------------------------------------------------------------------------
 
 function humanizeType(type: string): string {
-  const words = type.replace(/[_-]+/g, " ").trim();
+  const words = type.replace(/[_-]+/g, ' ').trim();
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
@@ -279,7 +285,7 @@ function formatTimeAgo(isoString: string): string {
   try {
     const diffMs = Date.now() - new Date(isoString).getTime();
     const diffMins = Math.floor(diffMs / (1000 * 60));
-    if (diffMins < 1) return "just now";
+    if (diffMins < 1) return 'just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     const diffHours = Math.floor(diffMins / 60);
     if (diffHours < 24) return `${diffHours}h ago`;
@@ -292,28 +298,52 @@ function formatTimeAgo(isoString: string): string {
 
 const statusBadgeConfig: Record<
   RecStatus,
-  { label: string; variant: "default" | "secondary" | "success" | "neutral" | "destructive" }
+  {
+    label: string;
+    variant: 'default' | 'secondary' | 'success' | 'neutral' | 'destructive';
+  }
 > = {
-  pending: { label: "Pending review", variant: "secondary" },
-  approved: { label: "Approved", variant: "default" },
-  rejected: { label: "Rejected", variant: "neutral" },
-  executed: { label: "Executed", variant: "success" },
-  failed: { label: "Failed", variant: "destructive" },
+  pending: { label: 'Pending review', variant: 'secondary' },
+  approved: { label: 'Approved', variant: 'default' },
+  rejected: { label: 'Rejected', variant: 'neutral' },
+  executed: { label: 'Executed', variant: 'success' },
+  failed: { label: 'Failed', variant: 'destructive' },
 };
 
-const riskBadgeConfig: Record<Risk, { label: string; variant: "success" | "warning" | "destructive" }> = {
-  low: { label: "Low risk", variant: "success" },
-  medium: { label: "Med risk", variant: "warning" },
-  high: { label: "High risk", variant: "destructive" },
+const riskBadgeConfig: Record<
+  Risk,
+  { label: string; variant: 'success' | 'warning' | 'destructive' }
+> = {
+  low: { label: 'Low risk', variant: 'success' },
+  medium: { label: 'Med risk', variant: 'warning' },
+  high: { label: 'High risk', variant: 'destructive' },
 };
 
 const platformBadgeConfig: Record<string, { label: string; color: string }> = {
-  meta: { label: "Meta", color: "text-blue-400 border-blue-500/20 bg-blue-500/10" },
-  google: { label: "Google", color: "text-emerald-400 border-emerald-500/20 bg-emerald-500/10" },
-  tiktok: { label: "TikTok", color: "text-pink-400 border-pink-500/20 bg-pink-500/10" },
-  shopify: { label: "Shopify", color: "text-green-400 border-green-500/20 bg-green-500/10" },
-  linkedin: { label: "LinkedIn", color: "text-sky-400 border-sky-500/20 bg-sky-500/10" },
-  multi: { label: "Multi-channel", color: "text-primary border-purple-500/20 bg-purple-500/10" },
+  meta: {
+    label: 'Meta',
+    color: 'text-blue-400 border-blue-500/20 bg-blue-500/10',
+  },
+  google: {
+    label: 'Google',
+    color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
+  },
+  tiktok: {
+    label: 'TikTok',
+    color: 'text-pink-400 border-pink-500/20 bg-pink-500/10',
+  },
+  shopify: {
+    label: 'Shopify',
+    color: 'text-green-400 border-green-500/20 bg-green-500/10',
+  },
+  linkedin: {
+    label: 'LinkedIn',
+    color: 'text-sky-400 border-sky-500/20 bg-sky-500/10',
+  },
+  multi: {
+    label: 'Multi-channel',
+    color: 'text-primary border-purple-500/20 bg-purple-500/10',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -371,10 +401,12 @@ function RecCard({
   onReject,
   onReopen,
 }: RecCardProps) {
-  const isPending = rec.status === "pending";
-  const isApproved = rec.status === "approved" || rec.status === "executed";
+  const isPending = rec.status === 'pending';
+  const isApproved = rec.status === 'approved' || rec.status === 'executed';
 
-  const statusConfig = statusBadgeConfig[(rec.status as RecStatus) || "pending"] ?? statusBadgeConfig.pending;
+  const statusConfig =
+    statusBadgeConfig[(rec.status as RecStatus) || 'pending'] ??
+    statusBadgeConfig.pending;
   const riskConfig = riskBadgeConfig[rec.risk] ?? riskBadgeConfig.low;
   const platformConfig =
     rec.platform && platformBadgeConfig[rec.platform]
@@ -394,8 +426,8 @@ function RecCard({
             {platformConfig && (
               <span
                 className={cn(
-                  "inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium tracking-wide",
-                  platformConfig.color
+                  'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium tracking-wide',
+                  platformConfig.color,
                 )}
               >
                 {platformConfig.label}
@@ -414,7 +446,8 @@ function RecCard({
           {/* Right confidence & timestamp */}
           <div className="flex items-center gap-2">
             <span className="text-xs tabular-nums font-mono text-muted-foreground">
-              <span className="text-muted-foreground">confidence</span> {formatConfidence(rec.confidence)}
+              <span className="text-muted-foreground">confidence</span>{' '}
+              {formatConfidence(rec.confidence)}
             </span>
             <span className="text-zinc-600">·</span>
             <time
@@ -440,8 +473,10 @@ function RecCard({
             role="alert"
             className="rounded-lg border border-amber-500/25 bg-amber-500/10 px-3.5 py-2 text-xs leading-relaxed text-amber-300"
           >
-            <span className="font-semibold text-amber-200">Policy constraint: </span>
-            {blockReasons.join("; ")}. Execution held for manual safety check.
+            <span className="font-semibold text-amber-200">
+              Policy constraint:{' '}
+            </span>
+            {blockReasons.join('; ')}. Execution held for manual safety check.
           </div>
         )}
 
@@ -483,9 +518,18 @@ function RecCard({
 
         {/* Expandable Diagnostic Inspection Panes */}
         <div className="space-y-2 pt-1">
-          <JsonBlock title="Evidence & attribution signals" data={rec.evidence_json} />
-          <JsonBlock title="Proposed parameter diffs" data={rec.proposed_changes_json} />
-          <JsonBlock title="Automated rollback guardrails" data={rec.rollback_json} />
+          <JsonBlock
+            title="Evidence & attribution signals"
+            data={rec.evidence_json}
+          />
+          <JsonBlock
+            title="Proposed parameter diffs"
+            data={rec.proposed_changes_json}
+          />
+          <JsonBlock
+            title="Automated rollback guardrails"
+            data={rec.rollback_json}
+          />
         </div>
       </CardContent>
 
@@ -618,7 +662,9 @@ function RecCard({
           <span>#REC-{rec.id}</span>
           <span>·</span>
           <span className="text-zinc-600">
-            {rec.risk === "low" ? "Auto-apply eligible" : "Manual review required"}
+            {rec.risk === 'low'
+              ? 'Auto-apply eligible'
+              : 'Manual review required'}
           </span>
         </div>
       </CardFooter>
@@ -691,12 +737,14 @@ function EmptyRecommendations({
         </div>
         <div className="max-w-md space-y-1">
           <p className="text-sm font-semibold text-foreground">
-            {hasFilters ? "No matching recommendations" : "No recommendations in queue"}
+            {hasFilters
+              ? 'No matching recommendations'
+              : 'No recommendations in queue'}
           </p>
           <p className="text-xs leading-relaxed text-muted-foreground">
             {hasFilters
-              ? "No recommendations match your current status or search filter. Try clearing your filters to see all queued actions."
-              : "Run the reconcile and attribution analysis pipeline to generate actionable budget shifts, creative rotations, and bid cap adjustments."}
+              ? 'No recommendations match your current status or search filter. Try clearing your filters to see all queued actions.'
+              : 'Run the reconcile and attribution analysis pipeline to generate actionable budget shifts, creative rotations, and bid cap adjustments.'}
           </p>
         </div>
         <div className="mt-2 flex items-center gap-2">
@@ -711,7 +759,7 @@ function EmptyRecommendations({
             disabled={generating}
             className="bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white font-medium shadow-sm"
           >
-            {generating ? "Generating analysis…" : "Generate recommendations"}
+            {generating ? 'Generating analysis…' : 'Generate recommendations'}
           </Button>
         </div>
       </CardContent>
@@ -724,7 +772,9 @@ function EmptyRecommendations({
 // ---------------------------------------------------------------------------
 
 export default function RecommendationsPage() {
-  const [recommendations, setRecommendations] = useState<ExtendedRecommendation[]>([]);
+  const [recommendations, setRecommendations] = useState<
+    ExtendedRecommendation[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -732,9 +782,13 @@ export default function RecommendationsPage() {
   const [blocked, setBlocked] = useState<Record<number, DecisionResult>>({});
 
   // Filter states
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
-  const [riskFilter, setRiskFilter] = useState<"all" | "low" | "medium" | "high">("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'pending' | 'approved' | 'rejected'
+  >('all');
+  const [riskFilter, setRiskFilter] = useState<
+    'all' | 'low' | 'medium' | 'high'
+  >('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Load from API with automatic fallback to mock state
   const load = useCallback(async () => {
@@ -781,20 +835,23 @@ export default function RecommendationsPage() {
   }
 
   // Act on recommendation (Approve / Reject)
-  async function handleAction(id: number, action: "approve" | "reject") {
+  async function handleAction(id: number, action: 'approve' | 'reject') {
     setBusyId(id);
     setError(null);
-    const targetStatus: RecStatus = action === "approve" ? "approved" : "rejected";
+    const targetStatus: RecStatus =
+      action === 'approve' ? 'approved' : 'rejected';
 
     // Optimistically update local status immediately
     setRecommendations((prev) =>
-      prev.map((rec) => (rec.id === id ? { ...rec, status: targetStatus } : rec))
+      prev.map((rec) =>
+        rec.id === id ? { ...rec, status: targetStatus } : rec,
+      ),
     );
 
     try {
-      if (action === "approve") {
+      if (action === 'approve') {
         const result = await approveRecommendation(id);
-        if (result?.decision === "block") {
+        if (result?.decision === 'block') {
           setBlocked((prev) => ({ ...prev, [id]: result }));
         } else {
           setBlocked(({ [id]: _drop, ...rest }) => rest);
@@ -813,7 +870,7 @@ export default function RecommendationsPage() {
   // Reopen/revert recommendation
   function handleReopen(id: number) {
     setRecommendations((prev) =>
-      prev.map((rec) => (rec.id === id ? { ...rec, status: "pending" } : rec))
+      prev.map((rec) => (rec.id === id ? { ...rec, status: 'pending' } : rec)),
     );
     setBlocked(({ [id]: _drop, ...rest }) => rest);
   }
@@ -821,14 +878,16 @@ export default function RecommendationsPage() {
   // Bulk approve all pending low-risk recommendations
   async function handleApproveAllLowRisk() {
     const pendingLowRisk = recommendations.filter(
-      (r) => r.status === "pending" && r.risk === "low"
+      (r) => r.status === 'pending' && r.risk === 'low',
     );
     if (pendingLowRisk.length === 0) return;
 
     setRecommendations((prev) =>
       prev.map((r) =>
-        r.status === "pending" && r.risk === "low" ? { ...r, status: "approved" } : r
-      )
+        r.status === 'pending' && r.risk === 'low'
+          ? { ...r, status: 'approved' }
+          : r,
+      ),
     );
 
     // Trigger API in background for each
@@ -843,39 +902,51 @@ export default function RecommendationsPage() {
 
   // Counts & stats
   const totalCount = recommendations.length;
-  const pendingCount = recommendations.filter((r) => r.status === "pending").length;
-  const approvedCount = recommendations.filter(
-    (r) => r.status === "approved" || r.status === "executed"
+  const pendingCount = recommendations.filter(
+    (r) => r.status === 'pending',
   ).length;
-  const rejectedCount = recommendations.filter((r) => r.status === "rejected").length;
+  const approvedCount = recommendations.filter(
+    (r) => r.status === 'approved' || r.status === 'executed',
+  ).length;
+  const rejectedCount = recommendations.filter(
+    (r) => r.status === 'rejected',
+  ).length;
   const lowRiskPendingCount = recommendations.filter(
-    (r) => r.status === "pending" && r.risk === "low"
+    (r) => r.status === 'pending' && r.risk === 'low',
   ).length;
 
   // Filtered recommendations
   const filteredRecommendations = useMemo(() => {
     return recommendations.filter((rec) => {
       // Status filter
-      if (statusFilter === "pending" && rec.status !== "pending") return false;
+      if (statusFilter === 'pending' && rec.status !== 'pending') return false;
       if (
-        statusFilter === "approved" &&
-        rec.status !== "approved" &&
-        rec.status !== "executed"
+        statusFilter === 'approved' &&
+        rec.status !== 'approved' &&
+        rec.status !== 'executed'
       )
         return false;
-      if (statusFilter === "rejected" && rec.status !== "rejected") return false;
+      if (statusFilter === 'rejected' && rec.status !== 'rejected')
+        return false;
 
       // Risk filter
-      if (riskFilter !== "all" && rec.risk !== riskFilter) return false;
+      if (riskFilter !== 'all' && rec.risk !== riskFilter) return false;
 
       // Search query
       if (searchQuery.trim().length > 0) {
         const query = searchQuery.toLowerCase();
         const matchesReason = rec.reason.toLowerCase().includes(query);
         const matchesType = rec.type.toLowerCase().includes(query);
-        const matchesImpact = rec.expected_impact?.toLowerCase().includes(query) ?? false;
-        const matchesPlatform = rec.platform?.toLowerCase().includes(query) ?? false;
-        if (!matchesReason && !matchesType && !matchesImpact && !matchesPlatform) {
+        const matchesImpact =
+          rec.expected_impact?.toLowerCase().includes(query) ?? false;
+        const matchesPlatform =
+          rec.platform?.toLowerCase().includes(query) ?? false;
+        if (
+          !matchesReason &&
+          !matchesType &&
+          !matchesImpact &&
+          !matchesPlatform
+        ) {
           return false;
         }
       }
@@ -885,7 +956,9 @@ export default function RecommendationsPage() {
   }, [recommendations, statusFilter, riskFilter, searchQuery]);
 
   const hasActiveFilters =
-    statusFilter !== "all" || riskFilter !== "all" || searchQuery.trim().length > 0;
+    statusFilter !== 'all' ||
+    riskFilter !== 'all' ||
+    searchQuery.trim().length > 0;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6 pb-12">
@@ -896,8 +969,9 @@ export default function RecommendationsPage() {
             Recommendations
           </h1>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground max-w-2xl">
-            Policy-gated action queue proposed by the reconcile and attribution models. Low-risk
-            approvals execute automatically with rollback guardrails.
+            Policy-gated action queue proposed by the reconcile and attribution
+            models. Low-risk approvals execute automatically with rollback
+            guardrails.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -926,7 +1000,7 @@ export default function RecommendationsPage() {
             disabled={generating}
             className="text-xs bg-blue-600 hover:bg-blue-500 text-foreground dark:text-white font-medium"
           >
-            {generating ? "Analyzing…" : "Run analysis"}
+            {generating ? 'Analyzing…' : 'Run analysis'}
           </Button>
         </div>
       </div>
@@ -941,7 +1015,9 @@ export default function RecommendationsPage() {
             <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
               {pendingCount}
             </span>
-            <span className="text-[11px] text-muted-foreground">of {totalCount} total</span>
+            <span className="text-[11px] text-muted-foreground">
+              of {totalCount} total
+            </span>
           </div>
         </Card>
 
@@ -953,7 +1029,9 @@ export default function RecommendationsPage() {
             <span className="font-mono text-2xl font-bold tabular-nums text-emerald-400">
               {approvedCount}
             </span>
-            <span className="text-[11px] text-muted-foreground">active/queued</span>
+            <span className="text-[11px] text-muted-foreground">
+              active/queued
+            </span>
           </div>
         </Card>
 
@@ -965,7 +1043,9 @@ export default function RecommendationsPage() {
             <span className="font-mono text-2xl font-bold tabular-nums text-blue-400">
               +$28.4k
             </span>
-            <span className="text-[11px] text-emerald-400/90 font-mono">+14.8%</span>
+            <span className="text-[11px] text-emerald-400/90 font-mono">
+              +14.8%
+            </span>
           </div>
         </Card>
 
@@ -977,7 +1057,9 @@ export default function RecommendationsPage() {
             <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
               92.8%
             </span>
-            <span className="text-[11px] text-muted-foreground">high accuracy</span>
+            <span className="text-[11px] text-muted-foreground">
+              high accuracy
+            </span>
           </div>
         </Card>
       </div>
@@ -988,51 +1070,63 @@ export default function RecommendationsPage() {
         <div className="flex flex-wrap items-center gap-1">
           <button
             type="button"
-            onClick={() => setStatusFilter("all")}
+            onClick={() => setStatusFilter('all')}
             className={cn(
-              "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
-              statusFilter === "all"
-                ? "bg-white/8 text-foreground"
-                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+              'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
+              statusFilter === 'all'
+                ? 'bg-white/8 text-foreground'
+                : 'text-muted-foreground hover:bg-white/4 hover:text-foreground',
             )}
           >
-            All <span className="tabular-nums text-muted-foreground">({totalCount})</span>
+            All{' '}
+            <span className="tabular-nums text-muted-foreground">
+              ({totalCount})
+            </span>
           </button>
           <button
             type="button"
-            onClick={() => setStatusFilter("pending")}
+            onClick={() => setStatusFilter('pending')}
             className={cn(
-              "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
-              statusFilter === "pending"
-                ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+              'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
+              statusFilter === 'pending'
+                ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20'
+                : 'text-muted-foreground hover:bg-white/4 hover:text-foreground',
             )}
           >
-            Pending <span className="tabular-nums text-muted-foreground">({pendingCount})</span>
+            Pending{' '}
+            <span className="tabular-nums text-muted-foreground">
+              ({pendingCount})
+            </span>
           </button>
           <button
             type="button"
-            onClick={() => setStatusFilter("approved")}
+            onClick={() => setStatusFilter('approved')}
             className={cn(
-              "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
-              statusFilter === "approved"
-                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+              'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
+              statusFilter === 'approved'
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                : 'text-muted-foreground hover:bg-white/4 hover:text-foreground',
             )}
           >
-            Approved <span className="tabular-nums text-muted-foreground">({approvedCount})</span>
+            Approved{' '}
+            <span className="tabular-nums text-muted-foreground">
+              ({approvedCount})
+            </span>
           </button>
           <button
             type="button"
-            onClick={() => setStatusFilter("rejected")}
+            onClick={() => setStatusFilter('rejected')}
             className={cn(
-              "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
-              statusFilter === "rejected"
-                ? "bg-white/8 text-zinc-300"
-                : "text-muted-foreground hover:bg-white/4 hover:text-foreground"
+              'rounded-lg px-2.5 py-1 text-xs font-medium transition-colors',
+              statusFilter === 'rejected'
+                ? 'bg-white/8 text-zinc-300'
+                : 'text-muted-foreground hover:bg-white/4 hover:text-foreground',
             )}
           >
-            Rejected <span className="tabular-nums text-muted-foreground">({rejectedCount})</span>
+            Rejected{' '}
+            <span className="tabular-nums text-muted-foreground">
+              ({rejectedCount})
+            </span>
           </button>
         </div>
 
@@ -1041,7 +1135,9 @@ export default function RecommendationsPage() {
           {/* Risk selector */}
           <select
             value={riskFilter}
-            onChange={(e) => setRiskFilter(e.target.value as "all" | "low" | "medium" | "high")}
+            onChange={(e) =>
+              setRiskFilter(e.target.value as 'all' | 'low' | 'medium' | 'high')
+            }
             className="rounded-lg border border-border bg-card px-2.5 py-1 text-xs text-zinc-300 focus:border-blue-500/50 focus:outline-none"
           >
             <option value="all">All risk levels</option>
@@ -1062,7 +1158,7 @@ export default function RecommendationsPage() {
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-zinc-300"
               >
                 ×
@@ -1084,7 +1180,11 @@ export default function RecommendationsPage() {
 
       {/* Recommendation Card List */}
       {loading ? (
-        <div className="space-y-4" aria-busy="true" aria-label="Loading recommendations">
+        <div
+          className="space-y-4"
+          aria-busy="true"
+          aria-label="Loading recommendations"
+        >
           <RecSkeleton />
           <RecSkeleton />
           <RecSkeleton />
@@ -1093,9 +1193,9 @@ export default function RecommendationsPage() {
         <EmptyRecommendations
           onGenerate={() => void handleGenerate()}
           onResetFilters={() => {
-            setStatusFilter("all");
-            setRiskFilter("all");
-            setSearchQuery("");
+            setStatusFilter('all');
+            setRiskFilter('all');
+            setSearchQuery('');
           }}
           generating={generating}
           hasFilters={hasActiveFilters}
@@ -1108,8 +1208,8 @@ export default function RecommendationsPage() {
               rec={rec}
               busy={busyId === rec.id}
               blockReasons={blocked[rec.id]?.reasons}
-              onApprove={(id) => void handleAction(id, "approve")}
-              onReject={(id) => void handleAction(id, "reject")}
+              onApprove={(id) => void handleAction(id, 'approve')}
+              onReject={(id) => void handleAction(id, 'reject')}
               onReopen={(id) => handleReopen(id)}
             />
           ))}

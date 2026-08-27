@@ -1,136 +1,152 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 
 const SAMPLE_ADS = [
   {
-    brand: "Notion",
-    domain: "notion.so",
-    platform: "Meta",
+    brand: 'Notion',
+    domain: 'notion.so',
+    platform: 'Meta',
     daysActive: 142,
-    angle: "Post-it / Visual Sticky Note Workflow",
-    ctrEstimate: "4.8%",
-    category: "Productivity / SaaS",
-    format: "Static 1080x1080",
-    hookCopy: "Projects move faster when your docs and tasks live in the exact same workspace.",
-    cta: "Try Notion Free",
-    evergreen: true
+    angle: 'Post-it / Visual Sticky Note Workflow',
+    ctrEstimate: '4.8%',
+    category: 'Productivity / SaaS',
+    format: 'Static 1080x1080',
+    hookCopy:
+      'Projects move faster when your docs and tasks live in the exact same workspace.',
+    cta: 'Try Notion Free',
+    evergreen: true,
   },
   {
-    brand: "Linear",
-    domain: "linear.app",
-    platform: "LinkedIn",
+    brand: 'Linear',
+    domain: 'linear.app',
+    platform: 'LinkedIn',
     daysActive: 98,
-    angle: "Keyboard shortcuts & sub-50ms issue tracking",
-    ctrEstimate: "3.9%",
-    category: "Developer Tools",
-    format: "High Contrast Video",
-    hookCopy: "Issue tracking designed for software teams that value speed and precision.",
-    cta: "See Product Tour",
-    evergreen: true
+    angle: 'Keyboard shortcuts & sub-50ms issue tracking',
+    ctrEstimate: '3.9%',
+    category: 'Developer Tools',
+    format: 'High Contrast Video',
+    hookCopy:
+      'Issue tracking designed for software teams that value speed and precision.',
+    cta: 'See Product Tour',
+    evergreen: true,
   },
   {
-    brand: "Supabase",
-    domain: "supabase.com",
-    platform: "Google / YouTube",
+    brand: 'Supabase',
+    domain: 'supabase.com',
+    platform: 'Google / YouTube',
     daysActive: 180,
-    angle: "Firebase Alternative / Open Source Postgres",
-    ctrEstimate: "5.2%",
-    category: "Infrastructure",
-    format: "Shorts Video Hook",
-    hookCopy: "Build in a weekend. Scale to millions. The open source Firebase alternative.",
-    cta: "Start Your Project",
-    evergreen: true
+    angle: 'Firebase Alternative / Open Source Postgres',
+    ctrEstimate: '5.2%',
+    category: 'Infrastructure',
+    format: 'Shorts Video Hook',
+    hookCopy:
+      'Build in a weekend. Scale to millions. The open source Firebase alternative.',
+    cta: 'Start Your Project',
+    evergreen: true,
   },
   {
-    brand: "Raycast",
-    domain: "raycast.com",
-    platform: "X / Twitter",
+    brand: 'Raycast',
+    domain: 'raycast.com',
+    platform: 'X / Twitter',
     daysActive: 112,
-    angle: "Supercharged Mac Spotlight Replacement",
-    ctrEstimate: "4.1%",
-    category: "Mac Utility",
-    format: "GIF / Motion",
-    hookCopy: "Control your tools, clipboard, and AI prompts in a single keystroke.",
-    cta: "Download for Mac",
-    evergreen: true
+    angle: 'Supercharged Mac Spotlight Replacement',
+    ctrEstimate: '4.1%',
+    category: 'Mac Utility',
+    format: 'GIF / Motion',
+    hookCopy:
+      'Control your tools, clipboard, and AI prompts in a single keystroke.',
+    cta: 'Download for Mac',
+    evergreen: true,
   },
   {
-    brand: "PostHog",
-    domain: "posthog.com",
-    platform: "Meta",
+    brand: 'PostHog',
+    domain: 'posthog.com',
+    platform: 'Meta',
     daysActive: 74,
-    angle: "All-in-one product analytics without tracking bloat",
-    ctrEstimate: "4.4%",
-    category: "Analytics",
-    format: "Meme / Comic Illustration",
-    hookCopy: "Product analytics, session replay, and feature flags. Open source and developer-friendly.",
-    cta: "Get Started Free",
-    evergreen: false
+    angle: 'All-in-one product analytics without tracking bloat',
+    ctrEstimate: '4.4%',
+    category: 'Analytics',
+    format: 'Meme / Comic Illustration',
+    hookCopy:
+      'Product analytics, session replay, and feature flags. Open source and developer-friendly.',
+    cta: 'Get Started Free',
+    evergreen: false,
   },
   {
-    brand: "Resend",
-    domain: "resend.com",
-    platform: "LinkedIn",
+    brand: 'Resend',
+    domain: 'resend.com',
+    platform: 'LinkedIn',
     daysActive: 135,
-    angle: "Email for developers with React Email templates",
-    ctrEstimate: "4.9%",
-    category: "Developer Tools",
-    format: "Clean Minimalist Dark Code",
-    hookCopy: "The best way to reach humans instead of spam folders. Build emails with React.",
-    cta: "Send Your First Email",
-    evergreen: true
+    angle: 'Email for developers with React Email templates',
+    ctrEstimate: '4.9%',
+    category: 'Developer Tools',
+    format: 'Clean Minimalist Dark Code',
+    hookCopy:
+      'The best way to reach humans instead of spam folders. Build emails with React.',
+    cta: 'Send Your First Email',
+    evergreen: true,
   },
   {
-    brand: "Vercel",
-    domain: "vercel.com",
-    platform: "Google / YouTube",
+    brand: 'Vercel',
+    domain: 'vercel.com',
+    platform: 'Google / YouTube',
     daysActive: 210,
-    angle: "Next.js zero-config edge deployments",
-    ctrEstimate: "5.8%",
-    category: "Cloud Hosting",
-    format: "Product Demo Video",
-    hookCopy: "Develop. Preview. Ship. The frontend cloud platform powering the modern web.",
-    cta: "Deploy Now",
-    evergreen: true
+    angle: 'Next.js zero-config edge deployments',
+    ctrEstimate: '5.8%',
+    category: 'Cloud Hosting',
+    format: 'Product Demo Video',
+    hookCopy:
+      'Develop. Preview. Ship. The frontend cloud platform powering the modern web.',
+    cta: 'Deploy Now',
+    evergreen: true,
   },
   {
-    brand: "Cursor",
-    domain: "cursor.com",
-    platform: "X / Twitter",
+    brand: 'Cursor',
+    domain: 'cursor.com',
+    platform: 'X / Twitter',
     daysActive: 160,
-    angle: "AI Code Editor built to make you 10x faster",
-    ctrEstimate: "6.1%",
-    category: "AI / Dev",
-    format: "Side-by-side terminal capture",
-    hookCopy: "The AI code editor. Forked from VS Code, built for autonomous coding agents.",
-    cta: "Download Cursor",
-    evergreen: true
-  }
+    angle: 'AI Code Editor built to make you 10x faster',
+    ctrEstimate: '6.1%',
+    category: 'AI / Dev',
+    format: 'Side-by-side terminal capture',
+    hookCopy:
+      'The AI code editor. Forked from VS Code, built for autonomous coding agents.',
+    cta: 'Download Cursor',
+    evergreen: true,
+  },
 ];
 
 export default function AdLibraryPage() {
-  const [filter, setFilter] = useState("all");
-  const [durationFilter, setDurationFilter] = useState("all");
-  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState('all');
+  const [durationFilter, setDurationFilter] = useState('all');
+  const [search, setSearch] = useState('');
   const [savedAds, setSavedAds] = useState<string[]>([]);
-  const [selectedAd, setSelectedAd] = useState<(typeof SAMPLE_ADS)[0] | null>(null);
+  const [selectedAd, setSelectedAd] = useState<(typeof SAMPLE_ADS)[0] | null>(
+    null,
+  );
 
   const toggleSave = (brand: string) => {
     if (savedAds.includes(brand)) {
-      setSavedAds(savedAds.filter(b => b !== brand));
+      setSavedAds(savedAds.filter((b) => b !== brand));
     } else {
       setSavedAds([...savedAds, brand]);
     }
   };
 
-  const filteredAds = SAMPLE_ADS.filter(ad => {
-    if (filter !== "all" && ad.platform.toLowerCase() !== filter.toLowerCase()) return false;
-    if (durationFilter === "evergreen" && !ad.evergreen) return false;
-    if (durationFilter === "90" && ad.daysActive < 90) return false;
-    if (durationFilter === "120" && ad.daysActive < 120) return false;
-    if (search && !ad.brand.toLowerCase().includes(search.toLowerCase()) && !ad.angle.toLowerCase().includes(search.toLowerCase())) return false;
+  const filteredAds = SAMPLE_ADS.filter((ad) => {
+    if (filter !== 'all' && ad.platform.toLowerCase() !== filter.toLowerCase())
+      return false;
+    if (durationFilter === 'evergreen' && !ad.evergreen) return false;
+    if (durationFilter === '90' && ad.daysActive < 90) return false;
+    if (durationFilter === '120' && ad.daysActive < 120) return false;
+    if (
+      search &&
+      !ad.brand.toLowerCase().includes(search.toLowerCase()) &&
+      !ad.angle.toLowerCase().includes(search.toLowerCase())
+    )
+      return false;
     return true;
   });
 
@@ -143,10 +159,15 @@ export default function AdLibraryPage() {
           500,000+ Tracked Competitor Ads
         </div>
         <h1 className="text-4xl sm:text-6xl font-display font-bold text-foreground dark:text-white tracking-tight leading-[1.08]">
-          The Ad Library for <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">SaaS & Mobile Apps</span>
+          The Ad Library for{' '}
+          <span className="bg-linear-to-r from-purple-400 via-violet-300 to-indigo-400 bg-clip-text text-transparent">
+            SaaS & Mobile Apps
+          </span>
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Stop scrolling through laggy Meta & Google ad libraries. Search 500k+ ads, filter by active longevity, and uncover competitor money-makers that have run for 90+ consecutive days.
+          Stop scrolling through laggy Meta & Google ad libraries. Search 500k+
+          ads, filter by active longevity, and uncover competitor money-makers
+          that have run for 90+ consecutive days.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
           <Link
@@ -173,42 +194,42 @@ export default function AdLibraryPage() {
               type="text"
               placeholder="Search by brand, category, or hook angle..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
             <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
-              {["all", "Meta", "LinkedIn", "Google", "X"].map((plat) => (
+              {['all', 'Meta', 'LinkedIn', 'Google', 'X'].map((plat) => (
                 <button
                   key={plat}
                   onClick={() => setFilter(plat)}
                   className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
                     filter === plat
-                      ? "bg-primary text-white dark:text-white shadow"
-                      : "text-muted-foreground hover:text-foreground dark:text-white"
+                      ? 'bg-primary text-white dark:text-white shadow'
+                      : 'text-muted-foreground hover:text-foreground dark:text-white'
                   }`}
                 >
-                  {plat === "all" ? "All Networks" : plat}
+                  {plat === 'all' ? 'All Networks' : plat}
                 </button>
               ))}
             </div>
 
             <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-border">
               {[
-                { id: "all", label: "Any Duration" },
-                { id: "90", label: "90+ Days" },
-                { id: "120", label: "120+ Days" },
-                { id: "evergreen", label: "Evergreen Only ⭐" }
+                { id: 'all', label: 'Any Duration' },
+                { id: '90', label: '90+ Days' },
+                { id: '120', label: '120+ Days' },
+                { id: 'evergreen', label: 'Evergreen Only ⭐' },
               ].map((dur) => (
                 <button
                   key={dur.id}
                   onClick={() => setDurationFilter(dur.id)}
                   className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${
                     durationFilter === dur.id
-                      ? "bg-indigo-600 text-foreground dark:text-white shadow"
-                      : "text-muted-foreground hover:text-foreground dark:text-white"
+                      ? 'bg-indigo-600 text-foreground dark:text-white shadow'
+                      : 'text-muted-foreground hover:text-foreground dark:text-white'
                   }`}
                 >
                   {dur.label}
@@ -235,11 +256,13 @@ export default function AdLibraryPage() {
                       {ad.domain}
                     </span>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
-                    ad.daysActive >= 100
-                      ? "bg-purple-500/15 text-primary border-primary/30"
-                      : "bg-white/5 text-muted-foreground border-border"
-                  }`}>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
+                      ad.daysActive >= 100
+                        ? 'bg-purple-500/15 text-primary border-primary/30'
+                        : 'bg-white/5 text-muted-foreground border-border'
+                    }`}
+                  >
                     {ad.daysActive}d active
                   </span>
                 </div>
@@ -270,7 +293,9 @@ export default function AdLibraryPage() {
                 <div className="space-y-1.5 text-xs text-muted-foreground pt-1">
                   <div className="flex justify-between">
                     <span>Network:</span>
-                    <span className="text-foreground font-medium">{ad.platform}</span>
+                    <span className="text-foreground font-medium">
+                      {ad.platform}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Target Category:</span>
@@ -278,7 +303,9 @@ export default function AdLibraryPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Primary CTA:</span>
-                    <span className="text-zinc-300 font-mono text-[11px]">{ad.cta}</span>
+                    <span className="text-zinc-300 font-mono text-[11px]">
+                      {ad.cta}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -294,11 +321,11 @@ export default function AdLibraryPage() {
                   onClick={() => toggleSave(ad.brand)}
                   className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                     savedAds.includes(ad.brand)
-                      ? "bg-primary text-white dark:text-white"
-                      : "bg-white/5 hover:bg-white/10 text-zinc-300"
+                      ? 'bg-primary text-white dark:text-white'
+                      : 'bg-white/5 hover:bg-white/10 text-zinc-300'
                   }`}
                 >
-                  {savedAds.includes(ad.brand) ? "✓ Saved" : "Save"}
+                  {savedAds.includes(ad.brand) ? '✓ Saved' : 'Save'}
                 </button>
               </div>
             </div>
@@ -316,8 +343,12 @@ export default function AdLibraryPage() {
                   {selectedAd.brand[0]}
                 </div>
                 <div>
-                  <h3 className="text-lg font-display font-bold text-foreground dark:text-white">{selectedAd.brand}</h3>
-                  <p className="text-xs text-muted-foreground">{selectedAd.domain} · Active on {selectedAd.platform}</p>
+                  <h3 className="text-lg font-display font-bold text-foreground dark:text-white">
+                    {selectedAd.brand}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedAd.domain} · Active on {selectedAd.platform}
+                  </p>
                 </div>
               </div>
               <button
@@ -330,22 +361,38 @@ export default function AdLibraryPage() {
 
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-black/50 border border-white/5 space-y-2">
-                <span className="text-xs font-mono uppercase text-primary font-semibold">Full Primary Hook Copy</span>
-                <p className="text-sm text-foreground leading-relaxed">&quot;{selectedAd.hookCopy}&quot;</p>
+                <span className="text-xs font-mono uppercase text-primary font-semibold">
+                  Full Primary Hook Copy
+                </span>
+                <p className="text-sm text-foreground leading-relaxed">
+                  &quot;{selectedAd.hookCopy}&quot;
+                </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">Days Running</span>
-                  <span className="text-primary font-bold text-base">{selectedAd.daysActive} days</span>
+                  <span className="text-muted-foreground block">
+                    Days Running
+                  </span>
+                  <span className="text-primary font-bold text-base">
+                    {selectedAd.daysActive} days
+                  </span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">Estimated CTR</span>
-                  <span className="text-emerald-400 font-bold text-base">{selectedAd.ctrEstimate}</span>
+                  <span className="text-muted-foreground block">
+                    Estimated CTR
+                  </span>
+                  <span className="text-emerald-400 font-bold text-base">
+                    {selectedAd.ctrEstimate}
+                  </span>
                 </div>
                 <div className="p-3 rounded-lg bg-white/2 border border-white/4">
-                  <span className="text-muted-foreground block">Format Type</span>
-                  <span className="text-foreground font-semibold text-sm">{selectedAd.format}</span>
+                  <span className="text-muted-foreground block">
+                    Format Type
+                  </span>
+                  <span className="text-foreground font-semibold text-sm">
+                    {selectedAd.format}
+                  </span>
                 </div>
               </div>
             </div>
@@ -374,9 +421,13 @@ export default function AdLibraryPage() {
           <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-primary text-2xl">
             ⏱️
           </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Longevity Filter</h3>
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
+            Longevity Filter
+          </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Eliminate low-budget test creatives from your research. When an ad has been active for 90+ consecutive days across Meta and Google, you can bet it&apos;s profitable.
+            Eliminate low-budget test creatives from your research. When an ad
+            has been active for 90+ consecutive days across Meta and Google, you
+            can bet it&apos;s profitable.
           </p>
         </div>
 
@@ -384,9 +435,13 @@ export default function AdLibraryPage() {
           <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-2xl">
             📁
           </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Swipe File Sync</h3>
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
+            Swipe File Sync
+          </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Organize winning creatives into categorized folders. Export structured JSON schemas directly to Claude or Cursor through our native Ads MCP server.
+            Organize winning creatives into categorized folders. Export
+            structured JSON schemas directly to Claude or Cursor through our
+            native Ads MCP server.
           </p>
         </div>
 
@@ -394,9 +449,12 @@ export default function AdLibraryPage() {
           <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
             📬
           </div>
-          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">Weekly Competitor Digests</h3>
+          <h3 className="font-display font-bold text-foreground dark:text-white text-lg">
+            Weekly Competitor Digests
+          </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Automated alerts sent to Slack or email whenever competitors launch new angles, scale budgets, or shut down fatigued ad variants.
+            Automated alerts sent to Slack or email whenever competitors launch
+            new angles, scale budgets, or shut down fatigued ad variants.
           </p>
         </div>
       </div>

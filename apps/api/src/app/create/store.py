@@ -1,12 +1,14 @@
-"""JSON-file store for generated creative assets (CREATE stage persistence).
+"""Durable workspace-scoped store for generated creative assets.
 
-Appends assets to ``.build/assets.json`` (a single JSON list). Plain stdlib,
-mock-safe, no DB — mirrors the lightweight style of the CREATE stage.
+The default application store uses the main SQL database. An explicit path is
+kept as a compatibility adapter for old isolated tests and scripts.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import UTC
+from uuid import uuid4
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -29,28 +31,61 @@ def _to_record(obj: Any) -> dict[str, Any]:
 class AssetStore:
     """Persist generated assets to a JSON list on disk."""
 
-    def __init__(self, path: str | Path = DEFAULT_PATH) -> None:
-        self.path = Path(path)
+    def __init__(self, path: str | Path | None = None) -> None:
+        self.path = Path(path) if path is not None else None
 
     def add(
         self,
         asset: Any,
         *,
         source_ad_id: str | None = None,
+        workspace_id: int = 0,
+        run_id: str | None = None,
+        brief_text: str | None = None,
+        session: Any = None,
     ) -> dict[str, Any]:
         """Append one asset and persist. ``source_ad_id`` overrides the field
         for asset types that don't carry it themselves."""
         rec = _to_record(asset)
         if source_ad_id is not None:
             rec["source_ad_id"] = source_ad_id
+        if brief_text is not None:
+            rec["brief_text"] = brief_text
+        if self.path is None:
+            return self._db_add(rec, workspace_id=workspace_id, run_id=run_id, session=session)
         records = self.all()
         records.append(rec)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(records, indent=2), encoding="utf-8")
         return rec
 
-    def all(self) -> list[dict[str, Any]]:
+    def all(self, workspace_id: int = 0) -> list[dict[str, Any]]:
         """Return every stored asset as plain dicts (empty list if none yet)."""
+        if self.path is None:
+            from app.core.db import SessionLocal, init_db
+            from app.models import CreativeAsset
+
+            init_db()
+            with SessionLocal() as db:
+                rows = (
+                    db.query(CreativeAsset)
+                    .filter(CreativeAsset.workspace_id == int(workspace_id))
+                    .order_by(CreativeAsset.created_at, CreativeAsset.id)
+                    .all()
+                )
+                return [
+                    {
+                        "id": row.id,
+                        "source_ad_id": row.source_ad_id,
+                        "brief_text": row.brief_text,
+                        "asset_url": row.asset_url,
+                        "duration_s": row.duration_s,
+                        "provider": row.provider,
+                        "run_id": row.run_id,
+                        "created_at": row.created_at.replace(tzinfo=UTC).isoformat(),
+                    }
+                    for row in rows
+                ]
         if not self.path.exists():
             return []
         try:
@@ -59,9 +94,58 @@ class AssetStore:
             return []
         return data if isinstance(data, list) else []
 
-    def by_source(self, ad_id: str) -> list[dict[str, Any]]:
+    def by_source(self, ad_id: str, workspace_id: int = 0) -> list[dict[str, Any]]:
         """All assets generated from a given source ad id."""
-        return [r for r in self.all() if r.get("source_ad_id") == ad_id]
+        return [r for r in self.all(workspace_id) if r.get("source_ad_id") == ad_id]
+
+    def _db_add(
+        self,
+        rec: dict[str, Any],
+        *,
+        workspace_id: int,
+        run_id: str | None,
+        session: Any = None,
+    ) -> dict[str, Any]:
+        from app.core.db import SessionLocal, init_db
+        from app.models import CreativeAsset
+
+        if session is None:
+            init_db()
+            db = SessionLocal()
+            own = True
+        else:
+            db = session
+            own = False
+        try:
+            row = CreativeAsset(
+                id=uuid4().hex,
+                workspace_id=int(workspace_id),
+                source_ad_id=str(rec.get("source_ad_id") or ""),
+                brief_text=rec.get("brief_text"),
+                asset_url=str(rec.get("asset_url") or ""),
+                duration_s=rec.get("duration_s"),
+                provider=rec.get("provider"),
+                run_id=run_id,
+            )
+            db.add(row)
+            if own:
+                db.commit()
+                db.refresh(row)
+            else:
+                db.flush()
+            return {
+                "id": row.id,
+                "source_ad_id": row.source_ad_id,
+                "brief_text": row.brief_text,
+                "asset_url": row.asset_url,
+                "duration_s": row.duration_s,
+                "provider": row.provider,
+                "run_id": row.run_id,
+                "created_at": row.created_at.replace(tzinfo=UTC).isoformat(),
+            }
+        finally:
+            if own:
+                db.close()
 
 
 if __name__ == "__main__":  # minimal self-check

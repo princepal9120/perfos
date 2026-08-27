@@ -1,18 +1,22 @@
-"use client";
-import Link from "next/link";
+'use client';
+import Link from 'next/link';
 
 export default function GoogleAdsMcpPage() {
   return (
     <div className="py-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
       <div className="text-center space-y-4">
-        <Link href="/features/ads-mcp" className="text-xs text-primary hover:underline">
+        <Link
+          href="/features/ads-mcp"
+          className="text-xs text-primary hover:underline"
+        >
           ← Back to All Ads MCPs
         </Link>
         <h1 className="text-4xl sm:text-5xl font-display font-bold text-foreground dark:text-white tracking-tight">
           Google Ads MCP Connector
         </h1>
         <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
-          Manage Search, Performance Max, and YouTube ad assets directly through AI agent tools.
+          Manage Search, Performance Max, and YouTube ad assets directly through
+          AI agent tools.
         </p>
       </div>
 
@@ -22,12 +26,21 @@ export default function GoogleAdsMcpPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
           <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-amber-400 font-bold">adkit_google_get_campaigns</span>
-            <p className="text-muted-foreground font-sans text-[11px]">Fetch Search & PMax campaign metrics, keywords, and search queries.</p>
+            <span className="text-amber-400 font-bold">
+              adkit_google_get_campaigns
+            </span>
+            <p className="text-muted-foreground font-sans text-[11px]">
+              Fetch Search & PMax campaign metrics, keywords, and search
+              queries.
+            </p>
           </div>
           <div className="p-3 rounded-lg bg-black/40 border border-border space-y-1">
-            <span className="text-amber-400 font-bold">adkit_google_add_negative_keywords</span>
-            <p className="text-muted-foreground font-sans text-[11px]">Automate search term waste reduction in real-time.</p>
+            <span className="text-amber-400 font-bold">
+              adkit_google_add_negative_keywords
+            </span>
+            <p className="text-muted-foreground font-sans text-[11px]">
+              Automate search term waste reduction in real-time.
+            </p>
           </div>
         </div>
       </div>

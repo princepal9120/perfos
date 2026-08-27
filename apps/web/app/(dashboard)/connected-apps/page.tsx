@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -18,54 +18,54 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   getIntegrations,
-  registerIntegration,
-  setWorkspaceId,
-  toggleIntegration,
   type Integration,
   type IntegrationCategory,
   type IntegrationCreate,
   type IntegrationProvider,
-} from "@/lib/api";
+  registerIntegration,
+  setWorkspaceId,
+  toggleIntegration,
+} from '@/lib/api';
 
 const PROVIDERS: { id: IntegrationProvider; label: string }[] = [
-  { id: "google_ads", label: "Google Ads" },
-  { id: "meta_ads", label: "Meta Ads" },
-  { id: "shopify", label: "Shopify" },
-  { id: "stripe", label: "Stripe" },
-  { id: "slack", label: "Slack" },
-  { id: "linear", label: "Linear" },
+  { id: 'google_ads', label: 'Google Ads' },
+  { id: 'meta_ads', label: 'Meta Ads' },
+  { id: 'shopify', label: 'Shopify' },
+  { id: 'stripe', label: 'Stripe' },
+  { id: 'slack', label: 'Slack' },
+  { id: 'linear', label: 'Linear' },
 ];
 
 const CATEGORIES: { id: IntegrationCategory; label: string }[] = [
-  { id: "ads", label: "Ads" },
-  { id: "analytics", label: "Analytics" },
-  { id: "crm", label: "CRM" },
-  { id: "creative", label: "Creative" },
+  { id: 'ads', label: 'Ads' },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'crm', label: 'CRM' },
+  { id: 'creative', label: 'Creative' },
 ];
 
 const inputCls =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+  'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 
 const PROVIDER_DOT: Record<string, string> = {
-  google_ads: "bg-blue-500",
-  meta_ads: "bg-indigo-500",
-  shopify: "bg-green-500",
-  stripe: "bg-purple-500",
-  slack: "bg-amber-500",
-  linear: "bg-pink-500",
+  google_ads: 'bg-blue-500',
+  meta_ads: 'bg-indigo-500',
+  shopify: 'bg-green-500',
+  stripe: 'bg-purple-500',
+  slack: 'bg-amber-500',
+  linear: 'bg-pink-500',
 };
 
 function ProviderChip({ provider }: { provider: string }) {
   return (
     <span className="inline-flex items-center gap-2 font-medium">
       <span
-        className={`h-2 w-2 shrink-0 rounded-full ${PROVIDER_DOT[provider] ?? "bg-muted-foreground"}`}
+        className={`h-2 w-2 shrink-0 rounded-full ${PROVIDER_DOT[provider] ?? 'bg-muted-foreground'}`}
         aria-hidden="true"
       />
-      {provider.replace(/_/g, " ").toUpperCase()}
+      {provider.replace(/_/g, ' ').toUpperCase()}
     </span>
   );
 }
@@ -80,13 +80,13 @@ function CategoryChip({ category }: { category: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const variant =
-    status === "connected"
-      ? "success"
-      : status === "disabled"
-        ? "secondary"
-        : status === "error"
-          ? "destructive"
-          : "warning";
+    status === 'connected'
+      ? 'success'
+      : status === 'disabled'
+        ? 'secondary'
+        : status === 'error'
+          ? 'destructive'
+          : 'warning';
   return <Badge variant={variant}>{status}</Badge>;
 }
 
@@ -94,17 +94,17 @@ export default function IntegrationsPage() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [provider, setProvider] = useState<IntegrationProvider>("google_ads");
-  const [category, setCategory] = useState<IntegrationCategory>("ads");
-  const [endpoint, setEndpoint] = useState("");
-  const [apiKey, setApiKey] = useState("");
+  const [name, setName] = useState('');
+  const [provider, setProvider] = useState<IntegrationProvider>('google_ads');
+  const [category, setCategory] = useState<IntegrationCategory>('ads');
+  const [endpoint, setEndpoint] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = window.localStorage.getItem("perfos_workspace_id");
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('perfos_workspace_id');
       setWorkspaceId(stored ? Number(stored) || 1 : 1);
     }
   }, []);
@@ -115,7 +115,7 @@ export default function IntegrationsPage() {
       setIntegrations(Array.isArray(data) ? data : []);
       setError(null);
     } catch {
-      setError("Could not load integrations. Is the API running in mock mode?");
+      setError('Could not load integrations. Is the API running in mock mode?');
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export default function IntegrationsPage() {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      setError("Integration name is required.");
+      setError('Integration name is required.');
       return;
     }
     setSaving(true);
@@ -142,12 +142,12 @@ export default function IntegrationsPage() {
         endpoint: endpoint.trim() || null,
         api_key: apiKey.trim() || null,
       });
-      setName("");
-      setEndpoint("");
-      setApiKey("");
+      setName('');
+      setEndpoint('');
+      setApiKey('');
       await load();
     } catch {
-      setError("Failed to register integration. Check that the backend is up.");
+      setError('Failed to register integration. Check that the backend is up.');
     } finally {
       setSaving(false);
     }
@@ -169,7 +169,9 @@ export default function IntegrationsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="font-display text-lg font-semibold tracking-tight">Integrations</h2>
+        <h2 className="font-display text-lg font-semibold tracking-tight">
+          Integrations
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Connect external tools (ad platforms, analytics, CRM) so PerfOS can
           pull spend and revenue data and act on it.
@@ -289,7 +291,7 @@ export default function IntegrationsPage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={saving} className="w-full">
-                {saving ? "Connecting…" : "Connect integration"}
+                {saving ? 'Connecting…' : 'Connect integration'}
               </Button>
             </CardFooter>
           </form>
@@ -310,7 +312,8 @@ export default function IntegrationsPage() {
           </div>
         ) : integrations.length === 0 ? (
           <p className="mt-3 rounded-md border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No integrations connected yet. Register your first integration above.
+            No integrations connected yet. Register your first integration
+            above.
           </p>
         ) : (
           <div className="mt-3 overflow-hidden rounded-lg border border-border">
@@ -328,7 +331,9 @@ export default function IntegrationsPage() {
               <TableBody>
                 {integrations.map((i) => (
                   <TableRow key={i.id}>
-                    <TableCell className="px-4 py-3 font-medium">{i.name}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium">
+                      {i.name}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3">
                       <ProviderChip provider={i.provider} />
                     </TableCell>
@@ -339,20 +344,20 @@ export default function IntegrationsPage() {
                       <StatusBadge status={i.status} />
                     </TableCell>
                     <TableCell className="max-w-[220px] truncate px-4 py-3 text-muted-foreground">
-                      {i.endpoint ?? "-"}
+                      {i.endpoint ?? '-'}
                     </TableCell>
                     <TableCell className="whitespace-nowrap px-4 py-3 text-right">
                       <Button
-                        variant={i.enabled ? "outline" : "default"}
+                        variant={i.enabled ? 'outline' : 'default'}
                         size="sm"
                         onClick={() => handleToggle(i)}
                         disabled={busyId === i.id}
                       >
                         {busyId === i.id
-                          ? "…"
+                          ? '…'
                           : i.enabled
-                            ? "Disable"
-                            : "Enable"}
+                            ? 'Disable'
+                            : 'Enable'}
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -1,54 +1,112 @@
-"use client";
+/* Hallmark · macrostructure: Workbench · tone: modern-minimal · anchor hue: daisy-black
+ * pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black
+ */
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { useRouter } from 'next/navigation';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 type CommandRoute = {
   href: string;
   label: string;
+  category: string;
 };
 
 const routes: CommandRoute[] = [
-  { href: "/overview", label: "Overview" },
-  { href: "/discovery", label: "Discovery" },
-  { href: "/creative", label: "Creative" },
-  { href: "/loop", label: "Loop" },
-  { href: "/measurement", label: "Measurement" },
-  { href: "/accounts", label: "Accounts" },
-  { href: "/recommendations", label: "Recommendations" },
-  { href: "/experiments", label: "Experiments" },
-  { href: "/agents", label: "Agents" },
-  { href: "/mcp", label: "MCP" },
-  { href: "/command-center", label: "Command center" },
-  { href: "/chat", label: "Chat" },
-  { href: "/settings", label: "Settings" },
-  { href: "/connected-apps", label: "Integrations" },
+  {
+    href: '/command-center',
+    label: 'Central Command Center (ChatGPT)',
+    category: 'Copilot',
+  },
+  {
+    href: '/overview',
+    label: 'Daily Briefing & Performance Overview',
+    category: 'Copilot',
+  },
+  {
+    href: '/loop',
+    label: 'Autonomous Growth Loop (Find → Launch)',
+    category: 'Copilot',
+  },
+  {
+    href: '/discovery',
+    label: 'Competitor Ads Library & Spy File',
+    category: 'Intelligence',
+  },
+  {
+    href: '/discovery?view=competitors',
+    label: 'Competitor Watchlist Tracking',
+    category: 'Intelligence',
+  },
+  {
+    href: '/creative',
+    label: 'Creative Studio & Hook Generator',
+    category: 'Creative',
+  },
+  {
+    href: '/recommendations',
+    label: 'Draft Approvals & Policy Gate',
+    category: 'Optimization',
+  },
+  {
+    href: '/accounts',
+    label: 'Connected Ad Accounts (Meta, Google)',
+    category: 'Optimization',
+  },
+  {
+    href: '/measurement',
+    label: 'Measurement & iROAS Calibration',
+    category: 'Optimization',
+  },
+  {
+    href: '/agents',
+    label: 'AI Marketing Agents Fleet',
+    category: 'Infrastructure',
+  },
+  {
+    href: '/connected-apps',
+    label: 'Connected Apps & Integrations',
+    category: 'Infrastructure',
+  },
+  {
+    href: '/mcp',
+    label: 'MCP Servers & Tool Catalog',
+    category: 'Infrastructure',
+  },
+  { href: '/settings', label: 'Workspace Settings', category: 'Settings' },
 ];
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      aria-hidden="true"
+    >
       <circle cx="11" cy="11" r="6.5" />
       <path d="m16 16 4.5 4.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-function CommandIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <path d="M9 9V7a3 3 0 1 0-3 3h2m7-1V7a3 3 0 1 1 3 3h-2m-7 5v2a3 3 0 1 1-3-3h2m7 1v2a3 3 0 1 0 3-3h-2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 9h6v6H9z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 function ArrowIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <path d="M7 17 17 7M8 7h9v9" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      aria-hidden="true"
+    >
+      <path
+        d="M7 17 17 7M8 7h9v9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -62,7 +120,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [internalOpen, setInternalOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const isOpen = open ?? internalOpen;
 
@@ -73,7 +131,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
       }
       onOpenChange?.(nextOpen);
     },
-    [onOpenChange, open]
+    [onOpenChange, open],
   );
 
   const filteredRoutes = useMemo(() => {
@@ -83,30 +141,31 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
     return routes.filter(
       (route) =>
         route.label.toLowerCase().includes(normalizedQuery) ||
-        route.href.toLowerCase().includes(normalizedQuery)
+        route.href.toLowerCase().includes(normalizedQuery) ||
+        route.category.toLowerCase().includes(normalizedQuery),
     );
   }, [query]);
 
   useEffect(() => {
     const handleOpen = () => setMenuOpen(true);
     const handleShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setMenuOpen(true);
       }
     };
 
-    window.addEventListener("open-command-menu", handleOpen);
-    window.addEventListener("keydown", handleShortcut);
+    window.addEventListener('open-command-menu', handleOpen);
+    window.addEventListener('keydown', handleShortcut);
     return () => {
-      window.removeEventListener("open-command-menu", handleOpen);
-      window.removeEventListener("keydown", handleShortcut);
+      window.removeEventListener('open-command-menu', handleOpen);
+      window.removeEventListener('keydown', handleShortcut);
     };
   }, [setMenuOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
-    setQuery("");
+    setQuery('');
     setSelectedIndex(0);
     const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 0);
     return () => window.clearTimeout(focusTimer);
@@ -122,16 +181,22 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   };
 
   const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowDown") {
+    if (event.key === 'ArrowDown') {
       event.preventDefault();
-      setSelectedIndex((index) => (index + 1) % Math.max(filteredRoutes.length, 1));
-    } else if (event.key === "ArrowUp") {
+      setSelectedIndex(
+        (index) => (index + 1) % Math.max(filteredRoutes.length, 1),
+      );
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      setSelectedIndex((index) => (index - 1 + Math.max(filteredRoutes.length, 1)) % Math.max(filteredRoutes.length, 1));
-    } else if (event.key === "Enter" && filteredRoutes[selectedIndex]) {
+      setSelectedIndex(
+        (index) =>
+          (index - 1 + Math.max(filteredRoutes.length, 1)) %
+          Math.max(filteredRoutes.length, 1),
+      );
+    } else if (event.key === 'Enter' && filteredRoutes[selectedIndex]) {
       event.preventDefault();
       navigateTo(filteredRoutes[selectedIndex]);
-    } else if (event.key === "Escape") {
+    } else if (event.key === 'Escape') {
       event.preventDefault();
       setMenuOpen(false);
     }
@@ -141,7 +206,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 px-4 py-[12vh] backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 px-4 py-[12vh] backdrop-blur-[2px]"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) setMenuOpen(false);
@@ -150,36 +215,43 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
       <section
         aria-label="Command menu"
         aria-modal="true"
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-border-subtle bg-bg-surface shadow-[0_24px_80px_rgba(9,9,11,0.55)]"
+        className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-surface shadow-2xl shadow-black"
         role="dialog"
         onKeyDown={(event) => {
-          if (event.key === "Escape") {
+          if (event.key === 'Escape') {
             event.preventDefault();
             setMenuOpen(false);
           }
         }}
       >
-        <div className="flex items-center gap-3 border-b border-border-subtle px-4">
-          <span className="h-4 w-4 shrink-0 text-text-muted"><SearchIcon /></span>
+        <div className="flex items-center gap-3 border-b border-border px-4 bg-card">
+          <span className="h-4 w-4 shrink-0 text-muted-foreground">
+            <SearchIcon />
+          </span>
           <input
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={handleInputKeyDown}
-            placeholder="Search pages..."
+            placeholder="Search pages or command copilot..."
             aria-label="Search dashboard pages"
-            className="h-14 min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
+            className="h-13 min-w-0 flex-1 bg-transparent text-xs sm:text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
-          <kbd className="hidden rounded border border-border-subtle bg-bg-elevated px-1.5 py-0.5 font-sans text-[10px] text-text-muted sm:inline-flex">esc</kbd>
+          <kbd className="hidden rounded border border-border bg-surface-elevated px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">
+            esc
+          </kbd>
         </div>
 
-        <div className="border-b border-border-subtle px-2 py-2">
-          <div className="flex items-center gap-2 px-2 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted">
-            <CommandIcon />
-            <span>Navigate</span>
+        <div className="border-b border-border px-2 py-2 max-h-[380px] overflow-y-auto">
+          <div className="flex items-center gap-2 px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <span>Navigation & Operators</span>
           </div>
           {filteredRoutes.length > 0 ? (
-            <div role="listbox" aria-label="Dashboard pages">
+            <div
+              role="listbox"
+              aria-label="Dashboard pages"
+              className="space-y-0.5"
+            >
               {filteredRoutes.map((route, index) => (
                 <button
                   key={route.href}
@@ -189,29 +261,46 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                   onMouseEnter={() => setSelectedIndex(index)}
                   onClick={() => navigateTo(route)}
                   className={cn(
-                    "group flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left outline-none transition duration-normal ease-out active:scale-[0.99]",
-                    "focus-visible:ring-2 focus-visible:ring-accent/60",
+                    'group flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left outline-none transition-colors',
                     index === selectedIndex
-                      ? "bg-accent-muted text-text-primary"
-                      : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
+                      ? 'bg-primary/10 text-primary border border-primary/20'
+                      : 'text-foreground hover:bg-surface-elevated border border-transparent',
                   )}
                 >
-                  <span className={cn("flex h-7 w-7 items-center justify-center rounded-md border", index === selectedIndex ? "border-accent/30 bg-accent/10 text-accent" : "border-border-subtle bg-bg-elevated text-text-muted")}>
+                  <span
+                    className={cn(
+                      'flex h-6 w-6 items-center justify-center rounded-md border text-xs font-mono',
+                      index === selectedIndex
+                        ? 'border-primary/30 bg-primary/20 text-primary'
+                        : 'border-border bg-card text-muted-foreground',
+                    )}
+                  >
+                    ⌘
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">
+                      {route.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground font-mono">
+                      {route.category}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground opacity-0 group-hover:opacity-100 group-aria-selected:opacity-100">
                     <ArrowIcon />
                   </span>
-                  <span className="flex-1 text-sm font-medium">{route.label}</span>
-                  <span className="text-text-muted opacity-0 transition-opacity group-hover:opacity-100 group-aria-selected:opacity-100"><ArrowIcon /></span>
                 </button>
               ))}
             </div>
           ) : (
-            <p className="px-2.5 py-8 text-center text-sm text-text-muted">No pages match “{query}”.</p>
+            <p className="px-2.5 py-8 text-center text-xs text-muted-foreground">
+              No destinations match “{query}”.
+            </p>
           )}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2.5 text-[11px] text-text-muted">
-          <span>Use ↑ ↓ to move</span>
-          <span className="flex items-center gap-1.5"><kbd className="rounded border border-border-subtle bg-bg-elevated px-1 py-0.5">↵</kbd> to open</span>
+        <div className="flex items-center justify-between px-4 py-2.5 text-[10px] text-muted-foreground bg-card">
+          <span>Use ↑ ↓ to move · ↵ to select</span>
+          <span className="font-mono">PerfOS Growth Console</span>
         </div>
       </section>
     </div>

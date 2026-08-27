@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,14 +10,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { type GeneratedAsset, generateCreative, getAssets } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 /* ---------------------------------- types --------------------------------- */
 
-type Format = "ugc" | "static" | "carousel" | "demo";
-type Platform = "meta" | "tiktok" | "youtube";
+type Format = 'ugc' | 'static' | 'carousel' | 'demo';
+type Platform = 'meta' | 'tiktok' | 'youtube';
 
 interface Brief {
   hook: string;
@@ -26,6 +27,8 @@ interface Brief {
   format: Format;
   platform: Platform;
 }
+
+type AssetRow = GeneratedAsset;
 
 interface AdVariant {
   id: string;
@@ -44,24 +47,24 @@ interface AdVariant {
 /* ------------------------------ draft defaults ----------------------------- */
 
 const DEFAULT_BRIEF: Brief = {
-  hook: "Your ad account is spending while you sleep. Most of it on ads nobody finishes watching.",
+  hook: 'Your ad account is spending while you sleep. Most of it on ads nobody finishes watching.',
   body: "PerfOS reads every creative's hold rate, flags fatigue before spend climbs, and drafts the next variant from what already worked.",
-  cta: "See what your ads are doing",
-  format: "ugc",
-  platform: "meta",
+  cta: 'See what your ads are doing',
+  format: 'ugc',
+  platform: 'meta',
 };
 
 const FORMATS: { value: Format; label: string }[] = [
-  { value: "ugc", label: "UGC talking head" },
-  { value: "static", label: "Static image" },
-  { value: "carousel", label: "Carousel" },
-  { value: "demo", label: "Product demo" },
+  { value: 'ugc', label: 'UGC talking head' },
+  { value: 'static', label: 'Static image' },
+  { value: 'carousel', label: 'Carousel' },
+  { value: 'demo', label: 'Product demo' },
 ];
 
 const PLATFORMS: { value: Platform; label: string }[] = [
-  { value: "meta", label: "Meta" },
-  { value: "tiktok", label: "TikTok" },
-  { value: "youtube", label: "YouTube" },
+  { value: 'meta', label: 'Meta' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'youtube', label: 'YouTube' },
 ];
 
 /** deterministic draft variants — stand-in for the generation API */
@@ -71,7 +74,14 @@ function buildVariants(brief: Brief): AdVariant[] {
   const c = brief.cta.trim() || DEFAULT_BRIEF.cta;
   const shortHook = h.split(/[.!?]/)[0]?.trim() || h;
 
-  const angles: { label: string; hook: string; body: string; hold: number; ctr: number; score: number }[] = [
+  const angles: {
+    label: string;
+    hook: string;
+    body: string;
+    hold: number;
+    ctr: number;
+    score: number;
+  }[] = [
     {
       label: `v1 · ${brief.format}`,
       hook: shortHook,
@@ -98,7 +108,8 @@ function buildVariants(brief: Brief): AdVariant[] {
     },
     {
       label: `v4 · short cut-down`,
-      hook: shortHook.length > 42 ? shortHook.slice(0, 42).trimEnd() : shortHook,
+      hook:
+        shortHook.length > 42 ? shortHook.slice(0, 42).trimEnd() : shortHook,
       body: b,
       hold: 0.276,
       ctr: 0.014,
@@ -165,7 +176,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 const inputClasses =
-  "w-full resize-none rounded-lg border border-border bg-white/3 px-3 py-2 text-sm text-foreground placeholder:text-zinc-600 transition-colors duration-150 ease-out hover:border-white/16 focus:border-blue-500/40 focus:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30";
+  'w-full resize-none rounded-lg border border-border bg-white/3 px-3 py-2 text-sm text-foreground placeholder:text-zinc-600 transition-colors duration-150 ease-out hover:border-white/16 focus:border-blue-500/40 focus:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30';
 
 function SegmentedControl<T extends string>({
   options,
@@ -187,10 +198,10 @@ function SegmentedControl<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            "rounded-md border px-2.5 py-1 text-xs font-medium transition-[background-color,border-color,color] duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
+            'rounded-md border px-2.5 py-1 text-xs font-medium transition-[background-color,border-color,color] duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50',
             value === o.value
-              ? "border-blue-500/30 bg-blue-500/12 text-blue-300"
-              : "border-border bg-transparent text-muted-foreground hover:border-white/16 hover:bg-white/4 hover:text-foreground"
+              ? 'border-blue-500/30 bg-blue-500/12 text-blue-300'
+              : 'border-border bg-transparent text-muted-foreground hover:border-white/16 hover:bg-white/4 hover:text-foreground',
           )}
         >
           {o.label}
@@ -202,7 +213,7 @@ function SegmentedControl<T extends string>({
 
 function ScoreChip({ score }: { score: number }) {
   return (
-    <Badge shape="square" variant={score >= 85 ? "default" : "neutral"}>
+    <Badge shape="square" variant={score >= 85 ? 'default' : 'neutral'}>
       score {score}
     </Badge>
   );
@@ -230,25 +241,33 @@ function VariantCard({
         <p className="font-display text-[15px] font-medium leading-snug tracking-tight text-foreground">
           {variant.hook}
         </p>
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{variant.body}</p>
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {variant.body}
+        </p>
         <p className="mt-auto border-l-2 border-blue-500/30 pl-2.5 text-xs text-zinc-300">
           {variant.cta}
         </p>
         <dl className="grid grid-cols-3 gap-2 border-t border-border pt-3">
           <div>
-            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">hold 3s</dt>
+            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">
+              hold 3s
+            </dt>
             <dd className="text-sm font-semibold tabular-nums text-foreground">
               {(variant.holdRate * 100).toFixed(1)}%
             </dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">est. ctr</dt>
+            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">
+              est. ctr
+            </dt>
             <dd className="text-sm font-semibold tabular-nums text-foreground">
               {(variant.ctr * 100).toFixed(2)}%
             </dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">fatigue risk</dt>
+            <dt className="text-[10px] uppercase tracking-wider text-zinc-600">
+              fatigue risk
+            </dt>
             <dd className="text-sm font-semibold tabular-nums text-foreground">
               {scoreToRisk(variant.score)}
             </dd>
@@ -257,7 +276,7 @@ function VariantCard({
       </CardContent>
       <CardFooter className="justify-between gap-2">
         <Button size="sm" variant="ghost" onClick={() => onCopy(variant)}>
-          {copied ? "Copied" : "Copy script"}
+          {copied ? 'Copied' : 'Copy script'}
         </Button>
         <Button size="sm" variant="outline">
           Send to review
@@ -268,9 +287,9 @@ function VariantCard({
 }
 
 function scoreToRisk(score: number) {
-  if (score >= 85) return "low";
-  if (score >= 80) return "moderate";
-  return "watch";
+  if (score >= 85) return 'low';
+  if (score >= 80) return 'moderate';
+  return 'watch';
 }
 
 /** skeleton matching the real variant-card layout shape */
@@ -307,24 +326,47 @@ function VariantGridSkeleton({ count = 4 }: { count?: number }) {
 
 export default function CreativePage() {
   const [brief, setBrief] = useState<Brief>(DEFAULT_BRIEF);
-  const [phase, setPhase] = useState<"empty" | "generating" | "done">("empty");
+  const [phase, setPhase] = useState<'empty' | 'generating' | 'done'>('empty');
   const [variants, setVariants] = useState<AdVariant[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const hookRef = useRef<HTMLTextAreaElement>(null);
+  const [assets, setAssets] = useState<AssetRow[]>([]);
+  const [assetsError, setAssetsError] = useState<string | null>(null);
+  const [rendering, setRendering] = useState(false);
+
+  useEffect(() => {
+    getAssets()
+      .then(setAssets)
+      .catch(() => setAssetsError('Could not load generated assets.'));
+  }, []);
+
+  /** Render clips from the winners discovery has already scored. */
+  async function renderFromWinners() {
+    setRendering(true);
+    setAssetsError(null);
+    try {
+      await generateCreative('saas');
+      setAssets(await getAssets());
+    } catch {
+      setAssetsError('Generation failed — run a discovery scan first.');
+    } finally {
+      setRendering(false);
+    }
+  }
 
   function generate() {
-    setPhase("generating");
+    setPhase('generating');
     // ponytail: mock latency instead of wiring the generation API; swap when /api/create exists
     window.setTimeout(() => {
       setVariants(buildVariants(brief));
-      setPhase("done");
+      setPhase('done');
     }, 1100);
   }
 
   async function handleCopy(v: AdVariant) {
     try {
       await navigator.clipboard.writeText(
-        `${v.hook}\n\n${v.body}\n\nCTA: ${v.cta}`
+        `${v.hook}\n\n${v.body}\n\nCTA: ${v.cta}`,
       );
       setCopiedId(v.id);
       window.setTimeout(() => setCopiedId(null), 1600);
@@ -348,21 +390,36 @@ export default function CreativePage() {
         </div>
         <dl className="flex items-center gap-6 text-sm">
           <div>
-            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">in review</dt>
-            <dd className="font-semibold tabular-nums text-foreground">6 scripts</dd>
+            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              in review
+            </dt>
+            <dd className="font-semibold tabular-nums text-foreground">
+              6 scripts
+            </dd>
           </div>
           <div className="h-8 w-px bg-white/8" aria-hidden="true" />
           <div>
-            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">avg hold 3s</dt>
+            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              avg hold 3s
+            </dt>
             <dd className="flex items-baseline gap-1.5 font-semibold tabular-nums text-foreground">
               31.4%
-              <Badge variant="up" shape="square">+2.1</Badge>
+              <Badge variant="up" shape="square">
+                +2.1
+              </Badge>
             </dd>
           </div>
-          <div className="hidden h-8 w-px bg-white/8 sm:block" aria-hidden="true" />
+          <div
+            className="hidden h-8 w-px bg-white/8 sm:block"
+            aria-hidden="true"
+          />
           <div className="hidden sm:block">
-            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">launched this week</dt>
-            <dd className="font-semibold tabular-nums text-foreground">12 creatives</dd>
+            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              launched this week
+            </dt>
+            <dd className="font-semibold tabular-nums text-foreground">
+              12 creatives
+            </dd>
           </div>
         </dl>
       </header>
@@ -374,7 +431,8 @@ export default function CreativePage() {
           <CardHeader>
             <CardTitle>Script brief</CardTitle>
             <CardDescription>
-              What the generator works from. Everything here stays editable until launch.
+              What the generator works from. Everything here stays editable
+              until launch.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -386,7 +444,9 @@ export default function CreativePage() {
                 className={inputClasses}
                 placeholder="One sharp opening line. Name the pain or the proof."
                 value={brief.hook}
-                onChange={(e) => setBrief((b) => ({ ...b, hook: e.target.value }))}
+                onChange={(e) =>
+                  setBrief((b) => ({ ...b, hook: e.target.value }))
+                }
               />
             </div>
             <div>
@@ -396,17 +456,21 @@ export default function CreativePage() {
                 className={inputClasses}
                 placeholder="What the product does, in plain words."
                 value={brief.body}
-                onChange={(e) => setBrief((b) => ({ ...b, body: e.target.value }))}
+                onChange={(e) =>
+                  setBrief((b) => ({ ...b, body: e.target.value }))
+                }
               />
             </div>
             <div>
               <FieldLabel>Call to action</FieldLabel>
               <input
                 type="text"
-                className={cn(inputClasses, "resize-none")}
+                className={cn(inputClasses, 'resize-none')}
                 placeholder="e.g. Start free, no card needed"
                 value={brief.cta}
-                onChange={(e) => setBrief((b) => ({ ...b, cta: e.target.value }))}
+                onChange={(e) =>
+                  setBrief((b) => ({ ...b, cta: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-3 pt-1">
@@ -430,16 +494,16 @@ export default function CreativePage() {
             <Button variant="ghost" onClick={() => setBrief(DEFAULT_BRIEF)}>
               Reset
             </Button>
-            <Button onClick={generate} disabled={phase === "generating"}>
+            <Button onClick={generate} disabled={phase === 'generating'}>
               <SparkIcon className="h-4 w-4" />
-              {phase === "generating" ? "Generating…" : "Generate variants"}
+              {phase === 'generating' ? 'Generating…' : 'Generate variants'}
             </Button>
           </CardFooter>
         </Card>
 
         {/* variants column */}
         <section aria-label="Generated variants" className="min-w-0">
-          {phase === "empty" ? (
+          {phase === 'empty' ? (
             <Card className="flex min-h-[420px] flex-col items-center justify-center px-8 py-16 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-white/3 text-muted-foreground">
                 <LayersIcon className="h-5 w-5" />
@@ -462,7 +526,7 @@ export default function CreativePage() {
                 Generate from brief
               </Button>
             </Card>
-          ) : phase === "generating" ? (
+          ) : phase === 'generating' ? (
             <>
               <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <SparkIcon className="h-4 w-4 animate-pulse text-blue-400" />
@@ -496,6 +560,50 @@ export default function CreativePage() {
           )}
         </section>
       </div>
+
+      {/* Clips rendered by the CREATE stage from scored competitor winners. */}
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+          <div>
+            <h3 className="font-display text-sm font-semibold text-foreground">
+              Generated assets
+            </h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Clips the create stage rendered from your top discovered winners.
+            </p>
+          </div>
+          <Button size="sm" onClick={renderFromWinners} disabled={rendering}>
+            {rendering ? 'Generating…' : 'Generate from top winners'}
+          </Button>
+        </div>
+        <div className="px-5 py-4">
+          {assetsError ? (
+            <p className="text-xs text-red-400">{assetsError}</p>
+          ) : assets.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              No assets yet — scan the ad library, then generate from the
+              winners.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {assets.slice(0, 20).map((a, i) => (
+                <li
+                  key={`${a.asset_url}-${i}`}
+                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-white/3 px-3 py-2 text-xs"
+                >
+                  <span className="truncate font-mono text-zinc-300">
+                    {a.asset_url}
+                  </span>
+                  <span className="shrink-0 text-muted-foreground">
+                    {a.provider ?? '—'}
+                    {a.duration_s ? ` · ${a.duration_s}s` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }

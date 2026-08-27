@@ -1,40 +1,269 @@
-"use client";
+/* Hallmark · macrostructure: Workbench · tone: modern-minimal · anchor hue: daisy-black
+ * pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black
+ */
+'use client';
 
-import * as React from "react";
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { AIAgentsSetupModal } from "./ai-agents-setup-modal";
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import type * as React from 'react';
+import { Suspense, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { AIAgentsSetupModal } from './ai-agents-setup-modal';
 
-/* Lock Icon component matching Image #1 */
-function LockIcon() {
+/* ------------------------------------------------------------------ */
+/* Vector Icons                                                       */
+/* ------------------------------------------------------------------ */
+
+function CommandIcon({ className }: { className?: string }) {
   return (
     <svg
-      className="h-4 w-4 shrink-0 text-muted-foreground"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-/* Settings Gear Icon */
-function GearIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={cn("h-4 w-4 shrink-0", className)}
+      className={cn('h-4 w-4 shrink-0', className)}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" />
+    </svg>
+  );
+}
+
+function OverviewIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="7" height="9" rx="1.5" />
+      <rect x="14" y="3" width="7" height="5" rx="1.5" />
+      <rect x="14" y="12" width="7" height="9" rx="1.5" />
+      <rect x="3" y="16" width="7" height="5" rx="1.5" />
+    </svg>
+  );
+}
+
+function LoopIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+    </svg>
+  );
+}
+
+function TargetIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function LayersIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  );
+}
+
+function BookmarkIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function StudioIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+    </svg>
+  );
+}
+
+function CheckCircleIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+  );
+}
+
+function CreditCardIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+    </svg>
+  );
+}
+
+function ChartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+
+function BotIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="11" width="18" height="10" rx="2" />
+      <circle cx="12" cy="5" r="2" />
+      <path d="M12 7v4" />
+      <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="2.5" />
+      <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="2.5" />
+    </svg>
+  );
+}
+
+function PlugIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 2v6" />
+      <path d="m19 13-4-4" />
+      <path d="M10 20l4-4" />
+      <path d="m2 22 3-3" />
+      <path d="M9.5 9.5 6 6" />
+      <path d="m6 18 6-6" />
+    </svg>
+  );
+}
+
+function TerminalIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  );
+}
+
+function GearIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('h-4 w-4 shrink-0', className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -45,336 +274,407 @@ function GearIcon({ className }: { className?: string }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Navigation Items Data                                              */
+/* ------------------------------------------------------------------ */
+
+interface NavItem {
+  label: string;
+  href: string;
+  view?: string | null;
+  badge?: string;
+  Icon: (props: { className?: string }) => React.JSX.Element;
+}
+
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      className={cn(
+        'flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+        active
+          ? 'bg-primary/10 text-primary border border-primary/20'
+          : 'text-muted-foreground hover:bg-surface-elevated hover:text-foreground border border-transparent',
+      )}
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        <item.Icon
+          className={active ? 'text-primary' : 'text-muted-foreground'}
+        />
+        <span className="truncate">{item.label}</span>
+      </div>
+      {item.badge && (
+        <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[9px] font-mono font-semibold text-primary">
+          {item.badge}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function InspirationLinksComponent({ pathname }: { pathname: string }) {
+  const searchParams = useSearchParams();
+  const currentView = searchParams.get('view') ?? 'library';
+
+  const items: NavItem[] = [
+    {
+      label: 'Ads Library',
+      href: '/discovery?view=library',
+      view: 'library',
+      Icon: LayersIcon,
+    },
+    {
+      label: 'Competitor Watch',
+      href: '/discovery?view=competitors',
+      view: 'competitors',
+      Icon: TargetIcon,
+    },
+    {
+      label: 'Saved Boards',
+      href: '/discovery?view=saved',
+      view: 'saved',
+      Icon: BookmarkIcon,
+    },
+  ];
+
+  return (
+    <>
+      {items.map((item) => {
+        const active = pathname === '/discovery' && currentView === item.view;
+        return <NavLink key={item.label} item={item} active={active} />;
+      })}
+    </>
+  );
+}
+
 export default function Sidebar() {
-  const pathname = usePathname() ?? "/";
+  const pathname = usePathname() ?? '/';
   const [isSetupOpen, setIsSetupOpen] = useState(false);
   const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [collapsedSections, setCollapsedSections] = useState<
+    Record<string, boolean>
+  >({});
 
   const toggleSection = (sec: string) => {
     setCollapsedSections((prev) => ({ ...prev, [sec]: !prev[sec] }));
   };
 
-  const isSettingsActive = pathname.startsWith("/settings");
-
   return (
     <>
       <aside
         aria-label="Primary navigation"
-        className="hidden w-64 shrink-0 flex-col border-r border-border bg-background text-foreground md:flex select-none"
+        className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface text-foreground md:flex select-none"
       >
-        {/* Top Project Selector (Exact match to Image #1) */}
+        {/* Top Project Selector */}
         <div className="relative flex h-14 shrink-0 items-center justify-between border-b border-border px-3.5">
           <button
             type="button"
             onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
-            className="flex items-center gap-2 rounded-lg py-1 px-1.5 text-left text-xs font-semibold text-foreground dark:text-white transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none"
+            className="flex items-center gap-2 rounded-lg py-1 px-1.5 text-left text-xs font-semibold text-foreground transition-colors hover:bg-surface-elevated focus:outline-none"
           >
-            <span className="flex h-5 w-5 items-center justify-center rounded-md border border-white/20 bg-zinc-800 text-[10px] font-bold text-foreground">
-              Np
+            <span className="flex h-5 w-5 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-[10px] font-bold text-primary">
+              ⌘
             </span>
-            <span className="font-display tracking-tight">New project</span>
+            <span className="font-display tracking-tight text-foreground">
+              Demo DTC Brand
+            </span>
             <svg
-              className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", isProjectDropdownOpen && "rotate-180")}
+              className={cn(
+                'h-3.5 w-3.5 text-muted-foreground transition-transform',
+                isProjectDropdownOpen && 'rotate-180',
+              )}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
-          {/* Collapse sidebar icon button */}
-          <button
-            type="button"
-            title="Collapse sidebar"
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
-              <path d="M9 3v18" strokeWidth="1.5" />
-            </svg>
-          </button>
+          <span
+            className="flex h-2 w-2 rounded-full bg-emerald-500"
+            title="Connected to API"
+          />
 
           {/* Project switch dropdown menu */}
           {isProjectDropdownOpen && (
-            <div className="absolute left-3 top-13 z-50 w-56 rounded-xl border border-border bg-muted p-1.5 shadow-xl shadow-black/80 animate-in fade-in zoom-in-95">
+            <div className="absolute left-3 top-13 z-50 w-56 rounded-xl border border-border bg-surface-elevated p-1.5 shadow-xl shadow-black/80 animate-in fade-in zoom-in-95">
               <div className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Switch Project
+                Workspace
               </div>
               <button
                 onClick={() => setIsProjectDropdownOpen(false)}
-                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-foreground dark:text-white bg-primary/10 border border-primary/30"
+                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-foreground bg-primary/10 border border-primary/30"
               >
                 <span className="flex items-center gap-2">
-                  <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-800 text-[9px]">Np</span>
-                  New project
+                  <span className="flex h-4 w-4 items-center justify-center rounded bg-primary/20 text-[9px] text-primary">
+                    DTC
+                  </span>
+                  Demo DTC Brand
                 </span>
                 <span className="text-primary text-[10px]">Active</span>
-              </button>
-              <button
-                onClick={() => setIsProjectDropdownOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
-              >
-                <span className="flex h-4 w-4 items-center justify-center rounded bg-zinc-800 text-[9px]">Q3</span>
-                Q3 Scaling Sprint
               </button>
               <div className="my-1 border-t border-border" />
               <button
                 onClick={() => setIsProjectDropdownOpen(false)}
                 className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-primary hover:bg-primary/10"
               >
-                <span>+</span> Create New Project
+                <span>+</span> Connect New Ad Account
               </button>
             </div>
           )}
         </div>
 
-        {/* Main Nav Scrollable Area */}
+        {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
-          {/* Section: INSPIRATION */}
+          {/* Section: COPILOT & CORE */}
+          <div className="space-y-1">
+            <div className="px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+              COPILOT & CORE
+            </div>
+            <div className="space-y-0.5">
+              <NavLink
+                item={{
+                  label: 'Command Center',
+                  href: '/command-center',
+                  badge: 'ChatGPT',
+                  Icon: CommandIcon,
+                }}
+                active={pathname === '/command-center' || pathname === '/chat'}
+              />
+              <NavLink
+                item={{
+                  label: 'Daily Briefing',
+                  href: '/overview',
+                  Icon: OverviewIcon,
+                }}
+                active={pathname === '/overview'}
+              />
+              <NavLink
+                item={{
+                  label: 'Growth Loop',
+                  href: '/loop',
+                  badge: 'Auto',
+                  Icon: LoopIcon,
+                }}
+                active={pathname === '/loop'}
+              />
+            </div>
+          </div>
+
+          {/* Section: INTELLIGENCE & CREATIVE */}
           <div>
             <button
               type="button"
-              onClick={() => toggleSection("inspiration")}
+              onClick={() => toggleSection('intel')}
               className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
-              <span>INSPIRATION</span>
+              <span>INTELLIGENCE & CREATIVE</span>
               <svg
-                className={cn("h-3 w-3 transition-transform", collapsedSections["inspiration"] ? "-rotate-90" : "")}
+                className={cn(
+                  'h-3 w-3 transition-transform',
+                  collapsedSections['intel'] ? '-rotate-90' : '',
+                )}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            {!collapsedSections["inspiration"] && (
+            {!collapsedSections['intel'] && (
               <div className="space-y-0.5 pt-0.5">
-                {[
-                  { label: "Competitors", href: "/discovery?view=competitors" },
-                  { label: "Ads Library", href: "/discovery?view=library" },
-                  { label: "Saved Ads", href: "/discovery?view=saved" },
-                  { label: "Activity Feed", href: "/command-center" },
-                ].map((item) => {
-                  const active = (pathname === item.href.split("?")[0]) && !isSettingsActive;
-                  return (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                        active
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
-                      )}
-                    >
-                      <LockIcon />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
+                <Suspense
+                  fallback={
+                    <div className="text-xs text-muted-foreground px-2 py-1">
+                      Loading...
+                    </div>
+                  }
+                >
+                  <InspirationLinksComponent pathname={pathname} />
+                </Suspense>
+                <NavLink
+                  item={{
+                    label: 'Creative Studio',
+                    href: '/creative',
+                    Icon: StudioIcon,
+                  }}
+                  active={pathname === '/creative'}
+                />
               </div>
             )}
           </div>
 
-          {/* Section: CREATE */}
+          {/* Section: MEDIA & OPTIMIZATION */}
           <div>
             <button
               type="button"
-              onClick={() => toggleSection("create")}
+              onClick={() => toggleSection('media')}
               className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
-              <span>CREATE</span>
+              <span>MEDIA & OPTIMIZATION</span>
               <svg
-                className={cn("h-3 w-3 transition-transform", collapsedSections["create"] ? "-rotate-90" : "")}
+                className={cn(
+                  'h-3 w-3 transition-transform',
+                  collapsedSections['media'] ? '-rotate-90' : '',
+                )}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            {!collapsedSections["create"] && (
+            {!collapsedSections['media'] && (
               <div className="space-y-0.5 pt-0.5">
-                <Link
-                  href="/creative"
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                    pathname === "/creative"
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
-                  )}
-                >
-                  <LockIcon />
-                  <span>Studio</span>
-                </Link>
+                <NavLink
+                  item={{
+                    label: 'Draft Approvals',
+                    href: '/recommendations',
+                    Icon: CheckCircleIcon,
+                  }}
+                  active={pathname === '/recommendations'}
+                />
+                <NavLink
+                  item={{
+                    label: 'Ad Accounts',
+                    href: '/accounts',
+                    Icon: CreditCardIcon,
+                  }}
+                  active={pathname === '/accounts'}
+                />
+                <NavLink
+                  item={{
+                    label: 'Measurement & iROAS',
+                    href: '/measurement',
+                    Icon: ChartIcon,
+                  }}
+                  active={pathname === '/measurement'}
+                />
               </div>
             )}
           </div>
 
-          {/* Section: ADS MANAGER */}
+          {/* Section: INFRA & INTEGRATIONS */}
           <div>
             <button
               type="button"
-              onClick={() => toggleSection("ads_manager")}
+              onClick={() => toggleSection('infra')}
               className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
             >
-              <span>ADS MANAGER</span>
+              <span>INFRA & AGENTS</span>
               <svg
-                className={cn("h-3 w-3 transition-transform", collapsedSections["ads_manager"] ? "-rotate-90" : "")}
+                className={cn(
+                  'h-3 w-3 transition-transform',
+                  collapsedSections['infra'] ? '-rotate-90' : '',
+                )}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            {!collapsedSections["ads_manager"] && (
+            {!collapsedSections['infra'] && (
               <div className="space-y-0.5 pt-0.5">
-                <Link
-                  href="/accounts"
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                    pathname === "/accounts"
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
-                  )}
-                >
-                  <LockIcon />
-                  <span>Accounts</span>
-                </Link>
-                <Link
-                  href="/recommendations"
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                    pathname === "/recommendations"
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
-                  )}
-                >
-                  <LockIcon />
-                  <span>Draft Approval</span>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Section: SETTINGS (Matching Image #1 active purple highlight) */}
-          <div>
-            <button
-              type="button"
-              onClick={() => toggleSection("settings")}
-              className="flex w-full items-center justify-between px-1 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground"
-            >
-              <span>SETTINGS</span>
-              <svg
-                className={cn("h-3 w-3 transition-transform", collapsedSections["settings"] ? "-rotate-90" : "")}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {!collapsedSections["settings"] && (
-              <div className="space-y-0.5 pt-0.5">
-                <Link
-                  href="/settings"
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors",
-                    isSettingsActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:text-foreground"
-                  )}
-                >
-                  <GearIcon className={isSettingsActive ? "text-primary" : "text-muted-foreground"} />
-                  <span>Settings</span>
-                </Link>
+                <NavLink
+                  item={{
+                    label: 'AI Agents Fleet',
+                    href: '/agents',
+                    Icon: BotIcon,
+                  }}
+                  active={pathname === '/agents'}
+                />
+                <NavLink
+                  item={{
+                    label: 'Connected Apps',
+                    href: '/connected-apps',
+                    Icon: PlugIcon,
+                  }}
+                  active={pathname === '/connected-apps'}
+                />
+                <NavLink
+                  item={{
+                    label: 'MCP Servers',
+                    href: '/mcp',
+                    Icon: TerminalIcon,
+                  }}
+                  active={pathname === '/mcp'}
+                />
+                <NavLink
+                  item={{
+                    label: 'Settings',
+                    href: '/settings',
+                    Icon: GearIcon,
+                  }}
+                  active={pathname === '/settings'}
+                />
               </div>
             )}
           </div>
         </div>
 
-        {/* Bottom Actions & User Profile Area (Exact match to Image #1) */}
-        <div className="shrink-0 border-t border-border p-3 space-y-3">
-          {/* Coral / Orange Gradient CTA Button: AI Agents Setup */}
+        {/* Bottom Actions & User Profile Area */}
+        <div className="shrink-0 border-t border-border p-3 space-y-3 bg-surface">
+          {/* AI Agents Setup CTA Button */}
           <button
             type="button"
             onClick={() => setIsSetupOpen(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all duration-150 hover:bg-primary/90 active:scale-[0.98]"
+            className="btn-daisy-solid flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-xs"
           >
-            <span className="text-sm">🤖</span>
+            <span>🤖</span>
             <span>AI Agents Setup</span>
           </button>
 
-          {/* Utility Nav Links */}
-          <div className="space-y-0.5 text-xs text-muted-foreground">
-            <Link
-              href="/chat"
-              className="flex items-center gap-2 rounded-lg px-2.5 py-1 transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span>Help & Feedback</span>
-            </Link>
-
-            <a
-              href="#docs"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsSetupOpen(true);
-              }}
-              className="flex items-center justify-between rounded-lg px-2.5 py-1 transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
-            >
-              <span className="flex items-center gap-2">
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Docs
-              </span>
-              <span className="text-[10px] text-muted-foreground">↗</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => {}}
-              className="flex w-full items-center justify-between rounded-lg px-2.5 py-1 text-left transition-colors hover:bg-accent hover:text-accent-foreground hover:text-foreground dark:text-white"
-            >
-              <span className="flex items-center gap-2">
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                What&apos;s New
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-            </button>
-          </div>
-
-          {/* User Profile Row: prince / pal265354@gmail.com */}
-          <div className="relative border-t border-border pt-2.5">
-            <div className="flex items-center justify-between rounded-lg p-1.5 hover:bg-accent hover:text-accent-foreground">
+          {/* User Profile Row */}
+          <div className="relative border-t border-border pt-2">
+            <div className="flex items-center justify-between rounded-lg p-1.5 hover:bg-surface-elevated">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-900/60 border border-purple-500/40 text-primary text-xs font-semibold">
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2" />
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                  </svg>
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/20 border border-primary/40 text-primary text-xs font-bold font-mono">
+                  P
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-foreground dark:text-white">prince</p>
-                  <p className="truncate text-[10px] text-muted-foreground">pal265354@gmail.com</p>
+                  <p className="truncate text-xs font-semibold text-foreground">
+                    prince
+                  </p>
+                  <p className="truncate text-[10px] text-muted-foreground">
+                    pal265354@gmail.com
+                  </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                className="rounded p-1 text-muted-foreground hover:text-foreground dark:text-white"
+                className="rounded p-1 text-muted-foreground hover:text-foreground"
                 aria-label="Profile options"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <circle cx="12" cy="6" r="1.5" fill="currentColor" />
                   <circle cx="12" cy="12" r="1.5" fill="currentColor" />
                   <circle cx="12" cy="18" r="1.5" fill="currentColor" />
@@ -384,12 +684,14 @@ export default function Sidebar() {
 
             {/* Profile Popover Menu */}
             {isProfileMenuOpen && (
-              <div className="absolute bottom-12 left-0 right-0 z-50 rounded-xl border border-border bg-muted p-1.5 shadow-2xl animate-in fade-in zoom-in-95">
-                <div className="px-2 py-1 text-[10px] text-muted-foreground">Signed in as prince</div>
+              <div className="absolute bottom-12 left-0 right-0 z-50 rounded-xl border border-border bg-surface-elevated p-1.5 shadow-2xl animate-in fade-in zoom-in-95">
+                <div className="px-2 py-1 text-[10px] text-muted-foreground">
+                  Signed in as prince
+                </div>
                 <Link
                   href="/settings"
                   onClick={() => setIsProfileMenuOpen(false)}
-                  className="block rounded-md px-2 py-1.5 text-xs text-foreground dark:text-white hover:bg-accent hover:text-accent-foreground"
+                  className="block rounded-md px-2 py-1.5 text-xs text-foreground hover:bg-muted"
                 >
                   Workspace Settings
                 </Link>
@@ -400,7 +702,7 @@ export default function Sidebar() {
                   }}
                   className="w-full text-left rounded-md px-2 py-1.5 text-xs text-primary hover:bg-primary/10"
                 >
-                  AI Agent Tokens
+                  AI Agent API Tokens
                 </button>
                 <div className="my-1 border-t border-border" />
                 <button
@@ -416,7 +718,10 @@ export default function Sidebar() {
       </aside>
 
       {/* AI Agents Setup Modal */}
-      <AIAgentsSetupModal isOpen={isSetupOpen} onClose={() => setIsSetupOpen(false)} />
+      <AIAgentsSetupModal
+        isOpen={isSetupOpen}
+        onClose={() => setIsSetupOpen(false)}
+      />
     </>
   );
 }

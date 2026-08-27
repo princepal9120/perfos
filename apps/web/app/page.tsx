@@ -1,148 +1,161 @@
 /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { MarketingNavbar } from "@/components/marketing/navbar";
-import { MarketingFooter } from "@/components/marketing/footer";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { MarketingFooter } from '@/components/marketing/footer';
 import {
-  MetaLogo,
-  GoogleLogo,
-  TikTokLogo,
-  LinkedInLogo,
+  ChatGPTLogo,
   ClaudeLogo,
   CursorLogo,
-  ChatGPTLogo,
+  GoogleLogo,
+  LinkedInLogo,
+  MetaLogo,
   NotionLogo,
-  PerfOSLogo
+  PerfOSLogo,
+  TikTokLogo,
 } from '@/components/marketing/icons';
-
+import { MarketingNavbar } from '@/components/marketing/navbar';
 
 const WORKFLOW_PROMPTS = [
   {
-    id: "spy",
-    title: "Spy Competitors",
-    icon: "🔍",
-    userPrompt: "What is the longest-running evergreen ad for notion.so?",
-    agentAction: "adkit_spy_competitor(domain: 'notion.so', min_longevity_days: 90)",
-    agentOutput: "Discovered top winner: 'Post-it Note Workflow' running active for 142 consecutive days. Directing to /product with 126 live variants. Hook angle: 'Consolidate 12 tools into 1 workspace'.",
-    badge: "142 Days Live",
-    adHeadline: "Consolidate 12 fragmented tools into 1 unified workspace.",
-    adSub: "Estimated spend: $42,500+ · 142 days continuous run · 9.4% CTR",
-    network: "Meta & YouTube"
+    id: 'spy',
+    title: 'Spy Competitors',
+    icon: '🔍',
+    userPrompt: 'What is the longest-running evergreen ad for notion.so?',
+    agentAction:
+      "adkit_spy_competitor(domain: 'notion.so', min_longevity_days: 90)",
+    agentOutput:
+      "Discovered top winner: 'Post-it Note Workflow' running active for 142 consecutive days. Directing to /product with 126 live variants. Hook angle: 'Consolidate 12 tools into 1 workspace'.",
+    badge: '142 Days Live',
+    adHeadline: 'Consolidate 12 fragmented tools into 1 unified workspace.',
+    adSub: 'Estimated spend: $42,500+ · 142 days continuous run · 9.4% CTR',
+    network: 'Meta & YouTube',
   },
   {
-    id: "kill-scale",
-    title: "Kill or Scale Ads",
-    icon: "⚡",
-    userPrompt: "Audit our Meta Ad Account for the last 14 days. What should we pause or scale?",
-    agentAction: "adkit_meta_audit_performance(timeframe: '14d', target_roas: 2.5)",
-    agentOutput: "2 underperformers identified: 'Feature Breakdown V2' (CPA $84.20, ROAS 0.8x) -> Staged Pause. 1 breakout winner: 'Founder Voiceover Reel' (ROAS 4.6x, Spent $1,240) -> Staged +25% Budget scale.",
-    badge: "ROAS 4.6x Scaled",
-    adHeadline: "Founder Story Reel: Why we ditched bloated agencies.",
-    adSub: "ROAS 4.6x · Spent $1,240 · Scaled budget to $150/day",
-    network: "Instagram & TikTok"
+    id: 'kill-scale',
+    title: 'Kill or Scale Ads',
+    icon: '⚡',
+    userPrompt:
+      'Audit our Meta Ad Account for the last 14 days. What should we pause or scale?',
+    agentAction:
+      "adkit_meta_audit_performance(timeframe: '14d', target_roas: 2.5)",
+    agentOutput:
+      "2 underperformers identified: 'Feature Breakdown V2' (CPA $84.20, ROAS 0.8x) -> Staged Pause. 1 breakout winner: 'Founder Voiceover Reel' (ROAS 4.6x, Spent $1,240) -> Staged +25% Budget scale.",
+    badge: 'ROAS 4.6x Scaled',
+    adHeadline: 'Founder Story Reel: Why we ditched bloated agencies.',
+    adSub: 'ROAS 4.6x · Spent $1,240 · Scaled budget to $150/day',
+    network: 'Instagram & TikTok',
   },
   {
-    id: "clone",
-    title: "Clone & Remix",
-    icon: "🧬",
-    userPrompt: "Clone Notion's 142-day evergreen ad and remix it with our PerfOS Dark Violet brand kit.",
-    agentAction: "adkit_clone_creative(source_id: 'notion_142d', brand_kit: 'perfos_tokens')",
-    agentOutput: "Extracted visual layout & hook mechanics. Synthesized 3 on-brand variations: 'Stop running ads like it's 2018. Connect Claude directly to Meta, Google & TikTok.' Creatives staged for preview.",
-    badge: "3 Variants Ready",
-    adHeadline: "Stop running ads like it's 2018. Connect Claude to Meta & TikTok.",
-    adSub: "Generated from Notion 142-day winner · Color tokens: Dark Violet",
-    network: "Meta, Google, X"
+    id: 'clone',
+    title: 'Clone & Remix',
+    icon: '🧬',
+    userPrompt:
+      "Clone Notion's 142-day evergreen ad and remix it with our PerfOS Dark Violet brand kit.",
+    agentAction:
+      "adkit_clone_creative(source_id: 'notion_142d', brand_kit: 'perfos_tokens')",
+    agentOutput:
+      "Extracted visual layout & hook mechanics. Synthesized 3 on-brand variations: 'Stop running ads like it's 2018. Connect Claude directly to Meta, Google & TikTok.' Creatives staged for preview.",
+    badge: '3 Variants Ready',
+    adHeadline:
+      "Stop running ads like it's 2018. Connect Claude to Meta & TikTok.",
+    adSub: 'Generated from Notion 142-day winner · Color tokens: Dark Violet',
+    network: 'Meta, Google, X',
   },
   {
-    id: "resize",
-    title: "Batch Placement Resize",
-    icon: "📐",
-    userPrompt: "Take our winning desktop banner and format for IG Stories 9:16, Feed 1:1, and LinkedIn.",
+    id: 'resize',
+    title: 'Batch Placement Resize',
+    icon: '📐',
+    userPrompt:
+      'Take our winning desktop banner and format for IG Stories 9:16, Feed 1:1, and LinkedIn.',
     agentAction: "adkit_batch_resize_and_adapt(creative_id: 'perfos_hero_01')",
-    agentOutput: "Generated 3 multi-platform assets: 9:16 Vertical Video with auto-safe zone captions, 1:1 Square Feed, and 4:5 Mobile Portrait. Dimensions and compression verified against network APIs.",
-    badge: "API Validated",
-    adHeadline: "Autonomous Ads via MCP Protocol · Zero UI Grunt Work",
-    adSub: "3 Formats ready · 9:16 Stories, 1:1 Feed, 4:5 Mobile · Verified",
-    network: "All 7 Networks"
+    agentOutput:
+      'Generated 3 multi-platform assets: 9:16 Vertical Video with auto-safe zone captions, 1:1 Square Feed, and 4:5 Mobile Portrait. Dimensions and compression verified against network APIs.',
+    badge: 'API Validated',
+    adHeadline: 'Autonomous Ads via MCP Protocol · Zero UI Grunt Work',
+    adSub: '3 Formats ready · 9:16 Stories, 1:1 Feed, 4:5 Mobile · Verified',
+    network: 'All 7 Networks',
   },
   {
-    id: "draft",
-    title: "Draft Campaign",
-    icon: "🚀",
-    userPrompt: "We launched our new Ads CLI. Draft a launch campaign for Meta & X targeting developers.",
-    agentAction: "adkit_draft_campaign(topic: 'Ads CLI Launch', target: 'devs', budget: '$50/day')",
-    agentOutput: "Drafted Campaign 'Ads CLI Launch' with 2 ad sets: Developer Tools Interest + Lookalike 1%. 4 terminal-themed hooks prepared. Staged in dashboard for your 1-click approval.",
-    badge: "Ready for Approval",
-    adHeadline: "Terminal-Native Ads for Engineers: Manage campaigns from CLI.",
+    id: 'draft',
+    title: 'Draft Campaign',
+    icon: '🚀',
+    userPrompt:
+      'We launched our new Ads CLI. Draft a launch campaign for Meta & X targeting developers.',
+    agentAction:
+      "adkit_draft_campaign(topic: 'Ads CLI Launch', target: 'devs', budget: '$50/day')",
+    agentOutput:
+      "Drafted Campaign 'Ads CLI Launch' with 2 ad sets: Developer Tools Interest + Lookalike 1%. 4 terminal-themed hooks prepared. Staged in dashboard for your 1-click approval.",
+    badge: 'Ready for Approval',
+    adHeadline: 'Terminal-Native Ads for Engineers: Manage campaigns from CLI.',
     adSub: "Campaign: 'Ads CLI Launch' · Budget: $50/day · 2 Ad Sets",
-    network: "Meta & X Ads"
-  }
+    network: 'Meta & X Ads',
+  },
 ];
 
 const AUDIENCE_CARDS = [
   {
-    icon: "👨‍💻",
-    title: "Founders & Solopreneurs",
-    desc: "You are growing a product and refuse to pay $10k/mo agency retainers. Run high-converting ad experiments yourself in 10 minutes a week instead of clicking through bloated ad managers."
+    icon: '👨‍💻',
+    title: 'Founders & Solopreneurs',
+    desc: 'You are growing a product and refuse to pay $10k/mo agency retainers. Run high-converting ad experiments yourself in 10 minutes a week instead of clicking through bloated ad managers.',
   },
   {
-    icon: "🎯",
-    title: "Agencies & Media Buyers",
-    desc: "Manage 10+ client ad accounts with autonomous execution. Reclaim hours lost duplicating ad sets, resizing banners, and chasing reporting numbers across Meta, Google, and TikTok."
+    icon: '🎯',
+    title: 'Agencies & Media Buyers',
+    desc: 'Manage 10+ client ad accounts with autonomous execution. Reclaim hours lost duplicating ad sets, resizing banners, and chasing reporting numbers across Meta, Google, and TikTok.',
   },
   {
-    icon: "📈",
-    title: "Growth Marketers",
-    desc: "Scale your creative testing velocity 5x. Uncover competitor evergreen winners, spin up 20 hook variations with your brand kit, and deploy campaigns directly from Claude or Cursor."
+    icon: '📈',
+    title: 'Growth Marketers',
+    desc: 'Scale your creative testing velocity 5x. Uncover competitor evergreen winners, spin up 20 hook variations with your brand kit, and deploy campaigns directly from Claude or Cursor.',
   },
   {
-    icon: "🎨",
-    title: "Brand Managers",
-    desc: "Maintain strict typography, color token fidelity, and tone guidelines across thousands of generated static and video creatives while giving media buyers autonomous speed."
-  }
+    icon: '🎨',
+    title: 'Brand Managers',
+    desc: 'Maintain strict typography, color token fidelity, and tone guidelines across thousands of generated static and video creatives while giving media buyers autonomous speed.',
+  },
 ];
 
 const FIT_CHECK_YES = [
-  "You are sick of wasting 2+ hours a week clicking around in Meta Ads Manager to duplicate, edit, and publish.",
-  "You have wanted to run ads but clunky, slow ad network dashboards held you back.",
-  "You already use AI agents (Claude Code, Cursor, ChatGPT) for development and want advertising to work the exact same way.",
-  "You run ads for multiple brands or clients and want to recover operational margin.",
-  "You want an intelligent assistant that drafts, researches, and monitors while you keep the final 1-click approval."
+  'You are sick of wasting 2+ hours a week clicking around in Meta Ads Manager to duplicate, edit, and publish.',
+  'You have wanted to run ads but clunky, slow ad network dashboards held you back.',
+  'You already use AI agents (Claude Code, Cursor, ChatGPT) for development and want advertising to work the exact same way.',
+  'You run ads for multiple brands or clients and want to recover operational margin.',
+  'You want an intelligent assistant that drafts, researches, and monitors while you keep the final 1-click approval.',
 ];
 
 const FIT_CHECK_NO = [
-  "You expect AI to magically fix a broken product or offer without strategy.",
-  "You refuse to review drafted campaigns before they deploy to live accounts.",
-  "You genuinely enjoy spending 10 hours a week manually configuring ad manager dropdowns."
+  'You expect AI to magically fix a broken product or offer without strategy.',
+  'You refuse to review drafted campaigns before they deploy to live accounts.',
+  'You genuinely enjoy spending 10 hours a week manually configuring ad manager dropdowns.',
 ];
 
 const FAQS = [
   {
-    q: "What can my AI agent actually do with PerfOS & AdKit?",
-    a: "Your AI agent gains typed MCP tools to search 500k+ competitor ads, deconstruct winning hooks, generate on-brand static and video variations, inspect live performance metrics, and draft campaigns across Meta, Google, TikTok, LinkedIn, Reddit, X, and Microsoft Ads."
+    q: 'What can my AI agent actually do with PerfOS & AdKit?',
+    a: 'Your AI agent gains typed MCP tools to search 500k+ competitor ads, deconstruct winning hooks, generate on-brand static and video variations, inspect live performance metrics, and draft campaigns across Meta, Google, TikTok, LinkedIn, Reddit, X, and Microsoft Ads.',
   },
   {
-    q: "Do changes go live immediately, or is there an approval step?",
-    a: "Every change your agent makes is a draft by default. Campaigns, ad sets, and creatives sit safely in your PerfOS dashboard until you click 'Approve'. Nothing touches your live accounts without your explicit sign-off."
+    q: 'Do changes go live immediately, or is there an approval step?',
+    a: "Every change your agent makes is a draft by default. Campaigns, ad sets, and creatives sit safely in your PerfOS dashboard until you click 'Approve'. Nothing touches your live accounts without your explicit sign-off.",
   },
   {
-    q: "Will using an MCP get my ad account flagged or banned?",
-    a: "No. Unlike unofficial scraping scripts, PerfOS is an approved Meta and Google Tech Partner. All operations use the official platform APIs with built-in rate-limiting, safety gates, and policy safeguards."
+    q: 'Will using an MCP get my ad account flagged or banned?',
+    a: 'No. Unlike unofficial scraping scripts, PerfOS is an approved Meta and Google Tech Partner. All operations use the official platform APIs with built-in rate-limiting, safety gates, and policy safeguards.',
   },
   {
-    q: "How long does setup take?",
-    a: "Less than 3 minutes. Connect your ad accounts in the web console, paste one JSON line into your Claude Desktop, Cursor, or ChatGPT MCP settings, and you are ready to command your agent."
+    q: 'How long does setup take?',
+    a: 'Less than 3 minutes. Connect your ad accounts in the web console, paste one JSON line into your Claude Desktop, Cursor, or ChatGPT MCP settings, and you are ready to command your agent.',
   },
   {
-    q: "Can I use PerfOS without an AI agent?",
-    a: "Yes! PerfOS includes a full standalone web dashboard where you can browse the Ad Library, use the AI Creative Generator & Cloner, and inspect account metrics directly."
+    q: 'Can I use PerfOS without an AI agent?',
+    a: 'Yes! PerfOS includes a full standalone web dashboard where you can browse the Ad Library, use the AI Creative Generator & Cloner, and inspect account metrics directly.',
   },
   {
-    q: "Which AI agents and IDEs are compatible?",
-    a: "PerfOS works natively with Claude Code, Claude Desktop, Cursor IDE, ChatGPT (OpenAI GPTs), Grok (xAI), Codex, OpenClaw, Perplexity, and Hermes Agent."
-  }
+    q: 'Which AI agents and IDEs are compatible?',
+    a: 'PerfOS works natively with Claude Code, Claude Desktop, Cursor IDE, ChatGPT (OpenAI GPTs), Grok (xAI), Codex, OpenClaw, Perplexity, and Hermes Agent.',
+  },
 ];
 
 export default function HomePage() {
@@ -153,7 +166,9 @@ export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [playProgress, setPlayProgress] = useState(38);
   const [deployedToast, setDeployedToast] = useState(false);
-  const [selectedRatio, setSelectedRatio] = useState<"9:16" | "1:1" | "16:9">("1:1");
+  const [selectedRatio, setSelectedRatio] = useState<'9:16' | '1:1' | '16:9'>(
+    '1:1',
+  );
 
   const currentWorkflow = WORKFLOW_PROMPTS[activeWorkflow];
 
@@ -166,8 +181,8 @@ export default function HomePage() {
   }, [isPlaying]);
 
   const handleCopyCmd = () => {
-    if (typeof navigator !== "undefined") {
-      navigator.clipboard.writeText("npx -y @adkit/mcp-server");
+    if (typeof navigator !== 'undefined') {
+      navigator.clipboard.writeText('npx -y @adkit/mcp-server');
       setCopiedCmd(true);
       setTimeout(() => setCopiedCmd(false), 2200);
     }
@@ -192,8 +207,12 @@ export default function HomePage() {
             ✓
           </div>
           <div>
-            <div className="text-xs font-bold text-white">Draft Approved &amp; Deployed!</div>
-            <div className="text-[11px] text-zinc-400">Pushed safely to Meta &amp; Google ad network APIs.</div>
+            <div className="text-xs font-bold text-white">
+              Draft Approved &amp; Deployed!
+            </div>
+            <div className="text-[11px] text-zinc-400">
+              Pushed safely to Meta &amp; Google ad network APIs.
+            </div>
           </div>
         </div>
       )}
@@ -215,12 +234,15 @@ export default function HomePage() {
           {/* Main Headline (Zero Gradient, Solid Daisy Rose Accent) */}
           <div className="max-w-5xl mx-auto">
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
-              The ads toolbox for you &amp; your <span className="text-[#d86f82]">AI agents</span>
+              The ads toolbox for you &amp; your{' '}
+              <span className="text-[#d86f82]">AI agents</span>
             </h1>
           </div>
 
           <p className="mt-6 text-base sm:text-xl text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed">
-            Research competitors, launch campaigns, and track performance in minutes instead of hours — all from your preferred AI agent, or from the dashboard.
+            Research competitors, launch campaigns, and track performance in
+            minutes instead of hours — all from your preferred AI agent, or from
+            the dashboard.
           </p>
 
           {/* Action CTAs (Solid Daisy Rose & Matte Dark) */}
@@ -240,7 +262,7 @@ export default function HomePage() {
               <span className="text-[#d86f82] font-bold">$</span>
               <span>npx -y @adkit/mcp-server</span>
               <span className="text-xs px-2 py-0.5 rounded bg-white/5 text-zinc-400 border border-white/5">
-                {copiedCmd ? "Copied! ✓" : "Copy"}
+                {copiedCmd ? 'Copied! ✓' : 'Copy'}
               </span>
             </button>
           </div>
@@ -268,7 +290,10 @@ export default function HomePage() {
           {/* Testimonial Callout Card */}
           <div className="mt-10 max-w-3xl mx-auto p-5 rounded-xl bg-[#121318] border border-white/10 text-left">
             <p className="text-xs sm:text-sm text-zinc-300">
-              &quot;My agent analyzed my account using AdKit, found what to optimize, and drafted all the changes on its own. I only had to click &apos;Approve&apos;. The first 30 minutes already saved me 8 hours of work.&quot;
+              &quot;My agent analyzed my account using AdKit, found what to
+              optimize, and drafted all the changes on its own. I only had to
+              click &apos;Approve&apos;. The first 30 minutes already saved me 8
+              hours of work.&quot;
             </p>
             <div className="mt-3 flex items-center gap-2 text-xs text-zinc-400 font-mono">
               <span className="font-semibold text-white">Gabe Salinas</span>
@@ -304,7 +329,12 @@ export default function HomePage() {
                     <button
                       key={wf.id}
                       onClick={() => setActiveWorkflow(idx)}
-                      className={"px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer " + (activeWorkflow === idx ? "bg-[#d86f82] text-white border border-[#d86f82]/50" : "bg-[#1c1d26] hover:bg-[#252632] text-zinc-300 border border-white/5")}
+                      className={
+                        'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ' +
+                        (activeWorkflow === idx
+                          ? 'bg-[#d86f82] text-white border border-[#d86f82]/50'
+                          : 'bg-[#1c1d26] hover:bg-[#252632] text-zinc-300 border border-white/5')
+                      }
                     >
                       <span>{wf.icon}</span>
                       <span>{wf.title}</span>
@@ -317,7 +347,12 @@ export default function HomePage() {
                     <button
                       key={r}
                       onClick={() => setSelectedRatio(r)}
-                      className={"px-2 py-0.5 text-[10px] font-mono rounded transition-colors cursor-pointer " + (selectedRatio === r ? "bg-[#d86f82] text-white font-bold" : "text-zinc-400 hover:text-zinc-200")}
+                      className={
+                        'px-2 py-0.5 text-[10px] font-mono rounded transition-colors cursor-pointer ' +
+                        (selectedRatio === r
+                          ? 'bg-[#d86f82] text-white font-bold'
+                          : 'text-zinc-400 hover:text-zinc-200')
+                      }
                     >
                       {r}
                     </button>
@@ -342,7 +377,8 @@ export default function HomePage() {
                     <div className="relative aspect-video rounded-lg bg-[#15161d] border border-white/10 p-4 flex flex-col justify-between overflow-hidden shadow-inner">
                       <div className="flex items-center justify-between text-xs text-zinc-400 z-10">
                         <span className="font-bold text-white flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-[#d86f82]" /> {currentWorkflow.network}
+                          <span className="w-2 h-2 rounded-full bg-[#d86f82]" />{' '}
+                          {currentWorkflow.network}
                         </span>
                         <span className="font-mono text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-300">
                           {selectedRatio} Active
@@ -364,27 +400,41 @@ export default function HomePage() {
                             onClick={() => setIsPlaying(!isPlaying)}
                             className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center text-[10px] text-white cursor-pointer"
                           >
-                            {isPlaying ? "❚❚" : "▶"}
+                            {isPlaying ? '❚❚' : '▶'}
                           </button>
                           <span>{currentSeconds}s / 15.0s</span>
                         </span>
-                        <span className="text-[#d86f82] font-semibold">Live Feed Synced</span>
+                        <span className="text-[#d86f82] font-semibold">
+                          Live Feed Synced
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3">
                     <div className="p-3 rounded-lg bg-[#0c0d12] border border-white/5 text-center">
-                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">Total Library</span>
-                      <span className="text-sm font-bold text-white font-mono">512,400+</span>
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">
+                        Total Library
+                      </span>
+                      <span className="text-sm font-bold text-white font-mono">
+                        512,400+
+                      </span>
                     </div>
                     <div className="p-3 rounded-lg bg-[#0c0d12] border border-white/5 text-center">
-                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">MCP Latency</span>
-                      <span className="text-sm font-bold text-[#d86f82] font-mono">&lt; 140ms</span>
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">
+                        MCP Latency
+                      </span>
+                      <span className="text-sm font-bold text-[#d86f82] font-mono">
+                        &lt; 140ms
+                      </span>
                     </div>
                     <div className="p-3 rounded-lg bg-[#0c0d12] border border-white/5 text-center">
-                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">Safety Gate</span>
-                      <span className="text-sm font-bold text-emerald-400 font-mono">100% Draft</span>
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">
+                        Safety Gate
+                      </span>
+                      <span className="text-sm font-bold text-emerald-400 font-mono">
+                        100% Draft
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -394,9 +444,14 @@ export default function HomePage() {
                   <div className="space-y-3.5">
                     <div className="p-3 rounded-lg bg-[#15161d] border border-white/10 text-zinc-200">
                       <div className="flex items-center gap-2 text-[11px] text-zinc-400 mb-1">
-                        <span className="flex items-center gap-1.5 text-[#d86f82] font-bold"><ClaudeLogo className="w-3.5 h-3.5" /> You (via Claude Desktop):</span>
+                        <span className="flex items-center gap-1.5 text-[#d86f82] font-bold">
+                          <ClaudeLogo className="w-3.5 h-3.5" /> You (via Claude
+                          Desktop):
+                        </span>
                       </div>
-                      <p className="text-sm font-sans font-medium text-white">{currentWorkflow.userPrompt}</p>
+                      <p className="text-sm font-sans font-medium text-white">
+                        {currentWorkflow.userPrompt}
+                      </p>
                     </div>
 
                     <div className="p-2.5 rounded-md bg-[#181922] border border-[#d86f82]/20 text-[#d86f82] text-[11px] flex items-center gap-2">
@@ -406,8 +461,13 @@ export default function HomePage() {
 
                     <div className="p-3.5 rounded-lg bg-[#15161d] border border-white/10 text-zinc-300 space-y-2">
                       <div className="flex items-center justify-between text-[11px] text-[#d86f82] font-bold">
-                        <span className="flex items-center gap-1.5"><ChatGPTLogo className="w-3 h-3 text-[#d86f82]" /> PerfOS Agent Output:</span>
-                        <span className="text-emerald-400 font-normal">Status: Staged in Dashboard</span>
+                        <span className="flex items-center gap-1.5">
+                          <ChatGPTLogo className="w-3 h-3 text-[#d86f82]" />{' '}
+                          PerfOS Agent Output:
+                        </span>
+                        <span className="text-emerald-400 font-normal">
+                          Status: Staged in Dashboard
+                        </span>
                       </div>
                       <p className="text-xs font-sans leading-relaxed text-zinc-200">
                         {currentWorkflow.agentOutput}
@@ -435,19 +495,23 @@ export default function HomePage() {
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
-                    setPlayProgress(Math.max(0, Math.min(100, (x / rect.width) * 100)));
+                    setPlayProgress(
+                      Math.max(0, Math.min(100, (x / rect.width) * 100)),
+                    );
                   }}
                   className="relative h-20 w-full bg-[#0c0d12] rounded-xl border border-white/10 p-2 overflow-hidden flex flex-col justify-between cursor-pointer group"
                 >
                   <div
-                    style={{ left: playProgress + "%" }}
+                    style={{ left: playProgress + '%' }}
                     className="absolute top-0 bottom-0 w-[2px] bg-[#d86f82] z-30 transition-all duration-75"
                   >
                     <div className="w-3 h-3 bg-[#d86f82] rotate-45 -translate-x-[5px] -translate-y-1.5" />
                   </div>
 
                   <div className="h-7 w-full rounded bg-[#181922] border border-white/10 flex items-center px-3 gap-2 overflow-hidden">
-                    <span className="text-[9px] font-mono text-[#d86f82] font-bold uppercase">Video 1</span>
+                    <span className="text-[9px] font-mono text-[#d86f82] font-bold uppercase">
+                      Video 1
+                    </span>
                     <div className="flex-1 flex gap-1 h-full py-1">
                       <div className="w-1/4 bg-white/10 rounded-sm" />
                       <div className="w-1/3 bg-[#d86f82]/30 rounded-sm border-l border-r border-[#d86f82] text-[8px] font-mono text-white px-1 flex items-center">
@@ -458,12 +522,22 @@ export default function HomePage() {
                   </div>
 
                   <div className="h-6 w-full rounded bg-[#181922] border border-white/10 flex items-center px-3 gap-2">
-                    <span className="text-[9px] font-mono text-zinc-400 font-bold uppercase">Audio 1</span>
+                    <span className="text-[9px] font-mono text-zinc-400 font-bold uppercase">
+                      Audio 1
+                    </span>
                     <div className="flex-1 flex items-center gap-[3px] h-full overflow-hidden opacity-80">
                       {Array.from({ length: 60 }).map((_, i) => (
                         <div
                           key={i}
-                          style={{ height: String((Math.sin((i + playProgress * 0.2) * 0.5) + 1.2) * 8 + 2) + "px" }}
+                          style={{
+                            height:
+                              String(
+                                (Math.sin((i + playProgress * 0.2) * 0.5) +
+                                  1.2) *
+                                  8 +
+                                  2,
+                              ) + 'px',
+                          }}
                           className="w-1 bg-[#d86f82] rounded-full transition-all duration-75"
                         />
                       ))}
@@ -495,10 +569,15 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-lg font-bold text-white">Research</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Browse 500k+ ads or import your competitors. Filter by longevity to uncover true evergreen winners live for 90+ days.
+                    Browse 500k+ ads or import your competitors. Filter by
+                    longevity to uncover true evergreen winners live for 90+
+                    days.
                   </p>
                 </div>
-                <Link href="/features/ad-library" className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1">
+                <Link
+                  href="/features/ad-library"
+                  className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1"
+                >
                   Find what&apos;s working →
                 </Link>
               </div>
@@ -510,10 +589,15 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-lg font-bold text-white">Create</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Turn your brand kit and competitor winners into 30+ static and video hooks in seconds. 1-click resize for every placement.
+                    Turn your brand kit and competitor winners into 30+ static
+                    and video hooks in seconds. 1-click resize for every
+                    placement.
                   </p>
                 </div>
-                <Link href="/features/ai-ads-generator" className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1">
+                <Link
+                  href="/features/ai-ads-generator"
+                  className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1"
+                >
                   AI Ads Generator →
                 </Link>
               </div>
@@ -525,10 +609,14 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-lg font-bold text-white">Launch</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Let your agent draft campaigns, sets, and budgets directly from chat. Review in your dashboard and approve in 1 click.
+                    Let your agent draft campaigns, sets, and budgets directly
+                    from chat. Review in your dashboard and approve in 1 click.
                   </p>
                 </div>
-                <Link href="/features/ads-mcp" className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1">
+                <Link
+                  href="/features/ads-mcp"
+                  className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1"
+                >
                   Launch with your agent →
                 </Link>
               </div>
@@ -540,10 +628,15 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-lg font-bold text-white">Analyze</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Cut through platform over-reporting. Identify fatigued creatives and scale winning ad sets with real incremental ROAS.
+                    Cut through platform over-reporting. Identify fatigued
+                    creatives and scale winning ad sets with real incremental
+                    ROAS.
                   </p>
                 </div>
-                <Link href="/command-center" className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1">
+                <Link
+                  href="/command-center"
+                  className="text-xs text-[#d86f82] hover:underline font-semibold flex items-center gap-1"
+                >
                   Track real ROAS →
                 </Link>
               </div>
@@ -562,7 +655,8 @@ export default function HomePage() {
                 Running ads feels like you&apos;re back in 2018...
               </h2>
               <p className="text-zinc-400 text-base">
-                You don&apos;t have hours to waste clicking through ad managers. Let your agent do the boring work so you can focus on strategy.
+                You don&apos;t have hours to waste clicking through ad managers.
+                Let your agent do the boring work so you can focus on strategy.
               </p>
             </div>
 
@@ -574,19 +668,30 @@ export default function HomePage() {
                 <ul className="space-y-4 text-xs sm:text-sm text-zinc-400">
                   <li className="flex items-start gap-3">
                     <span className="text-rose-400 font-bold mt-0.5">✕</span>
-                    <span>Scroll ad libraries and feeds hoping to find inspiration.</span>
+                    <span>
+                      Scroll ad libraries and feeds hoping to find inspiration.
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-rose-400 font-bold mt-0.5">✕</span>
-                    <span>Screenshot competitors into ChatGPT to guess why their ads work.</span>
+                    <span>
+                      Screenshot competitors into ChatGPT to guess why their ads
+                      work.
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-rose-400 font-bold mt-0.5">✕</span>
-                    <span>Open Photoshop/Canva to make 8 subtle size variations manually.</span>
+                    <span>
+                      Open Photoshop/Canva to make 8 subtle size variations
+                      manually.
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-rose-400 font-bold mt-0.5">✕</span>
-                    <span>Click through 15 dropdowns in Meta Ads Manager just to duplicate a campaign.</span>
+                    <span>
+                      Click through 15 dropdowns in Meta Ads Manager just to
+                      duplicate a campaign.
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -598,19 +703,39 @@ export default function HomePage() {
                 <ul className="space-y-4 text-xs sm:text-sm text-zinc-200">
                   <li className="flex items-start gap-3">
                     <span className="text-[#d86f82] font-bold mt-0.5">✓</span>
-                    <span>Ask your agent: <em>&quot;What are Notion&apos;s longest-running ads?&quot;</em></span>
+                    <span>
+                      Ask your agent:{' '}
+                      <em>
+                        &quot;What are Notion&apos;s longest-running ads?&quot;
+                      </em>
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-[#d86f82] font-bold mt-0.5">✓</span>
-                    <span><em>&quot;Clone their top 3 ads into my brand and write 5 hook variations.&quot;</em></span>
+                    <span>
+                      <em>
+                        &quot;Clone their top 3 ads into my brand and write 5
+                        hook variations.&quot;
+                      </em>
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-[#d86f82] font-bold mt-0.5">✓</span>
-                    <span><em>&quot;Resize all 5 for Stories, Feed, and TikTok in 1 click.&quot;</em></span>
+                    <span>
+                      <em>
+                        &quot;Resize all 5 for Stories, Feed, and TikTok in 1
+                        click.&quot;
+                      </em>
+                    </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-[#d86f82] font-bold mt-0.5">✓</span>
-                    <span><em>&quot;Draft the campaign on Meta and notify me when it&apos;s ready to review.&quot;</em></span>
+                    <span>
+                      <em>
+                        &quot;Draft the campaign on Meta and notify me when
+                        it&apos;s ready to review.&quot;
+                      </em>
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -638,8 +763,12 @@ export default function HomePage() {
                 >
                   <div className="space-y-3">
                     <span className="text-3xl block">{aud.icon}</span>
-                    <h3 className="text-base font-bold text-white">{aud.title}</h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed">{aud.desc}</p>
+                    <h3 className="text-base font-bold text-white">
+                      {aud.title}
+                    </h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      {aud.desc}
+                    </p>
                   </div>
                   <Link
                     href="/pricing"
@@ -662,20 +791,35 @@ export default function HomePage() {
                   N
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">A word from the founder</h3>
-                  <p className="text-xs text-zinc-400">Hi there 👋 I&apos;m Nico, the creator of AdKit</p>
+                  <h3 className="text-lg font-bold text-white">
+                    A word from the founder
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Hi there 👋 I&apos;m Nico, the creator of AdKit
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-4 text-xs sm:text-sm text-zinc-300 leading-relaxed border-t border-white/10 pt-6">
                 <p>
-                  Before building startups, I was a media buyer. I managed over <strong>$1,000,000 in ads</strong>, sold two startups grown entirely with performance marketing, and helped 1,000+ founders learn Meta Ads through my guides.
+                  Before building startups, I was a media buyer. I managed over{' '}
+                  <strong>$1,000,000 in ads</strong>, sold two startups grown
+                  entirely with performance marketing, and helped 1,000+
+                  founders learn Meta Ads through my guides.
                 </p>
                 <p>
-                  I love ads, but running them involves a tremendous amount of repetitive, mind-numbing grunt work 😩 Duplicating ad sets, resizing 20 static banners, copying and pasting copy, and navigating laggy ad managers. I hated every second of it.
+                  I love ads, but running them involves a tremendous amount of
+                  repetitive, mind-numbing grunt work 😩 Duplicating ad sets,
+                  resizing 20 static banners, copying and pasting copy, and
+                  navigating laggy ad managers. I hated every second of it.
                 </p>
                 <p>
-                  So I built AdKit to fix that. To let me and other marketers focus on what actually moves the needle: <strong>the strategy, the thinking, and the creativity</strong> — while letting AI agents handle the manual execution.
+                  So I built AdKit to fix that. To let me and other marketers
+                  focus on what actually moves the needle:{' '}
+                  <strong>
+                    the strategy, the thinking, and the creativity
+                  </strong>{' '}
+                  — while letting AI agents handle the manual execution.
                 </p>
                 <p className="font-semibold text-white pt-2">
                   — Nico, Founder of AdKit
@@ -683,7 +827,9 @@ export default function HomePage() {
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
-                <span className="text-xs text-zinc-400">Try it risk-free with full access for 7 days.</span>
+                <span className="text-xs text-zinc-400">
+                  Try it risk-free with full access for 7 days.
+                </span>
                 <Link
                   href="/pricing"
                   className="px-6 py-2.5 rounded-xl bg-[#d86f82] hover:bg-[#c85c6f] text-white text-xs font-semibold transition-colors"
@@ -756,13 +902,23 @@ export default function HomePage() {
               <div className="pt-4 inline-flex items-center gap-2 p-1.5 rounded-xl bg-[#121318] border border-white/10">
                 <button
                   onClick={() => setAnnualBilling(false)}
-                  className={"px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors " + (!annualBilling ? "bg-[#d86f82] text-white shadow-sm" : "text-zinc-400 hover:text-white")}
+                  className={
+                    'px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors ' +
+                    (!annualBilling
+                      ? 'bg-[#d86f82] text-white shadow-sm'
+                      : 'text-zinc-400 hover:text-white')
+                  }
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setAnnualBilling(true)}
-                  className={"px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors " + (annualBilling ? "bg-[#d86f82] text-white shadow-sm" : "text-zinc-400 hover:text-white")}
+                  className={
+                    'px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors ' +
+                    (annualBilling
+                      ? 'bg-[#d86f82] text-white shadow-sm'
+                      : 'text-zinc-400 hover:text-white')
+                  }
                 >
                   <span>Yearly</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-white font-mono font-bold">
@@ -776,21 +932,38 @@ export default function HomePage() {
               <div className="p-8 rounded-2xl bg-[#121318] border border-white/10 space-y-6 flex flex-col justify-between">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white">Single Project</h3>
-                    <p className="text-xs text-zinc-400 mt-1">Every AdKit tool (ad library, AI studio, and MCP) for one brand.</p>
+                    <h3 className="text-xl font-bold text-white">
+                      Single Project
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Every AdKit tool (ad library, AI studio, and MCP) for one
+                      brand.
+                    </p>
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold text-white">
-                      {annualBilling ? "$29" : "$49"}
+                      {annualBilling ? '$29' : '$49'}
                     </span>
-                    <span className="text-xs text-zinc-400 font-mono">/ month</span>
+                    <span className="text-xs text-zinc-400 font-mono">
+                      / month
+                    </span>
                   </div>
                   <ul className="space-y-3 text-xs text-zinc-300 border-t border-white/10 pt-5">
-                    <li className="flex items-center gap-2">✓ Multi-platform Ad Library (500k+ ads)</li>
-                    <li className="flex items-center gap-2">✓ Competitor Longevity &amp; Activity Alerts</li>
-                    <li className="flex items-center gap-2">✓ AI Ads Generator &amp; Creative Cloner</li>
-                    <li className="flex items-center gap-2">✓ Ads MCP Server &amp; Terminal CLI</li>
-                    <li className="flex items-center gap-2">✓ Meta, Google, TikTok, LinkedIn ad accounts</li>
+                    <li className="flex items-center gap-2">
+                      ✓ Multi-platform Ad Library (500k+ ads)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Competitor Longevity &amp; Activity Alerts
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ AI Ads Generator &amp; Creative Cloner
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Ads MCP Server &amp; Terminal CLI
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Meta, Google, TikTok, LinkedIn ad accounts
+                    </li>
                   </ul>
                 </div>
                 <Link
@@ -807,21 +980,39 @@ export default function HomePage() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white">Multiple Projects</h3>
-                    <p className="text-xs text-zinc-400 mt-1">For agencies, media buyers, and operators with multiple brands.</p>
+                    <h3 className="text-xl font-bold text-white">
+                      Multiple Projects
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      For agencies, media buyers, and operators with multiple
+                      brands.
+                    </p>
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-extrabold text-white">
-                      {annualBilling ? "$89" : "$149"}
+                      {annualBilling ? '$89' : '$149'}
                     </span>
-                    <span className="text-xs text-zinc-400 font-mono">/ month</span>
+                    <span className="text-xs text-zinc-400 font-mono">
+                      / month
+                    </span>
                   </div>
                   <ul className="space-y-3 text-xs text-zinc-200 border-t border-white/10 pt-5">
-                    <li className="flex items-center gap-2">✓ <strong>Unlimited</strong> Brands &amp; Client Workspaces</li>
-                    <li className="flex items-center gap-2">✓ Unlimited Competitor Ad Search &amp; Downloads</li>
-                    <li className="flex items-center gap-2">✓ 1,000 AI Creative Generations / mo</li>
-                    <li className="flex items-center gap-2">✓ Multi-Seat Team Access &amp; Dedicated API Keys</li>
-                    <li className="flex items-center gap-2">✓ Priority Support &amp; Custom MCP Bridge</li>
+                    <li className="flex items-center gap-2">
+                      ✓ <strong>Unlimited</strong> Brands &amp; Client
+                      Workspaces
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Unlimited Competitor Ad Search &amp; Downloads
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ 1,000 AI Creative Generations / mo
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Multi-Seat Team Access &amp; Dedicated API Keys
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Priority Support &amp; Custom MCP Bridge
+                    </li>
                   </ul>
                 </div>
                 <Link
@@ -859,7 +1050,7 @@ export default function HomePage() {
                   >
                     <span>{faq.q}</span>
                     <span className="text-[#d86f82] font-mono text-base font-bold">
-                      {openFaq === i ? "−" : "+"}
+                      {openFaq === i ? '−' : '+'}
                     </span>
                   </button>
                   {openFaq === i && (
@@ -880,7 +1071,8 @@ export default function HomePage() {
               Stop clicking. Start Advertising.
             </h2>
             <p className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto">
-              Give your AI agent the ads toolbox it&apos;s missing: research, create, launch, and diagnose from a single chat.
+              Give your AI agent the ads toolbox it&apos;s missing: research,
+              create, launch, and diagnose from a single chat.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link

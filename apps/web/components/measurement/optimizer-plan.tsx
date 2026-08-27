@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { OptimizerPlan } from "@/lib/api";
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { OptimizerPlan } from '@/lib/api';
 
 const PLATFORM_LABELS: Record<string, string> = {
-  google: "Google Ads",
-  meta: "Meta Ads",
-  shopify: "Shopify",
-  tiktok: "TikTok Ads",
-  linkedin: "LinkedIn Ads",
-  pinterest: "Pinterest Ads",
-  snapchat: "Snapchat Ads",
-  amazon: "Amazon Ads",
-  reddit: "Reddit Ads",
-  twitter: "Twitter Ads",
-  youtube: "YouTube Ads",
-  amazon_ads: "Amazon DSP",
-  x_ads: "X Ads",
+  google: 'Google Ads',
+  meta: 'Meta Ads',
+  shopify: 'Shopify',
+  tiktok: 'TikTok Ads',
+  linkedin: 'LinkedIn Ads',
+  pinterest: 'Pinterest Ads',
+  snapchat: 'Snapchat Ads',
+  amazon: 'Amazon Ads',
+  reddit: 'Reddit Ads',
+  twitter: 'Twitter Ads',
+  youtube: 'YouTube Ads',
+  amazon_ads: 'Amazon DSP',
+  x_ads: 'X Ads',
 };
 
 function label(platform: string) {
@@ -37,7 +37,7 @@ function usd(n: number) {
 }
 
 function signedUsd(n: number) {
-  return `${n >= 0 ? "+" : "-"}${usd(n)}`;
+  return `${n >= 0 ? '+' : '-'}${usd(n)}`;
 }
 
 export interface OptimizerPlanProps {
@@ -111,13 +111,21 @@ function EmptyState({ onRun }: { onRun?: () => void }) {
   );
 }
 
-export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProps) {
+export function OptimizerPlan({
+  plan,
+  running,
+  onRun,
+  error,
+}: OptimizerPlanProps) {
   const rows = plan
     ? plan.plan.filter((r) => r.current_spend > 0 || r.delta !== 0)
     : [];
   const movers = rows.filter((r) => r.delta !== 0);
   const maxSpend = rows.length
-    ? Math.max(...rows.map((r) => Math.max(r.current_spend, r.recommended_spend)), 1)
+    ? Math.max(
+        ...rows.map((r) => Math.max(r.current_spend, r.recommended_spend)),
+        1,
+      )
     : 1;
 
   return (
@@ -126,7 +134,8 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
         <div>
           <CardTitle className="font-display">Reallocation plan</CardTitle>
           <CardDescription className="pt-1.5">
-            What-if budget shift toward higher-iROAS channels. Total spend is held constant.
+            What-if budget shift toward higher-iROAS channels. Total spend is
+            held constant.
           </CardDescription>
         </div>
         {plan ? (
@@ -164,10 +173,10 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
                   {usd(plan.total_recommended_spend)}
                 </p>
               </div>
-              <Badge variant={movers.length > 0 ? "default" : "neutral"}>
+              <Badge variant={movers.length > 0 ? 'default' : 'neutral'}>
                 {movers.length > 0
-                  ? `${movers.length} channel${movers.length === 1 ? "" : "s"} shifted`
-                  : "no shifts suggested"}
+                  ? `${movers.length} channel${movers.length === 1 ? '' : 's'} shifted`
+                  : 'no shifts suggested'}
               </Badge>
             </div>
 
@@ -176,8 +185,8 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
               {rows.map((row) => {
                 const pct =
                   row.current_spend > 0
-                    ? `${row.delta >= 0 ? "+" : "-"}${Math.abs(
-                        (row.delta / row.current_spend) * 100
+                    ? `${row.delta >= 0 ? '+' : '-'}${Math.abs(
+                        (row.delta / row.current_spend) * 100,
                       ).toFixed(0)}%`
                     : null;
                 return (
@@ -191,16 +200,22 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
                       </span>
                       <span className="flex items-center gap-2 text-sm tabular-nums text-text-secondary">
                         {usd(row.current_spend)}
-                        <span aria-hidden className="text-text-muted">&rarr;</span>
+                        <span aria-hidden className="text-text-muted">
+                          &rarr;
+                        </span>
                         {usd(row.recommended_spend)}
                         <Badge
                           shape="square"
                           variant={
-                            row.delta > 0 ? "up" : row.delta < 0 ? "down" : "neutral"
+                            row.delta > 0
+                              ? 'up'
+                              : row.delta < 0
+                                ? 'down'
+                                : 'neutral'
                           }
                         >
                           {signedUsd(row.delta)}
-                          {pct ? ` (${pct})` : ""}
+                          {pct ? ` (${pct})` : ''}
                         </Badge>
                       </span>
                     </div>
@@ -217,7 +232,7 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
                       {/* recommended spend bar */}
                       <div
                         className={`h-1.5 rounded-full transition-[width] duration-slow ease-out ${
-                          row.delta >= 0 ? "bg-accent" : "bg-accent/50"
+                          row.delta >= 0 ? 'bg-accent' : 'bg-accent/50'
                         }`}
                         style={{
                           width: `${(row.recommended_spend / maxSpend) * 100}%`,
@@ -233,7 +248,8 @@ export function OptimizerPlan({ plan, running, onRun, error }: OptimizerPlanProp
             </div>
 
             <p className="text-xs text-text-muted">
-              Plan only. Applying changes still requires a policy-approved recommendation.
+              Plan only. Applying changes still requires a policy-approved
+              recommendation.
             </p>
           </>
         )}

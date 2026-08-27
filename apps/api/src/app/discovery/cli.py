@@ -144,7 +144,7 @@ def run_discovery(
         # discovery/loop pipeline still needs deterministic data to score. Pull
         # the full fixture set once so dry-run loops report non-zero counts.
         if not found:
-            for channel, adapter in active:
+            for _channel, adapter in active:
                 try:
                     for spy_ad in adapter(""):
                         found[(spy_ad.platform, spy_ad.platform_ad_id)] = spy_ad
