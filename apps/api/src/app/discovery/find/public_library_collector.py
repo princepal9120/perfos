@@ -67,7 +67,15 @@ def normalize_public_ad(platform: str, raw: Mapping[str, Any]) -> dict[str, Any]
         _first(advertiser_obj, "name", "title")
         if isinstance(advertiser_obj, Mapping)
         else advertiser_obj
-    ) or _first(raw, "advertiser_name", "page_name", "brand_name", "company_name")
+    ) or _first(
+        raw,
+        "advertiser_name",
+        "advertiserName",
+        "page_name",
+        "pageName",
+        "brand_name",
+        "company_name",
+    )
     ad_id = _first(
         raw,
         "ad_id",
@@ -152,7 +160,9 @@ async def collect_public_ads(
         rows = await asyncio.to_thread(_fetch, platform, query, country, limit)
         return rows[:limit]
 
-    needle = query.lower()
+    # Fixture mode represents a local catalog, not a remote search API. Keep
+    # its deterministic rows available for platform selection tests and demos.
+    needle = query.lower() if query else ""
     rows = [
         row
         for row in fallback
@@ -160,4 +170,3 @@ async def collect_public_ads(
         or needle in f"{row.get('advertiser', '')} {row.get('text', '')}".lower()
     ]
     return rows[:limit]
-

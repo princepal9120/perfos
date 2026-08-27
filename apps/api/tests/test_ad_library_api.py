@@ -379,7 +379,7 @@ def test_sync_rescores_an_already_stored_ad(client, mutable_collector):
     """The bug this closes: a re-sync used to report the score from the first sighting."""
     mutable_collector["start_date"] = _age_days(5)
     first = client.post("/api/ad-library/competitors/Supabase/sync").json()["items"][0]
-    assert first["score"] == pytest.approx(52.22, abs=0.05)
+    assert first["score"] == pytest.approx(58.02, abs=0.05)
     assert first["tier"] == "emerging"
 
     # Same ad, observed much later: the re-score must land, not the stale value.
@@ -389,12 +389,12 @@ def test_sync_rescores_an_already_stored_ad(client, mutable_collector):
 
     item = second["items"][0]
     assert item["ad_id"] == "AL-RESCORE-001"
-    assert item["score"] == pytest.approx(90.0, abs=0.05)
+    assert item["score"] == pytest.approx(100.0, abs=0.05)
     assert item["tier"] == "high_conf"
     assert item["runtime_days"] > first["runtime_days"]
 
     stored = client.get("/api/ad-library").json()["items"][0]
-    assert stored["score"] == pytest.approx(90.0, abs=0.05), "the re-score must persist"
+    assert stored["score"] == pytest.approx(100.0, abs=0.05), "the re-score must persist"
     assert stored["tier"] == "high_conf"
 
 
@@ -408,7 +408,7 @@ def test_sync_does_not_blank_copy_it_did_not_re_observe(client, mutable_collecto
     mutable_collector["start_date"] = _age_days(120)
     item = client.post("/api/ad-library/competitors/Supabase/sync").json()["items"][0]
     assert item["body"] == "Build production apps with Auth and Database."
-    assert item["score"] == pytest.approx(90.0, abs=0.05)
+    assert item["score"] == pytest.approx(100.0, abs=0.05)
 
 
 def test_refresh_is_visible_despite_a_persona_tagged_copy(client, mutable_collector):
@@ -436,7 +436,7 @@ def test_refresh_is_visible_despite_a_persona_tagged_copy(client, mutable_collec
 
     mutable_collector["start_date"] = _age_days(120)
     item = client.post("/api/ad-library/competitors/Supabase/sync").json()["items"][0]
-    assert item["score"] == pytest.approx(90.0, abs=0.05)
+    assert item["score"] == pytest.approx(100.0, abs=0.05)
     assert item["tier"] == "high_conf"
 
 
@@ -447,7 +447,7 @@ def test_search_does_not_overwrite_stored_scores(client, mutable_collector):
 
     mutable_collector["start_date"] = _age_days(5)
     searched = client.post("/api/ad-library/search", json={"query": "supabase"}).json()
-    assert searched["items"][0]["score"] == pytest.approx(90.0, abs=0.05)
+    assert searched["items"][0]["score"] == pytest.approx(100.0, abs=0.05)
     assert searched["items"][0]["tier"] == "high_conf"
 
 

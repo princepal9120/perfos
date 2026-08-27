@@ -20,12 +20,15 @@ from typing import Annotated, Any, TypeAlias
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_workspace
+from app.core.db import get_db
 from app.discovery.schemas import WinnerSignal
 
-router = APIRouter(dependencies=[Depends(get_current_workspace)])
+router = APIRouter(tags=["create"], dependencies=[Depends(get_current_workspace)])
 WorkspaceId: TypeAlias = Annotated[int, Depends(get_current_workspace)]
+DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
 
 
 class CreateRequest(BaseModel):
@@ -83,11 +86,9 @@ def _resolve_ad(ad_id: str, *, workspace_id: int = 0) -> WinnerSignal | None:
     ad discovered or saved through /api/ad-library exists only there.
     """
     from app.discovery.find import store as ad_library_store
-    from app.discovery.store import WinnerStore
+    winner_store = _winner_store()
 
-    match = next(
-        (r for r in WinnerStore().all(workspace_id) if str(r.ad_id) == ad_id), None
-    )
+    match = next((r for r in winner_store.all(workspace_id) if str(r.ad_id) == ad_id), None)
     if match is not None:
         return _to_signal(match)
 
@@ -95,14 +96,25 @@ def _resolve_ad(ad_id: str, *, workspace_id: int = 0) -> WinnerSignal | None:
     return _from_ad_library(ad) if ad is not None else None
 
 
-@router.post("/create")
-async def trigger_create(body: CreateRequest, workspace_id: WorkspaceId) -> dict:
-    """Generate clips for the top stored winners and persist them."""
-    from app.create.runner import run_create
+def _winner_store():
+    """Use the router's injected compatibility store in tests, DB otherwise."""
+    from app.routers.discovery import _store
+
+    if _store.path is not None:
+        return _store
     from app.discovery.store import WinnerStore
 
+    return WinnerStore()
+
+
+@router.post("/create", summary="Generate creative assets from winners")
+async def trigger_create(body: CreateRequest, workspace_id: WorkspaceId, db: DbDep) -> dict:
+    """Generate clips for the top stored winners and persist them."""
+    from app.create.runner import run_create
+    winner_store = _winner_store()
+
     try:
-        top = WinnerStore().top(20, workspace_id)
+        top = winner_store.top(20, workspace_id, session=db)
     except Exception as exc:  # corrupt/missing store should not 500 the API
         raise HTTPException(status_code=503, detail=f"winner store unavailable: {exc}") from exc
 
@@ -110,7 +122,7 @@ async def trigger_create(body: CreateRequest, workspace_id: WorkspaceId) -> dict
     # with /api/discovery and surfaced back in the response.
     signals = [_to_signal(s) for s in top]
     try:
-        assets = run_create(signals, workspace_id=workspace_id)
+        assets = run_create(signals, workspace_id=workspace_id, session=db)
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"create runner failed: {exc}") from exc
 
@@ -129,8 +141,8 @@ class CloneRequest(BaseModel):
     generate: bool = False
 
 
-@router.post("/clone")
-def clone_ad(body: CloneRequest, workspace_id: WorkspaceId) -> dict:
+@router.post("/clone", summary="Clone and remix one ad")
+def clone_ad(body: CloneRequest, workspace_id: WorkspaceId, db: DbDep) -> dict:
     """Ads Cloner: turn one stored ad into your own hook variants + brief.
 
     Resolves against the WinnerStore and the Ad Library, so a swipe-file ad is
@@ -144,7 +156,7 @@ def clone_ad(body: CloneRequest, workspace_id: WorkspaceId) -> dict:
         raise HTTPException(status_code=404, detail=f"ad {body.ad_id!r} not found")
 
     variants = remix_hook(signal)
-    assets = run_create([signal], workspace_id=workspace_id) if body.generate else []
+    assets = run_create([signal], workspace_id=workspace_id, session=db) if body.generate else []
 
     return {
         "source": {
@@ -164,12 +176,12 @@ def clone_ad(body: CloneRequest, workspace_id: WorkspaceId) -> dict:
     }
 
 
-@router.get("/assets")
-def list_assets(workspace_id: WorkspaceId) -> list[dict]:
+@router.get("/assets", summary="List generated creative assets")
+def list_assets(workspace_id: WorkspaceId, db: DbDep) -> list[dict]:
     """Every asset persisted by the CREATE stage (.build/assets.json)."""
     from app.create.store import AssetStore
 
-    return AssetStore().all(workspace_id)
+    return AssetStore().all(workspace_id, session=db)
 
 
 __all__ = ["CloneRequest", "CreateRequest", "clone_ad", "list_assets", "trigger_create"]

@@ -131,3 +131,21 @@ async def test_collector_falls_back_to_fixtures_when_live_fails(monkeypatch):
     monkeypatch.setattr(meta_live, "fetch_meta_ads", boom)
     rows = await meta_collector.collect_meta_ads(filters={"query": "nimbus"})
     assert rows and all(r["ad_id"].startswith("MT-") for r in rows)
+
+
+def test_walk_nodes_finds_ads_at_any_depth():
+    """Paginated GraphQL nests results differently from the SSR blob."""
+    payload = {
+        "data": {"page": {"results": [[{"ad_archive_id": "1", "page_name": "A"}]]}},
+        "extra": [{"nested": {"ad_archive_id": "2"}}],
+        "noise": {"ad_archive_id": None},
+    }
+    found = {n["ad_archive_id"] for n in meta_live._walk_nodes(payload)}
+    assert found == {"1", "2"}, "a null id is not an ad"
+
+
+def test_walk_nodes_tolerates_scalars_and_empties():
+    assert meta_live._walk_nodes({}) == []
+    assert meta_live._walk_nodes([]) == []
+    assert meta_live._walk_nodes("string") == []
+    assert meta_live._walk_nodes(None) == []

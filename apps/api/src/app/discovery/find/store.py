@@ -185,6 +185,30 @@ class TrackedCompetitorRow(Base):
     last_synced_at: Mapped[datetime | None]
 
 
+class AdAlertRow(Base):
+    """A competitor ad seen for the first time — the "they just launched" signal.
+
+    Written only when an upsert actually creates a row, so a re-sync of ads we
+    already hold never re-alerts.
+    """
+
+    __tablename__ = "discovery_ad_alerts"
+    __table_args__ = (
+        UniqueConstraint("workspace_id", "ad_id"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    workspace_id: Mapped[int] = mapped_column(default=0, index=True)
+    ad_id: Mapped[str] = mapped_column(String(255), index=True)
+    competitor: Mapped[str | None] = mapped_column(String(255), index=True)
+    platform: Mapped[str | None] = mapped_column(String(64))
+    title: Mapped[str | None]
+    score: Mapped[float | None]
+    tier: Mapped[str | None] = mapped_column(String(32))
+    detected_at: Mapped[datetime] = mapped_column(index=True)
+    acknowledged_at: Mapped[datetime | None] = mapped_column(default=None)
+
+
 _TEXT_FIELDS = ("platform", "competitor", "advertiser", "title", "body", "cta", "landing_url")
 _SIGNAL_FIELDS = ("score", "tier", "start_date", "variant_count")
 
@@ -876,7 +900,107 @@ def list_competitors(*, workspace_id: int = 0) -> list[dict[str, Any]]:
         return _CompetitorRoster(db, workspace_id=workspace_id).run()
 
 
+def record_alerts(
+    rows: list[tuple[SpyAdRow, bool]], *, workspace_id: int = 0
+) -> list[dict[str, Any]]:
+    """Raise one alert per genuinely new ad. Re-syncing known ads raises nothing."""
+    fresh = [row for row, created in rows if created]
+    if not fresh:
+        return []
+
+    now = datetime.now(UTC).replace(tzinfo=None)
+    engine = _engine_for(_db_url())
+    out: list[dict[str, Any]] = []
+    with Session(engine) as db:
+        for row in fresh:
+            existing = (
+                db.query(AdAlertRow)
+                .filter(
+                    AdAlertRow.workspace_id == workspace_id,
+                    AdAlertRow.ad_id == row.ad_id,
+                )
+                .first()
+            )
+            if existing is not None:
+                continue
+            alert = AdAlertRow(
+                workspace_id=workspace_id,
+                ad_id=row.ad_id,
+                competitor=row.competitor or row.advertiser,
+                platform=row.platform,
+                title=row.title,
+                score=row.score,
+                tier=row.tier,
+                detected_at=now,
+            )
+            db.add(alert)
+            db.flush()
+            out.append(_alert_dict(alert))
+        db.commit()
+    return out
+
+
+def _alert_dict(alert: AdAlertRow) -> dict[str, Any]:
+    return {
+        "id": alert.id,
+        "ad_id": alert.ad_id,
+        "competitor": alert.competitor,
+        "platform": alert.platform,
+        "title": alert.title,
+        "score": alert.score,
+        "tier": alert.tier,
+        "detected_at": _iso(alert.detected_at),
+        "acknowledged_at": _iso(alert.acknowledged_at),
+    }
+
+
+def list_alerts(
+    *, workspace_id: int = 0, unread_only: bool = True, limit: int = 100
+) -> dict[str, Any]:
+    """Newest competitor launches first."""
+    engine = _engine_for(_db_url())
+    with Session(engine) as db:
+        q = db.query(AdAlertRow).filter(AdAlertRow.workspace_id == workspace_id)
+        if unread_only:
+            q = q.filter(AdAlertRow.acknowledged_at.is_(None))
+        total = q.count()
+        rows = q.order_by(AdAlertRow.detected_at.desc()).limit(max(int(limit), 0)).all()
+        unread = (
+            db.query(AdAlertRow)
+            .filter(
+                AdAlertRow.workspace_id == workspace_id,
+                AdAlertRow.acknowledged_at.is_(None),
+            )
+            .count()
+        )
+        return {"total": total, "unread": unread, "items": [_alert_dict(a) for a in rows]}
+
+
+def acknowledge_alerts(
+    *, workspace_id: int = 0, ad_ids: list[str] | None = None
+) -> int:
+    """Mark alerts read. ``ad_ids=None`` acknowledges every unread alert."""
+    now = datetime.now(UTC).replace(tzinfo=None)
+    engine = _engine_for(_db_url())
+    with Session(engine) as db:
+        q = db.query(AdAlertRow).filter(
+            AdAlertRow.workspace_id == workspace_id,
+            AdAlertRow.acknowledged_at.is_(None),
+        )
+        if ad_ids:
+            q = q.filter(AdAlertRow.ad_id.in_(ad_ids))
+        rows = q.all()
+        for row in rows:
+            row.acknowledged_at = now
+        db.commit()
+        return len(rows)
+
+
 __all__ = [
+    "AdAlertRow",
+    "acknowledge_alerts",
+    "list_alerts",
+    "record_alerts",
     "SavedAdRow",
     "SpyAdRow",
     "TrackedCompetitorRow",

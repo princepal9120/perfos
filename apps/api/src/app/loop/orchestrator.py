@@ -66,7 +66,13 @@ async def run_loop(
     from app.loop.stages.score_stage import score_stage
     from app.loop.stages.track_stage import track_stage
 
-    ads = find_stage(persona=persona, channels=channels, query=query, workspace_id=workspace_id)
+    ads = find_stage(
+        persona=persona,
+        channels=channels,
+        query=query,
+        workspace_id=workspace_id,
+        session=session,
+    )
     winners = score_stage(ads=ads, persona=persona)
     assets = create_stage(winners)
     # The stage remains a pure transformation; persistence is owned by this

@@ -9,10 +9,11 @@ Gates under test:
 
 from dataclasses import dataclass
 
-from app.discovery.score.winner_tiers import (
+from app.discovery.score.winner_tiers import (  # noqa: I001
     EMERGING,
     HIGH_CONF,
     LOSER,
+    UNSCORED,
     WINNER,
     classify_ad,
     classify_tier,
@@ -50,8 +51,13 @@ def test_loser_below_bar():
     assert classify_tier(10.0, 1.0) == LOSER
 
 
-def test_missing_or_invalid_inputs_degrade_to_loser_deterministically():
-    assert classify_tier(None, None) == LOSER
+def test_missing_or_invalid_inputs_degrade_deterministically():
+    # No score AND no runtime means the source published nothing to judge on.
+    # Calling that a loser asserts a verdict we have no evidence for.
+    assert classify_tier(None, None) == UNSCORED
+    assert classify_tier(0.0, 0.0) == UNSCORED
+
+    # One real signal is enough to judge against, so these stay losers.
     assert classify_tier(None, 100.0) == LOSER
     assert classify_tier(-5.0, 3.0) == LOSER
     # Over-range scores clamp to 100 -> still emerging while young.
@@ -67,4 +73,5 @@ class FakeScoredAd:
 def test_classify_ad_accepts_dict_and_object():
     assert classify_ad({"score": 80.0, "runtime_days": 21}) == HIGH_CONF
     assert classify_ad(FakeScoredAd(score=80.0, runtime_days=21)) == HIGH_CONF
-    assert classify_ad(FakeScoredAd()) == LOSER
+    assert classify_ad(FakeScoredAd()) == UNSCORED
+    assert classify_ad(FakeScoredAd(runtime_days=200)) == LOSER

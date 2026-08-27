@@ -23,6 +23,10 @@ _UA = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
+# Pagination: stop once the feed stops yielding new ads, not on a fixed count.
+_MAX_STAGNANT_SCROLLS = 3
+_SCROLL_SETTLE_MS = 3500
+
 
 class LiveFetchError(RuntimeError):
     """Live collection failed; callers fall back to fixtures."""
@@ -164,6 +168,64 @@ def _to_row(node: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def _walk_nodes(payload: Any) -> list[dict[str, Any]]:
+    """Every dict carrying an ad_archive_id, at any depth.
+
+    Paginated GraphQL responses nest results differently from the SSR blob, so
+    the shape is discovered rather than assumed.
+    """
+    found: list[dict[str, Any]] = []
+    stack = [payload]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, dict):
+            if node.get("ad_archive_id"):
+                found.append(node)
+            stack.extend(node.values())
+        elif isinstance(node, list):
+            stack.extend(node)
+    return found
+
+
+async def _scroll_for_more(page: Any, seen: dict[str, dict], limit: int) -> None:
+    """Scroll until ``limit`` ads are collected or the feed stops growing.
+
+    The initial payload is server-rendered; everything after it arrives as
+    GraphQL XHR triggered by scrolling, so the responses are captured rather
+    than re-requested with a hand-built cursor (whose doc_id changes often).
+    """
+    payloads: list[str] = []
+
+    async def on_response(response: Any) -> None:
+        if "graphql" not in response.url:
+            return
+        try:
+            text = await response.text()
+        except Exception:  # noqa: BLE001 - a closed response is not fatal
+            return
+        if "ad_archive_id" in text:
+            payloads.append(text)
+
+    page.on("response", on_response)
+    stagnant = 0
+    while len(seen) < limit and stagnant < _MAX_STAGNANT_SCROLLS:
+        before = len(seen)
+        await page.mouse.wheel(0, 20_000)
+        await page.wait_for_timeout(_SCROLL_SETTLE_MS)
+
+        while payloads:
+            raw = payloads.pop()
+            try:
+                batch = json.loads(raw)
+            except json.JSONDecodeError:
+                # Meta streams several JSON objects in one response body.
+                batch = [json.loads(line) for line in raw.splitlines() if line.startswith("{")]
+            for node in _walk_nodes(batch):
+                seen.setdefault(str(node["ad_archive_id"]), node)
+
+        stagnant = stagnant + 1 if len(seen) == before else 0
+
+
 async def fetch_meta_ads(
     query: str,
     *,
@@ -172,7 +234,11 @@ async def fetch_meta_ads(
     active_only: bool = True,
     settle_ms: int = 8000,
 ) -> list[dict[str, Any]]:
-    """Search the public Meta Ad Library and return AdRecord-shaped rows."""
+    """Search the public Meta Ad Library and return AdRecord-shaped rows.
+
+    Pages past the first are loaded by scrolling; a library search for a busy
+    brand exposes thousands of ads and the first payload only carries ~28.
+    """
     try:
         from playwright.async_api import async_playwright
     except ImportError as exc:  # pragma: no cover - environment guard
@@ -193,19 +259,17 @@ async def fetch_meta_ads(
             # The result JSON is streamed in after first paint; no stable selector to await.
             await page.wait_for_timeout(settle_ms)
             html = await page.content()
+
+            seen: dict[str, dict[str, Any]] = {}
+            for node in _walk_nodes(_extract_connection(html)):
+                seen.setdefault(str(node["ad_archive_id"]), node)
+            if len(seen) < limit:
+                await _scroll_for_more(page, seen, limit)
         finally:
             await browser.close()
 
-    conn = _extract_connection(html)
-    rows: list[dict[str, Any]] = []
-    for edge in conn.get("edges") or []:
-        for node in (edge.get("node") or {}).get("collated_results") or []:
-            row = _to_row(node)
-            if row:
-                rows.append(row)
-            if len(rows) >= limit:
-                return rows
-    return rows
+    rows = [row for node in seen.values() if (row := _to_row(node)) is not None]
+    return rows[:limit]
 
 
 if __name__ == "__main__":

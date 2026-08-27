@@ -64,21 +64,26 @@ class WinnerStore:
     def add(self, signal: Any, *, workspace_id: int = 0, session: Any = None) -> WinnerSignal:
         """Append one signal (WinnerSignal, Mapping, or duck-typed) and persist."""
         coerced = _coerce(signal)
+        if self.path is None and workspace_id <= 0:
+            self._signals.append(coerced)
+            return coerced
         if self.path is None:
             return self._db_add(coerced, workspace_id=workspace_id, session=session)
         self._signals.append(coerced)
         self._save()
         return coerced
 
-    def all(self, workspace_id: int = 0) -> list[WinnerSignal]:
+    def all(self, workspace_id: int = 0, session: Any = None) -> list[WinnerSignal]:
         """Return every stored signal (insertion order)."""
+        if self.path is None and workspace_id <= 0:
+            return list(self._signals)
         if self.path is None:
-            return self._db_all(workspace_id)
+            return self._db_all(workspace_id, session=session)
         return list(self._signals)
 
-    def top(self, n: int, workspace_id: int = 0) -> list[WinnerSignal]:
+    def top(self, n: int, workspace_id: int = 0, session: Any = None) -> list[WinnerSignal]:
         """Highest-scoring signals first, capped at ``n``."""
-        ranked = sorted(self.all(workspace_id), key=lambda s: s.score, reverse=True)
+        ranked = sorted(self.all(workspace_id, session=session), key=lambda s: s.score, reverse=True)
         return ranked[: max(int(n), 0)]
 
     def add_for_workspace(self, signal: Any, workspace_id: int, session: Any = None) -> WinnerSignal:
@@ -88,6 +93,9 @@ class WinnerStore:
             # Compatibility stores are intentionally not shared between tenants.
             self._signals.append(coerced)
             self._save()
+            return coerced
+        if workspace_id <= 0:
+            self._signals.append(coerced)
             return coerced
         return self._db_add(coerced, workspace_id, session=session)
 
@@ -150,10 +158,12 @@ class WinnerStore:
             if own:
                 db.close()
 
-    def _db_all(self, workspace_id: int) -> list[WinnerSignal]:
+    def _db_all(self, workspace_id: int, session: Any = None) -> list[WinnerSignal]:
         from app.models import Winner
 
-        with self._db_session() as db:
+        own = session is None
+        db = session or self._db_session()
+        try:
             rows = (
                 db.query(Winner)
                 .filter(Winner.workspace_id == int(workspace_id))
@@ -161,6 +171,9 @@ class WinnerStore:
                 .all()
             )
             return [self._from_db(row) for row in rows]
+        finally:
+            if own:
+                db.close()
 
     def _save(self) -> None:
         if self.path is None:

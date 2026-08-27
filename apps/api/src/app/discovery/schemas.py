@@ -84,3 +84,7 @@ class WinnerSignal(BaseModel):
     cta: str | None = None
     text: str | None = Field(default=None, description="Ad body copy, the thing worth cloning.")
     runtime_days: float = Field(default=0.0, description="Observed days live at scoring time.")
+    evidence: list[str] = Field(
+        default_factory=list,
+        description="Signals the source disclosed (runtime/reach/spend). Fewer means a weaker basis.",
+    )

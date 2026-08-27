@@ -71,9 +71,12 @@ def _additive_sqlite_columns() -> None:
     if table is None:
         return
     with engine.begin() as conn:
-        existing = {column[1] for column in inspect(conn).get_columns("audit_logs")}
+        existing = {column["name"] for column in inspect(conn).get_columns("audit_logs")}
         for column_name in ("command_id", "correlation_id"):
             if column_name not in existing:
                 conn.exec_driver_sql(
                     f'ALTER TABLE audit_logs ADD COLUMN "{column_name}" VARCHAR(64)'
                 )
+        approval_existing = {column["name"] for column in inspect(conn).get_columns("approvals")}
+        if "command_id" not in approval_existing:
+            conn.exec_driver_sql('ALTER TABLE approvals ADD COLUMN "command_id" VARCHAR(64)')

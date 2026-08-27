@@ -42,6 +42,7 @@ class Approval(Base):
     actor: Mapped[str] = mapped_column(String(255))
     decision: Mapped[str] = mapped_column(String(16))
     note: Mapped[str | None] = mapped_column(String(1024), default=None)
+    command_id: Mapped[str | None] = mapped_column(String(64), index=True, default=None)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
 
 

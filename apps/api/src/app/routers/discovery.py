@@ -10,19 +10,23 @@ GET  /api/winners    -> top stored winner signals by score.
 from __future__ import annotations
 
 import asyncio
+from typing import Annotated, TypeAlias
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.core.deps import get_current_workspace
+from app.core.db import get_db
 from app.discovery.find.meta_collector import collect_meta_ads
 from app.discovery.find.tiktok_collector import collect_tiktok_ads
 from app.discovery.schemas import AdRecord
 from app.discovery.score.persona_fit import rank_by_persona
 from app.discovery.score.winner_engine import score_ads
 from app.discovery.store import WinnerStore
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["discovery"], dependencies=[Depends(get_current_workspace)])
+DbDep: TypeAlias = Annotated[Session, Depends(get_db)]
 
 _store = WinnerStore()
 
@@ -58,6 +62,7 @@ async def run_discovery(
     country: str = "US",
     limit: int = 30,
     workspace_id: int = 0,
+    session=None,
 ) -> list[dict]:
     """Collect competitor ads, score them, persist, return persona-fit signals."""
     filters = {"query": query, "country": country} if query else None
@@ -72,25 +77,33 @@ async def run_discovery(
 
     # ponytail: ad-id dedupe here instead of in WinnerStore; move into store.add()
     # if other callers need it.
-    seen = {s.ad_id for s in _store.all(workspace_id)}
+    seen = {s.ad_id for s in _store.all(workspace_id, session=session)}
     for signal in signals:
         if signal.ad_id not in seen:
-            _store.add_for_workspace(_persist_shape(signal), workspace_id)
+            _store.add_for_workspace(_persist_shape(signal), workspace_id, session=session)
             seen.add(signal.ad_id)
 
     return [s.model_dump() for s in rank_by_persona(signals, persona)]
 
 
-@router.post("/discovery")
-async def post_discovery(req: DiscoveryRequest, workspace_id: int = Depends(get_current_workspace)) -> list[dict]:
+@router.post("/discovery", summary="Run FIND + SCORE pipeline for competitor ads")
+async def post_discovery(
+    workspace_id: Annotated[int, Depends(get_current_workspace)],
+    db: DbDep,
+    req: DiscoveryRequest,
+) -> list[dict]:
     return await run_discovery(
-        req.persona, req.query, req.channels, req.country, req.limit, workspace_id
+        req.persona, req.query, req.channels, req.country, req.limit, workspace_id, db
     )
 
 
-@router.get("/winners")
-def get_winners(limit: int = 20, workspace_id: int = Depends(get_current_workspace)) -> list:
-    return _store.top(limit, workspace_id)
+@router.get("/winners", summary="Top stored winner signals by score")
+def get_winners(
+    workspace_id: Annotated[int, Depends(get_current_workspace)],
+    db: DbDep,
+    limit: int = 20,
+) -> list:
+    return _store.top(limit, workspace_id, session=db)
 
 
 if __name__ == "__main__":  # pragma: no cover - runnable self-check

@@ -52,7 +52,7 @@ class LoopRun(Base):
     __tablename__ = "lifecycle_runs"
     __table_args__ = (
         CheckConstraint("status IN ('running','completed','failed')", name="ck_lifecycle_run_status"),
-        Index("ix_lifecycle_runs_workspace_created", "workspace_id", "created_at"),
+        Index("ix_lifecycle_runs_workspace_started", "workspace_id", "started_at"),
     )
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)

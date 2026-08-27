@@ -12,7 +12,7 @@ from app.models import Campaign, Outcome
 from app.services.audit import log_action
 
 
-def execute_recommendation(rec, workspace_id, session=None) -> dict:
+def execute_recommendation(rec, workspace_id, session=None, command_id: str | None = None) -> dict:
     """Apply ``rec.proposed_changes_json`` through mock connectors.
 
     Supported actions: set_budget {campaign_id, new_daily_budget}, pause
@@ -88,6 +88,7 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                     "ok": r["ok"],
                 },
                 session=s,
+                command_id=command_id,
             )
 
         status = "executed" if not errors else "failed"

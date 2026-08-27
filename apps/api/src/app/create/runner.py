@@ -15,7 +15,11 @@ from app.discovery.schemas import WinnerSignal
 
 
 def run_create(
-    winners: list[WinnerSignal], *, workspace_id: int = 0, run_id: str | None = None
+    winners: list[WinnerSignal],
+    *,
+    workspace_id: int = 0,
+    run_id: str | None = None,
+    session=None,
 ) -> list[GeneratedAsset]:
     """Generate clips for each winner and persist them durably for a workspace.
 
@@ -38,6 +42,7 @@ def run_create(
                 workspace_id=workspace_id,
                 run_id=run_id,
                 brief_text=brief.brief_text,
+                session=session,
             )
             assets.append(asset)
     return assets

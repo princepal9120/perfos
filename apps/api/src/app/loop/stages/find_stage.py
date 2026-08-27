@@ -64,6 +64,7 @@ def find_stage(
     channels: list[str] | None = None,
     query: str | None = None,
     workspace_id: int = 0,
+    session: Any = None,
 ) -> list[AdRecord]:
     """Run one FIND pass for ``persona`` on ``channels`` and return its ads.
 
@@ -76,7 +77,9 @@ def find_stage(
     """
     from app.routers.discovery import run_discovery
 
-    result = _run_sync(run_discovery(persona, query, channels, workspace_id=workspace_id))
+    result = _run_sync(
+        run_discovery(persona, query, channels, workspace_id=workspace_id, session=session)
+    )
     return [
         ad for row in _extract_rows(result) if (ad := _to_ad_record(row)) is not None
     ]

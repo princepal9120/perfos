@@ -34,6 +34,7 @@ __all__ = [
     "TIER_STRONG",
     "TIER_FLOOR",
     "TIER_BELOW_FLOOR",
+    "evidence_of",
     "longevity_days",
     "longevity_tier",
     "score_ads",
@@ -138,6 +139,23 @@ def _concentrations(ads: list[AdRecord]) -> dict[str, float]:
     return shares
 
 
+def evidence_of(ad: AdRecord) -> tuple[str, ...]:
+    """Which scoring signals this library actually disclosed for this ad.
+
+    Public libraries differ in what they publish: Meta gives runtime and
+    duplicate-variant counts, Google gives runtime only, LinkedIn gives neither.
+    Scoring has to know the difference — see ``_score_one``.
+    """
+    signals: list[str] = []
+    if ad.start_date is not None:
+        signals.append("runtime")
+    if _volume(ad) > 0:
+        signals.append("reach")
+    if ad.spend_estimate:
+        signals.append("spend")
+    return tuple(signals)
+
+
 def _score_one(
     ad: AdRecord,
     days: float,
@@ -145,16 +163,27 @@ def _score_one(
     max_spend: float,
     concentration: float,
 ) -> float:
-    runtime_component = min(days / PROVEN_MIN_DAYS, 1.0)
-    reach_component = (_volume(ad) / max_reach) if max_reach > 0 else 0.0
-    spend_value = float(ad.spend_estimate or 0.0)
-    spend_component = (spend_value / max_spend) if max_spend > 0 else 0.0
-    composite = (
-        RUNTIME_WEIGHT * runtime_component
-        + REACH_WEIGHT * min(reach_component, 1.0)
-        + CONCENTRATION_WEIGHT * concentration
-        + SPEND_WEIGHT * min(spend_component, 1.0)
-    )
+    """0-100 over the signals the source disclosed, not over all four.
+
+    Dividing by the full weight set would cap a Google ad at 40 no matter how
+    long it ran, purely because the Transparency Center hides spend and reach.
+    The score answers "how strong on the available evidence"; ``evidence_of``
+    reports how much evidence that was, and the tier gates on it.
+    """
+    parts: list[tuple[float, float]] = []
+
+    if ad.start_date is not None:
+        parts.append((RUNTIME_WEIGHT, min(days / PROVEN_MIN_DAYS, 1.0)))
+    if max_reach > 0 and _volume(ad) > 0:
+        parts.append((REACH_WEIGHT, min(_volume(ad) / max_reach, 1.0)))
+        parts.append((CONCENTRATION_WEIGHT, concentration))
+    if max_spend > 0 and ad.spend_estimate:
+        parts.append((SPEND_WEIGHT, min(float(ad.spend_estimate) / max_spend, 1.0)))
+
+    available = sum(w for w, _ in parts)
+    if available <= 0:
+        return 0.0
+    composite = sum(w * v for w, v in parts) / available
     return round(min(composite, 1.0) * 100.0, 2)
 
 
@@ -189,6 +218,7 @@ def score_ads(ads: list[AdRecord], *, now: datetime | None = None) -> list[Winne
             cta=ad.cta,
             text=ad.text,
             runtime_days=round(days, 1),
+            evidence=list(evidence_of(ad)),
         )
         for ad, days in zip(ads, longevities)
     ]

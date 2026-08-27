@@ -33,6 +33,7 @@ class AssetStore:
 
     def __init__(self, path: str | Path | None = None) -> None:
         self.path = Path(path) if path is not None else None
+        self._records: list[dict[str, Any]] = []
 
     def add(
         self,
@@ -51,6 +52,9 @@ class AssetStore:
             rec["source_ad_id"] = source_ad_id
         if brief_text is not None:
             rec["brief_text"] = brief_text
+        if self.path is None and workspace_id <= 0:
+            self._records.append(rec)
+            return rec
         if self.path is None:
             return self._db_add(rec, workspace_id=workspace_id, run_id=run_id, session=session)
         records = self.all()
@@ -59,14 +63,21 @@ class AssetStore:
         self.path.write_text(json.dumps(records, indent=2), encoding="utf-8")
         return rec
 
-    def all(self, workspace_id: int = 0) -> list[dict[str, Any]]:
+    def all(self, workspace_id: int = 0, session: Any = None) -> list[dict[str, Any]]:
         """Return every stored asset as plain dicts (empty list if none yet)."""
+        if self.path is None and workspace_id <= 0:
+            return list(self._records)
         if self.path is None:
             from app.core.db import SessionLocal, init_db
             from app.models import CreativeAsset
 
-            init_db()
-            with SessionLocal() as db:
+            own = session is None
+            if own:
+                init_db()
+                db = SessionLocal()
+            else:
+                db = session
+            try:
                 rows = (
                     db.query(CreativeAsset)
                     .filter(CreativeAsset.workspace_id == int(workspace_id))
@@ -86,6 +97,9 @@ class AssetStore:
                     }
                     for row in rows
                 ]
+            finally:
+                if own:
+                    db.close()
         if not self.path.exists():
             return []
         try:
@@ -94,9 +108,9 @@ class AssetStore:
             return []
         return data if isinstance(data, list) else []
 
-    def by_source(self, ad_id: str, workspace_id: int = 0) -> list[dict[str, Any]]:
+    def by_source(self, ad_id: str, workspace_id: int = 0, session: Any = None) -> list[dict[str, Any]]:
         """All assets generated from a given source ad id."""
-        return [r for r in self.all(workspace_id) if r.get("source_ad_id") == ad_id]
+        return [r for r in self.all(workspace_id, session=session) if r.get("source_ad_id") == ad_id]
 
     def _db_add(
         self,

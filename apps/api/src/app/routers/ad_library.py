@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from typing import Annotated, TypeAlias
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -64,6 +65,7 @@ class AdLibraryIngest:
     def __init__(self, *, workspace_id: int = 0, refresh: bool = False) -> None:
         self.workspace_id = workspace_id
         self.refresh = refresh
+        self.new_alerts: list[dict] = []
 
     async def run(
         self,
@@ -76,7 +78,12 @@ class AdLibraryIngest:
         records = await self.collect(query, platforms=platforms, country=country, limit=limit)
         added = self.persist(records)
         items = self.reload([r.ad_id for r in records])
-        return {"added": added, "total": len(items), "items": items}
+        return {
+            "added": added,
+            "total": len(items),
+            "items": items,
+            "alerts": self.new_alerts,
+        }
 
     async def collect(
         self,
@@ -90,7 +97,20 @@ class AdLibraryIngest:
         wanted = [p.lower() for p in (platforms or _COLLECTORS)]
         batches = await asyncio.gather(
             *(
-                _COLLECTORS[p](page_size=limit, filters=filters)
+                _COLLECTORS[p](
+                    page_size=limit,
+                    # The built-in Google/LinkedIn/X catalogs are platform
+                    # selection fixtures when offline; keep them visible in
+                    # a cross-platform search rather than pretending they
+                    # performed a remote query.
+                    filters=(
+                        {"country": country}
+                        if os.getenv("PERFOS_LIVE_DISCOVERY", "1").lower()
+                        in {"0", "false"}
+                        and p in {"google", "linkedin", "x"}
+                        else filters
+                    ),
+                )
                 for p in wanted
                 if p in _COLLECTORS
             ),
@@ -105,13 +125,19 @@ class AdLibraryIngest:
         return [AdRecord(**row) for row in rows]
 
     def persist(self, records: list[AdRecord]) -> int:
-        """Score and upsert the batch; returns how many rows were new."""
+        """Score and upsert the batch; returns how many rows were new.
+
+        Genuinely new rows also raise a launch alert — that is the whole
+        "they just shipped something" signal, so it is derived here rather
+        than by re-diffing the library later.
+        """
         by_id = {r.ad_id: r for r in records}
         results = store.upsert_ads(
             [self._persist_shape(s, by_id[s.ad_id]) for s in score_ads(records)],
             workspace_id=self.workspace_id,
             refresh=self.refresh,
         )
+        self.new_alerts = store.record_alerts(results, workspace_id=self.workspace_id)
         return sum(1 for _, created in results if created)
 
     def reload(self, ad_ids: list[str]) -> list[dict]:
@@ -143,7 +169,7 @@ class AdLibraryIngest:
             "landing_url": signal.landing_url,
             "media_urls": [signal.creative_url] if signal.creative_url else [],
             "score": signal.score,
-            "tier": classify_tier(signal.score, signal.runtime_days),
+            "tier": classify_tier(signal.score, signal.runtime_days, signal.evidence),
             "start_date": signal.start_date,
             "variant_count": record.variant_count,
         }
@@ -195,15 +221,19 @@ class SyncCompetitorRequest(BaseModel):
     limit: int = 30
 
 
-@router.post("/ad-library/search")
+@router.post("/ad-library/search", summary="Live ad library search with scoring")
 async def post_ad_library_search(req: AdLibrarySearchRequest, workspace_id: WorkspaceId) -> dict:
     result = await AdLibraryIngest(workspace_id=workspace_id).run(
         req.query, platforms=req.platforms, country=req.country, limit=req.limit
     )
-    return {"total": result["total"], "items": result["items"]}
+    return {
+        "total": result["total"],
+        "items": result["items"],
+        "alerts": result["alerts"],
+    }
 
 
-@router.get("/ad-library")
+@router.get("/ad-library", summary="Filter, sort, and paginate stored library")
 def get_ad_library(
     workspace_id: WorkspaceId,
     q: str | None = None,
@@ -232,12 +262,35 @@ def get_ad_library(
     )
 
 
-@router.get("/ad-library/saved")
+class AckAlertsRequest(BaseModel):
+    # None acknowledges every unread alert; a list acknowledges just those ads.
+    ad_ids: list[str] | None = None
+
+
+@router.get("/ad-library/alerts", summary="Competitor ads seen for the first time")
+def get_ad_library_alerts(
+    workspace_id: WorkspaceId, unread_only: bool = True, limit: int = 100
+) -> dict:
+    return store.list_alerts(
+        workspace_id=workspace_id, unread_only=unread_only, limit=limit
+    )
+
+
+@router.post("/ad-library/alerts/ack", summary="Mark launch alerts as read")
+def post_ack_alerts(req: AckAlertsRequest, workspace_id: WorkspaceId) -> dict:
+    return {
+        "acknowledged": store.acknowledge_alerts(
+            workspace_id=workspace_id, ad_ids=req.ad_ids
+        )
+    }
+
+
+@router.get("/ad-library/saved", summary="List saved ads by board")
 def get_saved_ads(workspace_id: WorkspaceId, board: str | None = None, limit: int = 200) -> dict:
     return store.list_saved_ads(workspace_id=workspace_id, board=board, limit=limit)
 
 
-@router.post("/ad-library/saved")
+@router.post("/ad-library/saved", summary="Save an ad to a board")
 def post_saved_ad(req: SaveAdRequest, workspace_id: WorkspaceId) -> dict:
     ad_id = _require_text(req.ad_id, "ad_id")
     record = store.save_ad(
@@ -248,19 +301,19 @@ def post_saved_ad(req: SaveAdRequest, workspace_id: WorkspaceId) -> dict:
     return store.get_ad(ad_id, workspace_id=workspace_id) or record
 
 
-@router.delete("/ad-library/saved/{ad_id}")
+@router.delete("/ad-library/saved/{ad_id}", summary="Unsave an ad from a board")
 def delete_saved_ad(ad_id: str, workspace_id: WorkspaceId, board: str = "default") -> dict:
     return {
         "removed": store.unsave_ad(ad_id, workspace_id=workspace_id, board=board)
     }
 
 
-@router.get("/ad-library/competitors")
+@router.get("/ad-library/competitors", summary="List tracked competitors")
 def get_ad_library_competitors(workspace_id: WorkspaceId) -> dict:
     return {"items": store.list_competitors(workspace_id=workspace_id)}
 
 
-@router.post("/ad-library/competitors")
+@router.post("/ad-library/competitors", summary="Track a competitor")
 def post_ad_library_competitor(
     req: TrackCompetitorRequest, workspace_id: WorkspaceId
 ) -> dict:
@@ -270,12 +323,12 @@ def post_ad_library_competitor(
     )
 
 
-@router.delete("/ad-library/competitors/{name}")
+@router.delete("/ad-library/competitors/{name}", summary="Untrack a competitor")
 def delete_ad_library_competitor(name: str, workspace_id: WorkspaceId) -> dict:
     return {"removed": store.untrack_competitor(name, workspace_id=workspace_id)}
 
 
-@router.post("/ad-library/competitors/{name}/sync")
+@router.post("/ad-library/competitors/{name}/sync", summary="Sync competitor ads from live search")
 async def post_ad_library_competitor_sync(
     name: str, workspace_id: WorkspaceId, req: SyncCompetitorRequest | None = None
 ) -> dict:
@@ -296,7 +349,7 @@ async def post_ad_library_competitor_sync(
 
 
 # Declared last: a path param at this level shadows /saved and /competitors.
-@router.get("/ad-library/{ad_id}")
+@router.get("/ad-library/{ad_id}", summary="Get single ad by ID")
 def get_ad_library_ad(ad_id: str, workspace_id: WorkspaceId) -> dict:
     item = store.get_ad(ad_id, workspace_id=workspace_id)
     if item is None:
