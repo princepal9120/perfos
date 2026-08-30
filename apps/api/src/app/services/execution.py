@@ -12,7 +12,7 @@ from app.models import Campaign, Outcome
 from app.services.audit import log_action
 
 
-def execute_recommendation(rec, workspace_id, session=None) -> dict:
+def execute_recommendation(rec, workspace_id, session=None, command_id: str | None = None) -> dict:
     """Apply ``rec.proposed_changes_json`` through mock connectors.
 
     Supported actions: set_budget {campaign_id, new_daily_budget}, pause
@@ -48,36 +48,7 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
             kind = act.get("action") or act.get("type")
             campaign_id = act.get("campaign_id")
             try:
-                # Channel-level actions (e.g. reallocate_budget) have no single
-                # campaign/connector; handle them without a connector lookup.
-                if kind == "reallocate_budget":
-                    response = {
-                        "kind": "reallocate_budget",
-                        "source_platform": act.get("source_platform"),
-                        "target_platform": act.get("target_platform"),
-                        "budget_shift_pct": act.get("budget_shift_pct"),
-                        "shift_amount": act.get("shift_amount"),
-                        "requires_holdout_experiment": act.get(
-                            "requires_holdout_experiment", False
-                        ),
-                        "mock": True,
-                    }
-                else:
-                    connector = _connector_for(
-                        act.get("platform") or _platform_for(s, campaign_id),
-                        workspace_id,
-                    )
-                    if kind == "set_budget":
-                        response = connector.set_budget(campaign_id, float(act["new_daily_budget"]))
-                    elif kind == "pause":
-                        response = connector.pause_campaign(campaign_id)
-                    else:
-                        raise ValueError(f"unknown_action:{kind}")
-                    # connectors return {"success": False} instead of raising; surface it
-                    if isinstance(response, dict) and response.get("success") is False:
-                        raise RuntimeError(
-                            f"connector_failure:{response.get('error', 'unknown')}"
-                        )
+                response = _apply_action(s, workspace_id, kind, campaign_id, act)
                 results.append(
                     {
                         "action": kind,
@@ -86,9 +57,11 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                         "response": response,
                     }
                 )
-            except Exception as exc:  # one bad action must not abort the rest
+            except Exception as exc:
                 results.append({"action": kind, "campaign_id": campaign_id, "ok": False})
                 errors.append({"campaign_id": campaign_id, "error": str(exc)})
+                _apply_rollback(s, workspace_id, rec.rollback_json)
+                break
 
         for r in results:
             request = next(
@@ -115,6 +88,7 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
                     "ok": r["ok"],
                 },
                 session=s,
+                command_id=command_id,
             )
 
         status = "executed" if not errors else "failed"
@@ -140,32 +114,59 @@ def execute_recommendation(rec, workspace_id, session=None) -> dict:
 
 
 def _record_outcome(rec, workspace_id, session) -> None:
-    """Record a blended_mer Outcome for an executed recommendation.
+    """Record a blended_mer Outcome. Skip the row if analysis cannot run."""
+    from app.agents.orchestrator import run_analysis
 
-    Mock-safe: before/after both carry the current blended MER (delta 0.0)
-    until real post-execution measurement exists. Failures never abort the
-    execution result.
-    """
     try:
-        from app.agents.orchestrator import run_analysis
-
-        blended = 0.0
-        try:
-            analysis = run_analysis(workspace_id) or {}
-            blended = float(((analysis.get("reconcile") or {}).get("blended_mer")) or 0.0)
-        except Exception:
-            blended = 0.0
-        session.add(
-            Outcome(
-                recommendation_id=rec.id,
-                metric="blended_mer",
-                before=blended,
-                after=blended,
-                delta=0.0,
-            )
-        )
+        analysis = run_analysis(workspace_id) or {}
+        blended = float(((analysis.get("reconcile") or {}).get("blended_mer")) or 0.0)
     except Exception:
-        pass
+        return
+    session.add(
+        Outcome(
+            recommendation_id=rec.id,
+            metric="blended_mer",
+            before=blended,
+            after=blended,
+            delta=0.0,
+        )
+    )
+
+
+def _apply_action(session, workspace_id, kind, campaign_id, act) -> dict:
+    if kind == "reallocate_budget":
+        return {
+            "kind": "reallocate_budget",
+            "source_platform": act.get("source_platform"),
+            "target_platform": act.get("target_platform"),
+            "budget_shift_pct": act.get("budget_shift_pct"),
+            "shift_amount": act.get("shift_amount"),
+            "requires_holdout_experiment": act.get("requires_holdout_experiment", False),
+            "mock": True,
+        }
+    connector = _connector_for(
+        act.get("platform") or _platform_for(session, campaign_id),
+        workspace_id,
+    )
+    if kind == "set_budget":
+        response = connector.set_budget(campaign_id, float(act["new_daily_budget"]))
+    elif kind == "pause":
+        response = connector.pause_campaign(campaign_id)
+    else:
+        raise ValueError(f"unknown_action:{kind}")
+    if isinstance(response, dict) and response.get("success") is False:
+        raise RuntimeError(f"connector_failure:{response.get('error', 'unknown')}")
+    return response
+
+
+def _apply_rollback(session, workspace_id, rollback_json) -> None:
+    for act in _normalize(rollback_json):
+        kind = act.get("action") or act.get("type")
+        campaign_id = act.get("campaign_id")
+        try:
+            _apply_action(session, workspace_id, kind, campaign_id, act)
+        except Exception:
+            continue
 
 
 def _normalize(proposed_changes) -> list[dict]:

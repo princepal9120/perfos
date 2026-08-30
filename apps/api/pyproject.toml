@@ -21,8 +21,13 @@ dependencies = [
     "fastmcp>=2.0.0",
 ]
 
+[project.scripts]
+perfos = "app.cli:main"
+
 [project.optional-dependencies]
 postgres = ["psycopg2-binary>=2.9"]
+# Live Meta Ad Library collection needs a real browser; plain HTTP gets challenged.
+live = ["playwright>=1.44"]
 dev = [
     "ruff>=0.3.0",
     "pytest>=8.0",

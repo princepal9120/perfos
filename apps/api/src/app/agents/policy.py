@@ -1,16 +1,6 @@
 """Financial safety / policy engine (PerfOS).
 
-Enforced in CODE, not prompts. Every mutation passes through evaluate() before
-execution. Rules (spec/CONTRACTS.md + brief Phase 18/27):
-
-  * budget change > 25%            -> decision "block"   (too large, unsafe)
-  * recommendation workspace != actor workspace -> decision "block" (tenant breach)
-  * confidence < 0.6               -> decision "needs_approval" (stay pending)
-  * otherwise                      -> decision "allow"
-
-The approval route in app.api.routes treats "allow" as execute-now, "needs_approval"
-as recorded-but-pending (operator must still click approve in the UI), and "block"
-as rejected with reasons.
+Every mutation passes through evaluate() before execution.
 """
 
 from __future__ import annotations
@@ -30,8 +20,32 @@ def _get(obj: Any, key: str, default: Any = None) -> Any:
     return getattr(obj, key, default)
 
 
+def _as_percent(raw: Any) -> float | None:
+    try:
+        value = abs(float(raw))
+    except (TypeError, ValueError):
+        return None
+    if 0 < value <= 1:
+        return value * 100.0
+    return value
+
+
+def _iter_actions(proposed_changes: dict) -> list[dict]:
+    actions: list[dict] = []
+    for item in proposed_changes.get("actions") or []:
+        if isinstance(item, dict):
+            actions.append(item)
+    for key in ("set_budget", "pause", "reallocate_budget"):
+        for item in proposed_changes.get(key) or []:
+            if isinstance(item, dict):
+                actions.append({"action": key, **item})
+    if proposed_changes.get("action") or proposed_changes.get("type"):
+        actions.append(proposed_changes)
+    return actions
+
+
 def _budget_change_pct(proposed_changes: Any) -> float | None:
-    """Extract the largest absolute budget-shift percentage from a rec's changes."""
+    """Largest absolute budget-shift percent, or 100 if a set_budget has no baseline."""
     if proposed_changes is None:
         return None
     if isinstance(proposed_changes, str):
@@ -39,33 +53,34 @@ def _budget_change_pct(proposed_changes: Any) -> float | None:
             proposed_changes = json.loads(proposed_changes)
         except (ValueError, TypeError):
             return None
+    if isinstance(proposed_changes, list):
+        proposed_changes = {"actions": proposed_changes}
     if not isinstance(proposed_changes, dict):
         return None
 
-    # Common shapes: {"budget_shift_pct": 10} or {"pct": 0.10} or {"actions":[...]}
-    pct = proposed_changes.get("budget_shift_pct")
-    if pct is None:
-        pct = proposed_changes.get("pct")
-    if pct is None:
-        actions = proposed_changes.get("actions") or []
-        if isinstance(actions, list):
-            pcts = [
-                a.get("budget_shift_pct") or a.get("pct") for a in actions if isinstance(a, dict)
-            ]
-            pct = max((float(p) for p in pcts if p is not None), default=None)
-    if pct is None:
-        return None
-    try:
-        return abs(float(pct))
-    except (TypeError, ValueError):
-        return None
+    pcts: list[float] = []
+    for key in ("budget_shift_pct", "pct"):
+        parsed = _as_percent(proposed_changes[key]) if proposed_changes.get(key) is not None else None
+        if parsed is not None:
+            pcts.append(parsed)
+
+    for action in _iter_actions(proposed_changes):
+        for key in ("budget_shift_pct", "pct"):
+            parsed = _as_percent(action[key]) if action.get(key) is not None else None
+            if parsed is not None:
+                pcts.append(parsed)
+        kind = action.get("action") or action.get("type")
+        if kind == "set_budget" and action.get("new_daily_budget") is not None:
+            old = action.get("previous_daily_budget") or action.get("current_daily_budget")
+            new = float(action["new_daily_budget"])
+            if old in (None, 0, 0.0):
+                return 100.0
+            pcts.append(abs(new - float(old)) / float(old) * 100.0)
+
+    return max(pcts) if pcts else None
 
 
 def evaluate(rec: Any, workspace_id: Any | None = None) -> dict:
-    """Evaluate a Recommendation (ORM or dict) against safety policy.
-
-    Returns {"decision": "allow" | "needs_approval" | "block", "reasons": [str]}.
-    """
     reasons: list[str] = []
 
     rec_ws = _get(rec, "workspace_id")
@@ -98,5 +113,4 @@ def evaluate(rec: Any, workspace_id: Any | None = None) -> dict:
 
 
 def evaluate_payload(payload: dict, workspace_id: Any | None = None) -> dict:
-    """Convenience wrapper for dict inputs (used by tests / external callers)."""
     return evaluate(payload, workspace_id=workspace_id)

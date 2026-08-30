@@ -1,42 +1,82 @@
-"""FastAPI dependencies for workspace-scoped auth.
-
-Reads X-Workspace-Id + X-API-Key headers (or an Authorization: Bearer
-token) and exposes get_current_workspace for all /api routes.
-"""
+"""FastAPI dependencies for workspace-scoped auth."""
 
 from __future__ import annotations
 
-from fastapi import Header, HTTPException, status
+from collections.abc import Callable
 
-from app.core.security import get_workspace_from_header
+from fastapi import Cookie, Header, HTTPException, status
+
+from app.core.security import resolve_credentials, scope_rank
+
+_UNAUTHENTICATED = "Missing or invalid credentials. Send X-Workspace-Id and X-API-Key headers, or a Bearer token."
+
+
+def _credentials(
+    x_workspace_id: str | None,
+    x_api_key: str | None,
+    authorization: str | None,
+    perfos_session: str | None,
+) -> tuple[int, str]:
+    resolved = resolve_credentials(
+        {
+            "x-workspace-id": x_workspace_id,
+            "x-api-key": x_api_key,
+            "authorization": authorization,
+            "perfos-session": perfos_session,
+        }
+    )
+    if not resolved:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=_UNAUTHENTICATED)
+    workspace_id, scope = resolved
+    if x_workspace_id and str(x_workspace_id) != str(workspace_id):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="X-Workspace-Id does not match credentials.",
+        )
+    if not str(workspace_id).isdigit():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Workspace id must be an integer.",
+        )
+    return int(workspace_id), scope
 
 
 def get_current_workspace(
     x_workspace_id: str | None = Header(default=None, alias="X-Workspace-Id"),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
     authorization: str | None = Header(default=None),
-) -> str | int:
-    """Return the authenticated workspace_id or raise 401."""
-    workspace_id = get_workspace_from_header(
-        {
-            "x-workspace-id": x_workspace_id,
-            "x-api-key": x_api_key,
-            "authorization": authorization,
-        }
-    )
-    if not workspace_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid credentials. Send X-Workspace-Id "
-            "and X-API-Key headers, or a Bearer token.",
+    perfos_session: str | None = Cookie(default=None, alias="perfos_session"),
+) -> int:
+    """Return the authenticated workspace id or raise 401."""
+    return _credentials(x_workspace_id, x_api_key, authorization, perfos_session)[0]
+
+
+def get_current_scope(
+    x_workspace_id: str | None = Header(default=None, alias="X-Workspace-Id"),
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
+    perfos_session: str | None = Cookie(default=None, alias="perfos_session"),
+) -> str:
+    return _credentials(x_workspace_id, x_api_key, authorization, perfos_session)[1]
+
+
+def require_scope(minimum: str) -> Callable[..., int]:
+    """Dependency factory gating an endpoint behind a minimum access level."""
+
+    def dependency(
+        x_workspace_id: str | None = Header(default=None, alias="X-Workspace-Id"),
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+        authorization: str | None = Header(default=None),
+        perfos_session: str | None = Cookie(default=None, alias="perfos_session"),
+    ) -> int:
+        workspace_id, scope = _credentials(
+            x_workspace_id, x_api_key, authorization, perfos_session
         )
-    if x_workspace_id and x_workspace_id != workspace_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="X-Workspace-Id does not match credentials.",
-        )
-    # Workspace IDs are integers in the DB; coerce so filtered ORM queries
-    # match int columns (a str "1" never equals int 1 and returns []).
-    if workspace_id is not None and workspace_id.isdigit():
-        return int(workspace_id)
-    return workspace_id
+        if scope_rank(scope) < scope_rank(minimum):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This credential has '{scope}' access; '{minimum}' is required.",
+            )
+        return workspace_id
+
+    return dependency

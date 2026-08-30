@@ -13,6 +13,8 @@ def log_action(
     target: str,
     payload: Any | None = None,
     session=None,
+    command_id: str | None = None,
+    correlation_id: str | None = None,
 ):
     """Write one AuditLog row and return it.
 
@@ -28,6 +30,8 @@ def log_action(
             action=action,
             target=target,
             payload_json=payload if payload is not None else {},
+            command_id=command_id,
+            correlation_id=correlation_id or command_id,
         )
         s.add(row)
         if own:

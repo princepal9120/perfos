@@ -1,9 +1,17 @@
-"use client";
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · theme: daisy-black · macrostructure: Workbench */
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCallback, useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -11,115 +19,76 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { connectAccount, getAccounts, type AdAccount } from "@/lib/api";
+} from '@/components/ui/table';
+import {
+  MetaLogo,
+  GoogleLogo,
+  LinkedInLogo,
+  XLogo,
+  TikTokLogo,
+  RedditLogo,
+} from '@/components/marketing/icons';
+import {
+  type AdAccount,
+  connectAccount,
+  getAccounts,
+  type Platform,
+} from '@/lib/api';
 
-type PlatformMeta = {
-  id:
-    | "google"
-    | "meta"
-    | "shopify"
-    | "tiktok"
-    | "linkedin"
-    | "pinterest"
-    | "snapchat"
-    | "amazon"
-    | "reddit"
-    | "twitter"
-    | "youtube"
-    | "amazon_ads"
-    | "x_ads";
+type Connector = {
+  id: Platform;
   name: string;
+  Logo: (props: { className?: string }) => React.JSX.Element;
   description: string;
-  dotClass: string;
 };
 
-const PLATFORMS: PlatformMeta[] = [
+const CONNECTORS: Connector[] = [
   {
-    id: "google",
-    name: "Google Ads",
-    description: "Campaigns, spend and claimed conversions.",
-    dotClass: "bg-blue-500",
+    id: 'meta',
+    name: 'Meta Ads',
+    Logo: MetaLogo,
+    description:
+      'Facebook & Instagram campaigns — spend, CTR, and claimed conversions.',
   },
   {
-    id: "meta",
-    name: "Meta Ads",
-    description: "Facebook & Instagram performance claims.",
-    dotClass: "bg-sky-500",
+    id: 'google',
+    name: 'Google Ads',
+    Logo: GoogleLogo,
+    description:
+      'Search, Shopping, YouTube and Performance Max conversions.',
   },
   {
-    id: "shopify",
-    name: "Shopify",
-    description: "Actual revenue. The source of truth.",
-    dotClass: "bg-emerald-600",
+    id: 'linkedin',
+    name: 'LinkedIn Ads',
+    Logo: LinkedInLogo,
+    description: 'B2B sponsored content, lead gen forms, and audience reach.',
   },
   {
-    id: "tiktok",
-    name: "TikTok Ads",
-    description: "Short-form video performance claims.",
-    dotClass: "bg-[#ff2d55]",
+    id: 'twitter',
+    name: 'X (Twitter) Ads',
+    Logo: XLogo,
+    description: 'Timeline takeovers, keyword targeting, and engagement campaigns.',
   },
   {
-    id: "linkedin",
-    name: "LinkedIn Ads",
-    description: "B2B campaigns and lead gen claims.",
-    dotClass: "bg-[#0a66c2]",
+    id: 'tiktok',
+    name: 'TikTok Ads',
+    Logo: TikTokLogo,
+    description: 'Short-form video Spark ads and conversion tracking.',
   },
   {
-    id: "pinterest",
-    name: "Pinterest Ads",
-    description: "Visual discovery campaign claims.",
-    dotClass: "bg-[#e60023]",
-  },
-  {
-    id: "snapchat",
-    name: "Snapchat Ads",
-    description: "Vertical video reach and swipes.",
-    dotClass: "bg-[#f7b500]",
-  },
-  {
-    id: "amazon",
-    name: "Amazon Ads",
-    description: "Retail media spend and claimed sales.",
-    dotClass: "bg-[#ff9900]",
-  },
-  {
-    id: "reddit",
-    name: "Reddit Ads",
-    description: "Community placements and clicks.",
-    dotClass: "bg-[#ff4500]",
-  },
-  {
-    id: "twitter",
-    name: "Twitter Ads",
-    description: "Timeline campaigns and engagement.",
-    dotClass: "bg-[#1d9bf0]",
-  },
-  {
-    id: "youtube",
-    name: "YouTube Ads",
-    description: "Video views and claimed conversions.",
-    dotClass: "bg-[#ff0000]",
-  },
-  {
-    id: "amazon_ads",
-    name: "Amazon DSP",
-    description: "Programmatic retail media buys.",
-    dotClass: "bg-[#ff9900]",
-  },
-  {
-    id: "x_ads",
-    name: "X Ads",
-    description: "Real-time campaigns on X.",
-    dotClass: "bg-[#1d9bf0]",
+    id: 'reddit',
+    name: 'Reddit Ads',
+    Logo: RedditLogo,
+    description: 'Subreddit placement targeting, conversation ads, and CPC reach.',
   },
 ];
 
-function StatusBadge({ status }: { status: AdAccount["status"] }) {
+function StatusBadge({ status }: { status: AdAccount['status'] }) {
+  const active = status === 'active' || status === 'connected';
   return (
-    <Badge variant={status === "active" ? "success" : "warning"} className="gap-1.5">
+    <Badge variant={active ? 'success' : 'warning'} className="gap-1.5 font-mono text-[10px]">
       <span
-        className={`h-1.5 w-1.5 rounded-full ${status === "active" ? "bg-success" : "bg-warning"}`}
+        className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-emerald-400' : 'bg-amber-400'}`}
         aria-hidden="true"
       />
       {status}
@@ -127,26 +96,18 @@ function StatusBadge({ status }: { status: AdAccount["status"] }) {
   );
 }
 
-function PlatformChip({ platform }: { platform: PlatformMeta["id"] }) {
-  const meta = PLATFORMS.find((p) => p.id === platform);
-  return (
-    <span className="inline-flex items-center gap-2 font-medium text-foreground">
-      <span className={`h-2 w-2 shrink-0 rounded-full ${meta?.dotClass ?? "bg-muted-foreground"}`} aria-hidden="true" />
-      {meta?.name ?? platform}
-    </span>
-  );
-}
-
 function formatDate(iso: string) {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, { dateStyle: "medium" });
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<AdAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [connecting, setConnecting] = useState<PlatformMeta["id"] | null>(null);
+  const [connecting, setConnecting] = useState<Platform | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -155,7 +116,8 @@ export default function AccountsPage() {
         if (!cancelled) setAccounts(Array.isArray(rows) ? rows : []);
       })
       .catch(() => {
-        if (!cancelled) setError("Could not load accounts. Is the API running in mock mode?");
+        if (!cancelled)
+          setError('Could not load accounts. Check that the API is running.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -165,118 +127,214 @@ export default function AccountsPage() {
     };
   }, []);
 
-  const handleConnect = useCallback(async (platform: PlatformMeta["id"]) => {
-    setConnecting(platform);
-    setError(null);
-    try {
-      const created = await connectAccount({ platform });
-      setAccounts((prev) => [...prev, created]);
-    } catch {
-      setError(`Failed to connect ${platform}. Check that the backend is up.`);
-    } finally {
-      setConnecting(null);
-    }
-  }, []);
+  const handleConnect = useCallback(
+    async (platform: Platform, label: string) => {
+      setConnecting(platform);
+      setError(null);
+      try {
+        const created = await connectAccount({ platform });
+        setAccounts((prev) => [...prev, created]);
+      } catch {
+        setError(
+          `Could not connect ${label}. Make sure the API is up and try again.`,
+        );
+      } finally {
+        setConnecting(null);
+      }
+    },
+    [],
+  );
 
-  const connectedPlatforms = new Set(accounts.map((a) => a.platform));
+  const countByPlatform = accounts.reduce<Record<string, number>>((acc, a) => {
+    acc[a.platform] = (acc[a.platform] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const firstOpen = CONNECTORS.find((c) => !countByPlatform[c.id]);
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold tracking-tight">Connected accounts</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Google and Meta report claimed conversions. Shopify holds actual revenue. Mock
-          connectors seed demo data instantly.
+    <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 py-8">
+      {/* header */}
+      <div className="mb-8">
+        <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
+          Connected Ad Accounts
+        </h1>
+        <p className="mt-1 max-w-prose text-xs text-muted-foreground">
+          Connect your official ad network accounts to synchronize spend, CTR, and claimed conversions. PerfOS reconciles these claims against actual Shopify store orders before any budget shift.
         </p>
       </div>
 
       {error && (
         <div
           role="alert"
-          className="mb-6 rounded-md border border-destructive/40 bg-destructive/20 px-4 py-3 text-sm text-destructive-foreground"
+          className="mb-6 rounded-lg border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs text-red-300"
         >
           {error}
         </div>
       )}
 
-      <section aria-label="Available platforms" className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {PLATFORMS.map((platform) => {
-          const connected = connectedPlatforms.has(platform.id);
-          const isConnecting = connecting === platform.id;
-          return (
-            <Card key={platform.id} className="flex flex-col justify-between">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 rounded-full ${platform.dotClass}`} aria-hidden="true" />
-                  <CardTitle className="text-sm">{platform.name}</CardTitle>
+      {/* connector grid */}
+      <section aria-label="Available platforms">
+        <h2 className="mb-3 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+          Supported Platforms (6)
+        </h2>
+        {loading ? (
+          <div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            aria-busy="true"
+            aria-label="Loading platforms"
+          >
+            {CONNECTORS.map((c) => (
+              <Card key={c.id} className="p-5">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-9 w-9 rounded-lg" />
+                  <Skeleton className="h-4 w-28" />
                 </div>
-                <CardDescription className="text-xs leading-relaxed">
-                  {platform.description}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                {connected ? (
-                  <Button variant="outline" disabled className="w-full">
-                    Connected
-                  </Button>
-                ) : (
-                  <Button
-                    variant="default"
-                    onClick={() => handleConnect(platform.id)}
-                    disabled={connecting !== null || loading}
-                    className="w-full"
-                  >
-                    {isConnecting ? "Connecting…" : "Connect"}
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          );
-        })}
+                <Skeleton className="mt-4 h-3 w-full" />
+                <Skeleton className="mt-2 h-3 w-2/3" />
+                <Skeleton className="mt-5 h-9 w-full rounded-lg" />
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {CONNECTORS.map((c) => {
+              const count = countByPlatform[c.id] ?? 0;
+              const connected = count > 0;
+              const busy = connecting === c.id;
+              return (
+                <Card
+                  key={c.id}
+                  className="flex flex-col bg-surface border-border transition-colors hover:border-primary/40"
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span
+                          aria-hidden="true"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary"
+                        >
+                          <c.Logo className="w-4 h-4 text-primary" />
+                        </span>
+                        <CardTitle className="text-sm font-semibold">{c.name}</CardTitle>
+                      </div>
+                      {connected && (
+                        <Badge variant="success" shape="square" className="text-[9px] font-mono uppercase">
+                          connected
+                        </Badge>
+                      )}
+                    </div>
+                    <CardDescription className="text-xs leading-relaxed mt-2">
+                      {c.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter className="mt-auto pt-2 border-t border-border">
+                    {connected ? (
+                      <p className="w-full text-xs text-muted-foreground font-mono">
+                        <span className="font-medium text-foreground">
+                          {count}
+                        </span>{' '}
+                        {count === 1 ? 'account' : 'accounts'} syncing
+                      </p>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => handleConnect(c.id, c.name)}
+                        disabled={connecting !== null}
+                        className="btn-daisy-solid w-full text-xs"
+                      >
+                        {busy ? 'Connecting…' : `Connect ${c.name}`}
+                      </Button>
+                    )}
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      <section aria-label="Connected accounts list" className="mt-8">
-        <h3 className="text-sm font-semibold">Accounts</h3>
+      {/* connected accounts table */}
+      <section aria-label="Connected accounts" className="mt-10">
+        <div className="mb-3 flex items-baseline gap-2">
+          <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+            Active Connected Accounts
+          </h2>
+          {!loading && (
+            <span className="text-xs font-mono text-primary">
+              ({accounts.length})
+            </span>
+          )}
+        </div>
+
         {loading ? (
-          <div className="mt-3 space-y-2" aria-busy="true" aria-label="Loading accounts">
+          <div
+            className="space-y-2"
+            aria-busy="true"
+            aria-label="Loading accounts"
+          >
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
+              <Skeleton key={i} className="h-12 w-full" />
             ))}
           </div>
         ) : accounts.length === 0 ? (
-          <p className="mt-3 rounded-md border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-            No accounts connected yet. Connect a platform above to pull mock data.
-          </p>
+          <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
+            <span className="font-mono text-sm text-muted-foreground block mb-2">⌘</span>
+            <p className="text-xs text-muted-foreground">
+              No accounts connected yet. Connect Google, Meta, LinkedIn, X, TikTok, or Reddit above.
+            </p>
+            {firstOpen && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleConnect(firstOpen.id, firstOpen.name)}
+                disabled={connecting !== null}
+                className="mt-4 text-xs"
+              >
+                {connecting === firstOpen.id
+                  ? 'Connecting…'
+                  : `Connect ${firstOpen.name}`}
+              </Button>
+            )}
+          </div>
         ) : (
-          <div className="mt-3 overflow-hidden rounded-lg border border-border">
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Platform</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Account Name</TableHead>
                   <TableHead>Account ID</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Connected</TableHead>
+                  <TableHead>Connected Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {accounts.map((account) => (
-                  <TableRow key={account.id}>
-                    <TableCell className="whitespace-nowrap px-4 py-3">
-                      <PlatformChip platform={account.platform} />
-                    </TableCell>
-                    <TableCell className="px-4 py-3 font-medium">{account.name}</TableCell>
-                    <TableCell className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                      {account.platform_account_id}
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <StatusBadge status={account.status} />
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                      {formatDate(account.connected_at)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {accounts.map((account) => {
+                  const meta = CONNECTORS.find(
+                    (c) => c.id === account.platform,
+                  );
+                  return (
+                    <TableRow key={account.id}>
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-foreground font-medium flex items-center gap-2">
+                        {meta ? <meta.Logo className="w-3.5 h-3.5 text-primary" /> : null}
+                        <span>{meta?.name ?? account.platform}</span>
+                      </TableCell>
+                      <TableCell className="px-4 py-3 font-medium text-foreground text-xs">
+                        {account.name}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-4 py-3 font-mono text-xs tabular-nums text-muted-foreground">
+                        {account.platform_account_id ?? '—'}
+                      </TableCell>
+                      <TableCell className="px-4 py-3">
+                        <StatusBadge status={account.status} />
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap px-4 py-3 text-xs font-mono text-muted-foreground">
+                        {formatDate(account.connected_at)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

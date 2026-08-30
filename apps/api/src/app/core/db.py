@@ -2,7 +2,7 @@
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, inspect
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -15,12 +15,23 @@ class Base(DeclarativeBase):
 def _engine_kwargs() -> dict:
     kwargs: dict = {"future": True}
     if settings.DATABASE_URL.startswith("sqlite"):
-        # FastAPI serves requests across threads; allow the shared sqlite connection.
-        kwargs["connect_args"] = {"check_same_thread": False}
+        kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
     return kwargs
 
 
 engine = create_engine(settings.DATABASE_URL, **_engine_kwargs())
+
+
+@event.listens_for(engine, "connect")
+def _sqlite_pragmas(dbapi_conn, _connection_record) -> None:
+    if not settings.DATABASE_URL.startswith("sqlite"):
+        return
+    cur = dbapi_conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL")
+    cur.execute("PRAGMA synchronous=NORMAL")
+    cur.execute("PRAGMA busy_timeout=30000")
+    cur.execute("PRAGMA foreign_keys=ON")
+    cur.close()
 
 SessionLocal = sessionmaker(
     bind=engine,
@@ -44,3 +55,28 @@ def init_db() -> None:
     import app.models  # noqa: F401  (registers ORM mappings on Base.metadata)
 
     Base.metadata.create_all(bind=engine)
+    _additive_sqlite_columns()
+
+
+def _additive_sqlite_columns() -> None:
+    """Apply the small, backwards-compatible schema additions without Alembic.
+
+    PerfOS ships with SQLite for local operation. ``create_all`` does not alter
+    existing tables, so the two correlation columns on the legacy audit table
+    need an additive migration when an existing demo database is upgraded.
+    """
+    if engine.dialect.name != "sqlite":
+        return
+    table = Base.metadata.tables.get("audit_logs")
+    if table is None:
+        return
+    with engine.begin() as conn:
+        existing = {column["name"] for column in inspect(conn).get_columns("audit_logs")}
+        for column_name in ("command_id", "correlation_id"):
+            if column_name not in existing:
+                conn.exec_driver_sql(
+                    f'ALTER TABLE audit_logs ADD COLUMN "{column_name}" VARCHAR(64)'
+                )
+        approval_existing = {column["name"] for column in inspect(conn).get_columns("approvals")}
+        if "command_id" not in approval_existing:
+            conn.exec_driver_sql('ALTER TABLE approvals ADD COLUMN "command_id" VARCHAR(64)')

@@ -22,6 +22,17 @@ EXPECTED_TOOLS = {
     "list_ad_accounts",
     "list_recommendations",
     "generate_recommendations",
+    "platform_capabilities",
+    "ads_search",
+    "ads_winners",
+    "ads_clone",
+    "ads_generate",
+    "ads_assets",
+    "ads_loop_run",
+    "ads_loop_status",
+    "perfos_find_ads",
+    "perfos_score_winners",
+    "perfos_run_loop",
 }
 
 
@@ -30,7 +41,7 @@ async def test_lists_all_perfos_tools():
     async with Client(mcp) as client:
         tools = await client.list_tools()
     names = {t.name for t in tools}
-    assert EXPECTED_TOOLS <= names
+    assert names >= EXPECTED_TOOLS
 
 
 @pytest.mark.asyncio
@@ -51,3 +62,11 @@ async def test_mcp_http_mounted_on_app(client):
     # Streamable HTTP endpoint should exist (method may vary by FastMCP version).
     resp = client.get("/mcp")
     assert resp.status_code != 404
+
+
+@pytest.mark.asyncio
+async def test_platform_capabilities_is_machine_readable():
+    async with Client(mcp) as client:
+        result = await client.call_tool("platform_capabilities", {"workspace_id": "1"})
+    assert result.data["workspace_id"] == "1"
+    assert any(item["id"] == "ads.loop" for item in result.data["capabilities"])

@@ -1,0 +1,153 @@
+"""LOOP orchestrator -- chains all 6 stages into one closed-loop run.
+
+``run_loop`` drives find -> score -> create -> launch -> track -> double-down
+(see ``app.loop.config.LOOP_STAGES``) and returns a summary dict with counts
+per stage plus the final double-down decisions.
+
+Dry-run by default (BUILD_PLAN_50): every stage below is mock-safe data
+transformation only; the launch stage emits paused *plans* whose execution
+must pass ``app.loop.safety_gate`` + human approval -- never triggered here.
+
+Stage signatures consumed::
+
+    find_stage(persona, channels)            -> list[AdRecord]
+    score_stage(ads, persona)                -> list[WinnerSignal]
+    create_stage(winners)                    -> list[GeneratedAsset]
+    launch_stage(assets, channels, dry_run)  -> list[dict]   # paused plans
+    track_stage(launches)                    -> list[dict]   # perf rows
+    double_down_stage(tracking)              -> list[dict]   # scale/kill/hold
+
+# REAL hook: swap track_stage rows for connector metrics and route
+# double-down scale/kill actions back through loop.safety_gate.submit_write.
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+from typing import Any
+
+__all__ = ["run_loop"]
+
+
+async def run_loop(
+    persona: str = "saas",
+    channels: list[str] | None = None,
+    dry_run: bool = True,
+    query: str | None = None,
+    workspace_id: int = 0,
+    run_id: str | None = None,
+    command_id: str | None = None,
+    session: Any = None,
+) -> dict:
+    """Run one full lifecycle pass for ``persona`` and summarize it.
+
+    Args:
+        persona: audience/product persona tag driving discovery.
+        channels: launch channels; when None, derived from the platforms
+            actually observed in the find results.
+        dry_run: passed to the launch stage; True (default) records the flag
+            without executing anything external.
+        query: competitor/keyword to spy live; omitted means keyless fixtures.
+
+    Returns:
+        Summary dict::
+
+            {"persona", "channels", "dry_run",
+             "stages": {"find": n, "score": n, "create": n,
+                        "launch": n, "track": n, "double-down": n},
+             "decisions": [...],
+             "pending_approval": [...]}   # real runs only
+    """
+    # Lazy imports: sibling stage modules may be landing in parallel build steps.
+    from app.loop.stages.create_stage import create_stage
+    from app.loop.stages.double_down_stage import double_down_stage
+    from app.loop.stages.find_stage import find_stage
+    from app.loop.stages.launch_stage import launch_stage
+    from app.loop.stages.score_stage import score_stage
+    from app.loop.stages.track_stage import track_stage
+
+    ads = find_stage(
+        persona=persona,
+        channels=channels,
+        query=query,
+        workspace_id=workspace_id,
+        session=session,
+    )
+    winners = score_stage(ads=ads, persona=persona)
+    assets = create_stage(winners)
+    # The stage remains a pure transformation; persistence is owned by this
+    # durable orchestrator boundary rather than by a JSON side effect.
+    from app.create.store import AssetStore
+
+    asset_store = AssetStore()
+    for index, asset in enumerate(assets):
+        winner = winners[min(index // 2, len(winners) - 1)] if winners else None
+        asset_store.add(
+            asset,
+            source_ad_id=getattr(winner, "ad_id", "") if winner else "",
+            workspace_id=workspace_id,
+            run_id=run_id,
+            session=session,
+        )
+    # launch_stage consumes plain dicts; assets are dataclasses.
+    asset_dicts: list[dict[str, Any]] = [asdict(a) for a in assets]
+    create_count = len(asset_dicts)
+
+    if channels is None:
+        channels = sorted({ad.platform for ad in ads if getattr(ad, "platform", None)})
+    plans = launch_stage(
+        assets=asset_dicts,
+        channels=channels,
+        dry_run=dry_run,
+        workspace_id=workspace_id,
+        run_id=run_id,
+        command_id=command_id,
+        session=session,
+    )
+
+    tracking = track_stage(plans)
+    decisions = double_down_stage(tracking)
+
+    return {
+        "persona": persona,
+        "query": query,
+        "channels": channels,
+        "dry_run": bool(dry_run),
+        "stages": {
+            "find": len(ads),
+            "score": len(winners),
+            "create": create_count,
+            "launch": len(plans),
+            "track": len(tracking),
+            "double-down": len(decisions),
+        },
+        "decisions": decisions,
+        # Real runs stop here: each draft needs a human approval before anything ships.
+        "pending_approval": [
+            {"draft_id": p["draft_id"], "channel": p["channel"], "status": p["status"]}
+            for p in plans
+            if p.get("draft_id")
+        ],
+    }
+
+
+if __name__ == "__main__":
+    # Self-check: the full dry-run chain executes and reports all six counts.
+    import asyncio
+
+    async def _demo() -> None:
+        summary = await run_loop()
+        assert set(summary["stages"]) == {
+            "find", "score", "create", "launch", "track", "double-down"
+        }, summary["stages"]
+        assert all(isinstance(v, int) and v >= 0 for v in summary["stages"].values())
+        assert summary["dry_run"] is True
+        assert isinstance(summary["decisions"], list)
+        assert summary["pending_approval"] == [], "a dry run must not queue approvals"
+
+        live = await run_loop(dry_run=False)
+        assert live["pending_approval"], "a real run must queue drafts for approval"
+        assert all(d["status"] != "executed" for d in live["pending_approval"])
+        print("orchestrator OK:", summary["stages"])
+
+    asyncio.run(_demo())

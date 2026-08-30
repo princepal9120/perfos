@@ -42,6 +42,15 @@ Thumbs.db
 # Accidental pip/uv version-spec files (e.g. apps/api/=1.0.0)
 =*
 
+# Generated from openapi.json, which is committed as the API contract
+apps/web/lib/api-types.d.ts
+
+# Local runtime state
+apps/api/data/
+apps/web/.next-dev-pid
+*.db-shm
+*.db-wal
+
 # Agent/IDE state
 .build/
 .omx/
@@ -52,3 +61,4 @@ Thumbs.db
 .hallmark/
 .playwright-mcp/
 plans/
+design-extract-output/

@@ -175,4 +175,19 @@ def client(db_session, seeded_db):
 
 @pytest.fixture()
 def auth_headers(seeded_db):
-    return {"X-Workspace-Id": str(seeded_db["workspace_id"])}
+    # The app requires X-Workspace-Id AND X-API-Key (or a Bearer token). Reuse
+    # the demo master key the app actually loaded from settings so the two agree
+    # regardless of whether .env or conftest supplied it.
+    from app.core.config import settings
+
+    return {
+        "X-Workspace-Id": str(seeded_db["workspace_id"]),
+        "X-API-Key": settings.DEFAULT_WORKSPACE_API_KEY,
+    }
+
+
+def demo_api_key() -> str:
+    """The demo master key the app loaded from settings (test auth helper)."""
+    from app.core.config import settings
+
+    return settings.DEFAULT_WORKSPACE_API_KEY

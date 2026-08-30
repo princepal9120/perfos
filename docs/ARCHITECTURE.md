@@ -6,7 +6,7 @@ offline in mock mode against SQLite.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│  Console (web/) — Next.js 14 App Router + Tailwind         │
+│  Console (web/) — Next.js 16 App Router + Tailwind         │
 │  Overview · Accounts · Recommendations · Experiments · Agents│
 └───────────────────────────┬────────────────────────────────┘
                             │ /api (proxy, X-Workspace-Id)
